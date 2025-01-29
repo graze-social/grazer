@@ -1,3 +1,4 @@
+import numpy as np
 import ray
 from PIL import Image
 from io import BytesIO
@@ -43,7 +44,12 @@ class NetworkWorker(TimingBase):
                     try:
                         resp = await client.post(url, json=payload)
                         resp.raise_for_status()
-                        return resp.json()
+                        data =  resp.json()
+                        if data and isinstance(data, dict) and data.get("asset_value"):
+                            # Currently everything we return is a list so return as np array
+                            return np.array(data.get("asset_value"))
+                        else:
+                            return data
                     except httpx.HTTPError:
                         if i == 4:
                             raise

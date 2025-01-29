@@ -1,4 +1,4 @@
-from settings import SENTRY_DSN
+from app.settings import SENTRY_DSN
 import sentry_sdk
 
 
