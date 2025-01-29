@@ -8,6 +8,8 @@ from app.algos.manager import AlgoManager
 from app.helpers import create_exception_json
 from app.logger import logger
 from app.ray.timing_base import TimingBase, measure_time
+
+
 @ray.remote(max_concurrency=100)
 class CPUWorker(TimingBase):
     def __init__(

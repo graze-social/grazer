@@ -5,6 +5,7 @@ from app.settings import REDIS_URL, REDIS_DELETE_POST_QUEUE
 
 class RedisClient:
     REDIS_CLIENT = aioredis.from_url(REDIS_URL, decode_responses=True)
+
     @classmethod
     async def push_delete_transactions(cls, deletes):
         await cls.REDIS_CLIENT.rpush(REDIS_DELETE_POST_QUEUE, json.dumps(deletes))
@@ -30,4 +31,3 @@ class RedisClient:
         value = await cls.REDIS_CLIENT.get(keyname)
         if value:
             return json.loads(value)
-

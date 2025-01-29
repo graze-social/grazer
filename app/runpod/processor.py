@@ -1,7 +1,5 @@
-import json
 import random
 import asyncio
-from datetime import datetime
 
 from app.logic_evaluator import LogicEvaluator
 from app.logger import logger
@@ -9,6 +7,8 @@ from app.runpod.base import RunpodBase
 from app.helpers import chunk
 from app.redis import RedisClient
 from app.settings import CURRENT_ALGORITHMS_KEY
+
+
 class RunpodProcessor(RunpodBase):
     @classmethod
     async def ingest_feed(cls, transactions):
@@ -56,7 +56,6 @@ class RunpodProcessor(RunpodBase):
             while len(asyncio.all_tasks()) > 100:
                 logger.info(f"Current Task Depth is {len(asyncio.all_tasks())}")
                 asyncio.sleep(1)
-
 
     @classmethod
     async def get_algorithm_operators(cls):

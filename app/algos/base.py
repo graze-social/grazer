@@ -143,7 +143,9 @@ class ImageParser(BaseParser):
 
         return urls
 
-    async def get_ml_scores(self, records, category, comparator, threshold, default_value=True):
+    async def get_ml_scores(
+        self, records, category, comparator, threshold, default_value=True
+    ):
         image_urls_by_cid = await self.get_all_image_urls(records)
         all_cids = [e["commit"]["cid"] for e in records]
         # Flatten all URLs for batch processing

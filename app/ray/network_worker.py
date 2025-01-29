@@ -68,9 +68,7 @@ class NetworkWorker(TimingBase):
 
         # Fetch and store in cache
         asset = await self.fetch_asset(asset_type, asset_name, asset_parameters)
-        await self.cache.cache_asset.remote(
-            key, asset
-        )  # Cache for 3 hours
+        await self.cache.cache_asset.remote(key, asset)  # Cache for 3 hours
         return asset
 
     @measure_time

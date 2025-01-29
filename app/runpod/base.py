@@ -2,6 +2,7 @@ from app.redis import RedisClient
 from app.algos.manager import AlgoManager
 from app.logger import logger
 
+
 class RunpodBase:
     @classmethod
     async def publish_status(cls, task_id, message):
@@ -16,7 +17,7 @@ class RunpodBase:
                 dispatcher.gpu_embedding_workers,
                 dispatcher.gpu_classifier_workers,
                 dispatcher.network_workers,
-                dispatcher.cache
+                dispatcher.cache,
             )
         except Exception:
             await cls.publish_status(
@@ -25,4 +26,3 @@ class RunpodBase:
                     "error": "Algorithm can't compile - please check your logic, something is preventing it from properly loading."
                 },
             )
-

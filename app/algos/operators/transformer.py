@@ -1,4 +1,3 @@
-import pdb
 from hashlib import sha256
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity

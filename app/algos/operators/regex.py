@@ -36,7 +36,9 @@ class RegexParser(BaseParser):
         Returns a NumPy array of booleans indicating whether the field in each
         record does NOT match the pattern.
         """
-        response = await self.matches_operator(records, field_selector, pattern, insensitive)
+        response = await self.matches_operator(
+            records, field_selector, pattern, insensitive
+        )
         return ~response
 
     async def allow_operator(
@@ -72,7 +74,9 @@ class RegexParser(BaseParser):
         Returns a NumPy array of booleans indicating whether the field in each
         record matches none of the terms in the terms_list, considering enhanced word boundaries.
         """
-        response = await self.allow_operator(records, field_selector, terms_list, insensitive)
+        response = await self.allow_operator(
+            records, field_selector, terms_list, insensitive
+        )
         return ~response
 
     async def register_operations(self, logic_evaluator):
