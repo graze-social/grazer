@@ -7,7 +7,7 @@ from app.ray.utils import (
     discover_named_actors,
     discover_named_actor,
 )
-
+from app.sentry import sentry_sdk
 
 def main(name, num_workers, num_cpus, num_gpus, namespace):
     # Initialize Ray

@@ -6,7 +6,7 @@ from app.ray.utils import (
     parse_cache_worker_args,
     discover_named_actor,
 )
-
+from app.sentry import sentry_sdk
 
 def main(name, num_workers, num_cpus, num_gpus, namespace):
     # Initialize Ray

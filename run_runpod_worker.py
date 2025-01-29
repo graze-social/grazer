@@ -3,9 +3,12 @@ import runpod
 from app.runpod.router import RunpodRouter
 from app.ray.dispatcher import Dispatcher
 from app.ray.utils import parse_cache_worker_args
+from app.sentry import sentry_sdk
+
 
 args = parse_cache_worker_args()
 ray.init(namespace=args.namespace)
+
 NUM_WORKERS = 1
 
 

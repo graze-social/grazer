@@ -2,7 +2,7 @@ import ray
 from app.ray.cache import Cache
 from app.ray.semaphore import SemaphoreActor
 from app.ray.utils import parse_cache_worker_args
-
+from app.sentry import sentry_sdk
 
 def main(name, num_cpus, num_gpus, namespace):
     # Initialize Ray
