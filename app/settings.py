@@ -8,3 +8,6 @@ JETSTREAM_URL = os.getenv(
 )
 REDIS_DELETE_POST_QUEUE = "grazer_delete_posts"
 CURRENT_ALGORITHMS_KEY = "current_algorithms"
+SENTRY_DSN = os.getenv(
+    "SENTRY_DSN"
+)

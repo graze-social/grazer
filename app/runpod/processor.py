@@ -19,7 +19,8 @@ class RunpodProcessor(RunpodBase):
                 records.append(transaction)
             elif transaction.get("commit", {}).get("operation") == "delete":
                 deletes.append(transaction)
-        await RedisClient.push_delete_transactions(deletes)
+        if deletes:
+            await RedisClient.push_delete_transactions(deletes)
         return records
 
     @classmethod

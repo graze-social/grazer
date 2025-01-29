@@ -93,13 +93,14 @@ class ImageParser(BaseParser):
                     valid_images.append(img)
                     url_indices.append(url)
                     cache_keys.append(get_cache_key(self.MODEL_NAME, url, category))
-            probs = await self.probability_function(cache_keys, valid_images, category)
-            for single_url, single_probs in zip(url_indices, probs):
-                category_prob_map = {
-                    category: single_probs[0],
-                    f"not_{category}": single_probs[1],
-                }
-                all_out_probs[single_url] = category_prob_map
+            if valid_images:
+                probs = await self.probability_function(cache_keys, valid_images, category)
+                for single_url, single_probs in zip(url_indices, probs):
+                    category_prob_map = {
+                        category: single_probs[0],
+                        f"not_{category}": single_probs[1],
+                    }
+                    all_out_probs[single_url] = category_prob_map
         return {
             url: (all_out_probs.get(url, {}) or {}).get(category) for url in image_urls
         }

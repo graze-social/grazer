@@ -42,6 +42,8 @@ class TextArbitraryParser(HuggingfaceClassifierParser):
         if isinstance(texts, str):
             texts = [texts]
 
+        # Set to none since '' and None are non-interpretable by this model
+        texts = [e or 'none' for e in texts]
         # Cache setup
         cached_probs, uncached_keys, uncached_texts = (
             await self.precache_text_predictions(texts, labels, multi_label)

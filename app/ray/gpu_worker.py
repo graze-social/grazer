@@ -54,7 +54,7 @@ class GPUWorker(TimingBase):
         return self._get_or_load_model(model_name, ImageNSFWClassifier.get_model)
 
     @measure_time
-    def get_image_arbitrary_model(self, model_name):
+    def get_image_arbitrary_model(self, model_name: str) -> Any:
         return self._get_or_load_model(model_name, ImageArbitraryClassifier.get_model)
 
     @measure_time
@@ -74,7 +74,7 @@ class GPUWorker(TimingBase):
     @measure_time
     async def image_nsfw_classify(self, model_name, cache_keys, images, batch_size=10):
         predictions = await ImageNSFWClassifier.compute_predictions(
-            self.get_huggingface_classifier(model_name), images, batch_size
+            self.get_image_nsfw_model(model_name), images, batch_size
         )
         await self.cache.bulk_cache_prediction.remote(cache_keys, predictions)
         return predictions

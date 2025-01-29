@@ -6,7 +6,7 @@ class RunpodAuditor(RunpodBase):
     async def run_audit(cls, records, manager, task_id):
         try:
             return await manager.audit_records(records)
-        except Exception:
+        except Exception as e:
             await cls.publish_status(
                 task_id,
                 {

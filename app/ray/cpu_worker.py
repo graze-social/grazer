@@ -79,6 +79,9 @@ class CPUWorker(TimingBase):
                 error_dict = create_exception_json(e)
                 error_dict["algorithm_id"] = algorithm_id
                 response["error"] = error_dict
+                response["compute_environment"] = "none"
+                response["compute_amount"] = 0
+                response["matches"] = []
                 logger.error(traceback.format_exc())
             finally:
                 print(f"Finished {algorithm_id}, took {timing}, {count} matches")
