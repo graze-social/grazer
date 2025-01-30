@@ -44,7 +44,7 @@ class BaseParser:
 
 class ImageParser(BaseParser):
     async def fetch_image(self, url):
-        await self.network_worker.fetch_image.remote(url)
+        return await self.network_worker.fetch_image.remote(url)
 
     async def fetch_images(self, urls):
         tasks = [self.fetch_image(url) for url in urls]
