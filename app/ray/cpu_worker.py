@@ -10,7 +10,7 @@ from app.logger import logger
 from app.ray.timing_base import TimingBase, measure_time
 
 
-@ray.remote(max_concurrency=100)
+@ray.remote(max_concurrency=5)
 class CPUWorker(TimingBase):
     def __init__(
         self,
@@ -34,7 +34,7 @@ class CPUWorker(TimingBase):
         self.compute_environment = compute_environment
         self.semaphore = Semaphore(30)
         self.active_tasks = 0
-        self._max_concurrency = 10
+        self._max_concurrency = 5
         super().__init__()
 
     async def max_concurrency(self):

@@ -14,9 +14,9 @@ class Cache(TimingBase):
         Args:
             key_prefix: Namespace prefix for all keys in the cache.
         """
-        self._images = LRUCache(maxsize=10000)
-        self._predictions = LRUCache(maxsize=40000)
-        self._embeddings = LRUCache(maxsize=40000)
+        self._images = LRUCache(maxsize=1000)
+        self._predictions = LRUCache(maxsize=10000)
+        self._embeddings = LRUCache(maxsize=5000)
         self._resolved_dids = LRUCache(maxsize=40000)
         self._assets = TTLCache(maxsize=40000, ttl=60 * 60 * 3)
         self.key_prefix = key_prefix
