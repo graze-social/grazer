@@ -60,7 +60,11 @@ class ImageParser(BaseParser):
         # Process cache results
         for url, key, cached_value in zip(image_urls, keys, cache_results):
             if cached_value:
-                cached_probs[url] = cached_value
+                category_prob_map = {
+                    category: cached_value[0],
+                    f"not_{category}": cached_value[1],
+                }
+                cached_probs[url] = category_prob_map
             else:
                 uncached_urls.append(url)
         return cached_probs, uncached_urls
