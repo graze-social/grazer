@@ -41,7 +41,7 @@ class RunpodBackfiller(RunpodBase):
                     matched_records = await manager.matching_records(
                         list(reversed(batch))
                     )
-                except:
+                except Exception as e:
                     await cls.publish_status(
                         task_id,
                         {

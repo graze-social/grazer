@@ -7,7 +7,7 @@ import asyncio
 import httpx
 from atproto import IdResolver
 from app.algorithm_asset_cacher import AlgorithmAssetCacher
-from app.helpers import dict_to_sorted_string
+from app.helpers import dict_to_sorted_string, is_truthy
 from app.settings import HOSTNAME
 from app.ray.timing_base import TimingBase, measure_time
 
@@ -69,7 +69,7 @@ class NetworkWorker(TimingBase):
 
         # Check the cache
         cached_asset = await self.cache.get_asset.remote(key)
-        if cached_asset:
+        if is_truthy(cached_asset):
             return cached_asset
 
         # Fetch and store in cache

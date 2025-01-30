@@ -4,6 +4,11 @@ from app.logic_evaluator import LogicEvaluator
 
 
 class SocialParser(BaseParser):
+    def temp_hack(self, asset):
+        if isinstance(asset, dict) and asset.get("asset_value"):
+            asset = np.array(asset.get("asset_value"))
+        return asset
+
     async def get_starter_pack(self, starter_pack_url):
         return await self.network_worker.get_starter_pack.remote(starter_pack_url)
 
@@ -25,17 +30,17 @@ class SocialParser(BaseParser):
     async def starter_pack_member(self, records, starter_pack_url, operator):
         """Resolve the attribute path and apply a comparison operation using LogicEvaluator.compare."""
         asset = await self.get_starter_pack(starter_pack_url)
-        return await self.check_memberships(records, operator, asset)
+        return await self.check_memberships(records, operator, self.temp_hack(asset))
 
     async def list_member(self, records, list_url, operator):
         """Resolve the attribute path and apply a comparison operation using LogicEvaluator.compare."""
         asset = await self.get_list(list_url)
-        return await self.check_memberships(records, operator, asset)
+        return await self.check_memberships(records, operator, self.temp_hack(asset))
 
     async def social_graph(self, records, actor_handle, operator, direction):
         """Resolve the attribute path and apply a comparison operation using LogicEvaluator.compare."""
         asset = await self.get_user_collection(actor_handle, direction)
-        return await self.check_memberships(records, operator, asset)
+        return await self.check_memberships(records, operator, self.temp_hack(asset))
 
     async def social_list(self, records, actor_did_list, operator):
         """Resolve the attribute path and apply a comparison operation using LogicEvaluator.compare."""
@@ -44,7 +49,7 @@ class SocialParser(BaseParser):
     async def magic_audience(self, records, audience_id, operator):
         """Resolve the attribute path and apply a comparison operation using LogicEvaluator.compare."""
         asset = await self.get_magic_audience(audience_id)
-        return await self.check_memberships(records, operator, asset)
+        return await self.check_memberships(records, operator, self.temp_hack(asset))
 
     async def register_operations(self, logic_evaluator):
         # Register attribute comparison operation
