@@ -51,12 +51,12 @@ class RunpodProcessor(RunpodBase):
                         )
                     )
                     algorithm_ids.append(algorithm_id)
-        hydrated_manifests = await asyncio.gather(*hydrations)
-        manifest_data = list(zip(algorithm_ids, hydrated_manifests))
-        await dispatcher.distribute_tasks(records, manifest_data)
-        while len(asyncio.all_tasks()) > 100:
-            logger.info(f"Current Task Depth is {len(asyncio.all_tasks())}")
-            asyncio.sleep(1)
+            hydrated_manifests = await asyncio.gather(*hydrations)
+            manifest_data = list(zip(algorithm_ids, hydrated_manifests))
+            await dispatcher.distribute_tasks(records, manifest_data)
+            while len(asyncio.all_tasks()) > 100:
+                logger.info(f"Current Task Depth is {len(asyncio.all_tasks())}")
+                asyncio.sleep(1)
 
     @classmethod
     async def get_algorithm_operators(cls):
