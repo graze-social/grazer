@@ -29,7 +29,8 @@ class TextArbitraryParser(HuggingfaceClassifierParser):
         # Process cache results
         for text, cache_key, cached_value in zip(texts, cache_keys, cache_results):
             if cached_value:
-                cached_probs[text] = cached_value
+                label_probs = dict(zip(cached_value["labels"], cached_value["scores"]))
+                cached_probs[text] = label_probs
             else:
                 uncached_keys.append(cache_key)
                 uncached_texts.append(text)
