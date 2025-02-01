@@ -33,7 +33,6 @@ class RunpodProcessor(RunpodBase):
             algo_data["ALGORITHM_MANIFESTS"],
             algo_data["CONDITION_MAP"],
         )
-        await dispatcher.cache.flush_to_egress.remote()
 
     @classmethod
     async def run_algos(cls, dispatcher, records, manifests, all_operators):

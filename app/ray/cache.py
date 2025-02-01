@@ -1,3 +1,4 @@
+import aiorwlock
 import ray
 from asyncio import Lock
 from cachetools import LRUCache, TTLCache
@@ -19,6 +20,11 @@ class Cache(TimingBase):
         self._embeddings = LRUCache(maxsize=5000)
         self._resolved_dids = LRUCache(maxsize=40000)
         self._assets = TTLCache(maxsize=40000, ttl=60 * 60 * 3)
+        self._images_lock = aiorwlock.RWLock()
+        self._predictions_lock = aiorwlock.RWLock()
+        self._embeddings_lock = aiorwlock.RWLock()
+        self._resolved_dids_lock = aiorwlock.RWLock()
+        self._assets_lock = aiorwlock.RWLock()
         self.key_prefix = key_prefix
         self.outputs = []
         self.batch_size = batch_size
@@ -49,58 +55,69 @@ class Cache(TimingBase):
     @measure_time
     async def get_asset(self, asset_id):
         """Retrieve an asset from the cache."""
-        return self._assets.get(asset_id)
+        async with self._assets_lock.reader_lock:
+            return self._assets.get(asset_id)
 
     @measure_time
     async def cache_asset(self, asset_id, asset_data):
         """Cache an asset."""
-        self._assets[asset_id] = asset_data
+        async with self._assets_lock.writer_lock:
+            self._assets[asset_id] = asset_data
 
     @measure_time
     async def get_image(self, image_id):
         """Retrieve an image from the cache."""
-        return self._images.get(image_id)
+        async with self._images_lock.reader_lock:
+            return self._images.get(image_id)
 
     @measure_time
     async def bulk_get_image(self, image_ids):
         """Retrieve an image from the cache."""
-        return [self._images.get(image_id) for image_id in image_ids]
+        async with self._images_lock.reader_lock:
+            return [self._images.get(image_id) for image_id in image_ids]
 
     @measure_time
     async def cache_image(self, image_id, image_data):
         """Cache an image."""
-        self._images[image_id] = image_data
+        async with self._images_lock.writer_lock:
+            self._images[image_id] = image_data
 
     @measure_time
     async def bulk_get_prediction(self, prediction_ids):
         """Get a cached prediction."""
-        return [
-            self._predictions.get(prediction_id) for prediction_id in prediction_ids
-        ]
+        async with self._predictions_lock.reader_lock:
+            return [
+                self._predictions.get(prediction_id) for prediction_id in prediction_ids
+            ]
 
     @measure_time
     async def bulk_cache_prediction(self, prediction_ids, prediction_datas):
         """Cache a prediction."""
-        for prediction_id, prediction_data in zip(prediction_ids, prediction_datas):
-            self._predictions[prediction_id] = prediction_data
+        async with self._predictions_lock.writer_lock:
+            for prediction_id, prediction_data in zip(prediction_ids, prediction_datas):
+                self._predictions[prediction_id] = prediction_data
 
     @measure_time
     async def get_did(self, prediction_id):
         """Get a cached prediction."""
-        return self._resolved_dids.get(prediction_id)
+        async with self._resolved_dids_lock.reader_lock:
+            return self._resolved_dids.get(prediction_id)
 
     @measure_time
     async def cache_did(self, prediction_id, prediction_data):
         """Cache a prediction."""
-        self._resolved_dids[prediction_id] = prediction_data
+        async with self._resolved_dids_lock.writer_lock:
+            self._resolved_dids[prediction_id] = prediction_data
 
     @measure_time
     async def bulk_get_embedding(self, keys):
         """Retrieve an image from the cache."""
-        return [self._embeddings.get(key) for key in keys]
+        async with self._embeddings_lock.reader_lock:
+            return [self._embeddings.get(key) for key in keys]
 
     @measure_time
     async def bulk_cache_embedding(self, keys, values):
         """Retrieve an image from the cache."""
-        for key, value in zip(keys, values):
-            self._embeddings[key] = value
+        async with self._embeddings_lock.writer_lock:
+            for key, value in zip(keys, values):
+                self._embeddings[key] = value
