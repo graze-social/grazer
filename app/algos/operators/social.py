@@ -46,7 +46,7 @@ class SocialParser(BaseParser):
         """Resolve the attribute path and apply a comparison operation using LogicEvaluator.compare."""
         outdids = []
         for actor in actor_did_list:
-            outdids.append(await self.network_worker.get_or_set_handle_did.remote(value))
+            outdids.append(await self.network_worker.get_or_set_handle_did.remote(actor))
         return await self.check_memberships(records, operator, np.array(outdids))
 
     async def magic_audience(self, records, audience_id, operator):

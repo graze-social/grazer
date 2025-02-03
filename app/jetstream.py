@@ -75,7 +75,7 @@ class Jetstream:
         forcibly closing each slice as soon as the data is out of range or no data arrives.
         """
         # Example: you could do int(datetime.utcnow().timestamp()*1e6)
-        now_us = int((datetime.utcnow() - timedelta(days=1)).timestamp() * 1_000_000)
+        now_us = int((datetime.utcnow() - timedelta(days=0)).timestamp() * 1_000_000)
         if end_cursor is None:
             end_cursor = now_us - 60_000_000  # default: now minus 1 minute
         if start_cursor is None:

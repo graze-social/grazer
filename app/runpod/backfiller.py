@@ -32,6 +32,7 @@ class RunpodBackfiller(RunpodBase):
             task_id, {"status": "Starting crawl on historic data..."}
         )
         batch = []
+        matched_records = []
         async for record in Jetstream.yield_jetstream_reversed():
             batch.append(record)
             if len(batch) >= batch_size:

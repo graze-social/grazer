@@ -7,6 +7,19 @@ from app.algos.operators.attribute import resolve_path_batch
 
 
 class RegexParser(BaseParser):
+    def get_record_texts(self, records, field_selector):
+        return np.array([
+            (
+                " ".join(map(str, e))
+                if isinstance(e, list)
+                else (
+                    "" if isinstance(e, np.ndarray) and np.all(e == None)
+                    else (str(e) if str(e) else "")
+                )
+            )
+            for e in resolve_path_batch(records, field_selector)
+        ])
+
     async def matches_operator(
         self, records, field_selector, pattern, insensitive=True
     ):
@@ -14,16 +27,7 @@ class RegexParser(BaseParser):
         Returns a NumPy array of booleans indicating whether the field in each
         record matches the pattern.
         """
-        field_values = np.array(
-            [
-                (
-                    " ".join(map(str, e))
-                    if isinstance(e, list)
-                    else (str(e) if str(e) else "")
-                )
-                for e in resolve_path_batch(records, field_selector)
-            ]
-        )
+        field_values = self.get_record_texts(records, field_selector)
         if insensitive:
             regex = re2.compile(pattern, re2.IGNORECASE)
         else:
@@ -58,16 +62,7 @@ class RegexParser(BaseParser):
         combined_pattern = "|".join(
             rf"(?<![\w\-/])(?<!\.){re2.escape(term)}(?![\w-])" for term in terms_list
         )
-        field_values = np.array(
-            [
-                (
-                    " ".join(map(str, e))
-                    if isinstance(e, list)
-                    else (str(e) if str(e) else "")
-                )
-                for e in resolve_path_batch(records, field_selector)
-            ]
-        )
+        field_values = self.get_record_texts(records, field_selector)
         flags = re2.IGNORECASE if insensitive else 0
         return np.vectorize(lambda x: bool(re2.search(combined_pattern, x, flags)))(
             field_values

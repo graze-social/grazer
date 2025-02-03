@@ -16,6 +16,8 @@ class RunpodRouter:
                 dispatcher, params.get("task_id"), params.get("manifest")
             )
         elif params.get("task") == "debug_post":
+            print("About to debug with the following params:")
+            print(params)
             await RunpodAuditor.audit_records(
                 dispatcher,
                 params.get("task_id"),
