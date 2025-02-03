@@ -1,4 +1,5 @@
 import numpy as np
+import re
 import re2
 
 from app.algos.base import BaseParser
@@ -24,10 +25,15 @@ class RegexParser(BaseParser):
             ]
         )
         if insensitive:
-            pattern = re2.compile(pattern, re2.IGNORECASE)
+            regex = re2.compile(pattern, re2.IGNORECASE)
         else:
-            pattern = re2.compile(pattern)
-        return np.vectorize(lambda x: bool(re2.search(pattern, x)))(field_values)
+            regex = re2.compile(pattern)
+        using_re2 = type(regex) != re2.PythonRePattern
+        if using_re2:
+            return np.vectorize(lambda x: bool(re2.search(regex, x)))(field_values)
+        else:
+            return np.vectorize(lambda x: bool(re.search(pattern, x)))(field_values)
+
 
     async def negation_matches_operator(
         self, records, field_selector, pattern, insensitive=True
