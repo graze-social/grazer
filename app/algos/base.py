@@ -50,6 +50,12 @@ class ImageParser(BaseParser):
         tasks = [self.fetch_image(url) for url in urls]
         return await asyncio.gather(*tasks, return_exceptions=True)
 
+    def process_probs(self, probs, category):
+        return {
+            category: probs[0],
+            f"not_{category}": probs[1],
+        }
+
     async def precache_predictions(self, image_urls, category):
         # Generate cache keys for the URLs
         keys = [get_cache_key(self.MODEL_NAME, url, category) for url in image_urls]
@@ -60,11 +66,7 @@ class ImageParser(BaseParser):
         # Process cache results
         for url, key, cached_value in zip(image_urls, keys, cache_results):
             if cached_value:
-                category_prob_map = {
-                    category: cached_value[0],
-                    f"not_{category}": cached_value[1],
-                }
-                cached_probs[url] = category_prob_map
+                cached_probs[url] = self.process_probs(cached_value, category)
             else:
                 uncached_urls.append(url)
         return cached_probs, uncached_urls
@@ -100,11 +102,7 @@ class ImageParser(BaseParser):
             if valid_images:
                 probs = await self.probability_function(cache_keys, valid_images, category)
                 for single_url, single_probs in zip(url_indices, probs):
-                    category_prob_map = {
-                        category: single_probs[0],
-                        f"not_{category}": single_probs[1],
-                    }
-                    all_out_probs[single_url] = category_prob_map
+                    all_out_probs[single_url] = self.process_probs(single_probs, category)
         return {
             url: (all_out_probs.get(url, {}) or {}).get(category) for url in image_urls
         }
