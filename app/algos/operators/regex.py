@@ -52,16 +52,21 @@ class RegexParser(BaseParser):
         return ~response
 
     async def allow_operator(
-        self, records, field_selector, terms_list, insensitive=True
+        self, records, field_selector, terms_list, insensitive=True, treat_as_regex=False
     ):
         """
         Returns a NumPy array of booleans indicating whether the field in each
         record matches any term in the terms_list, considering enhanced word boundaries.
         """
         # Adjust boundary pattern to avoid matches around invalid delimiters like '.'
-        combined_pattern = "|".join(
-            rf"(?<![\w\-/])(?<!\.){re2.escape(term)}(?![\w-])" for term in terms_list
-        )
+        if treat_as_regex:
+            combined_pattern = "|".join(
+                rf"(?<![\w\-/])(?<!\.){term}(?![\w-])" for term in terms_list
+            )
+        else:
+            combined_pattern = "|".join(
+                rf"(?<![\w\-/])(?<!\.){re2.escape(term)}(?![\w-])" for term in terms_list
+            )
         field_values = self.get_record_texts(records, field_selector)
         flags = re2.IGNORECASE if insensitive else 0
         return np.vectorize(lambda x: bool(re2.search(combined_pattern, x, flags)))(
@@ -69,14 +74,14 @@ class RegexParser(BaseParser):
         )
 
     async def deny_operator(
-        self, records, field_selector, terms_list, insensitive=True
+        self, records, field_selector, terms_list, insensitive=True, treat_as_regex=False
     ):
         """
         Returns a NumPy array of booleans indicating whether the field in each
         record matches none of the terms in the terms_list, considering enhanced word boundaries.
         """
         response = await self.allow_operator(
-            records, field_selector, terms_list, insensitive
+            records, field_selector, terms_list, insensitive, treat_as_regex
         )
         return ~response
 

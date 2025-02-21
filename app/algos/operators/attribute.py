@@ -33,7 +33,6 @@ def resolve_path_batch(records, path):
         if not parts:
             return [obj]
         part = parts[0]
-
         # Handle wildcard `*` or `[*]`
         if part in ("*", "[*]"):
             if isinstance(obj, list):
@@ -54,7 +53,6 @@ def resolve_path_batch(records, path):
                 ]
             else:
                 return []  # `*` on non-iterable returns no results.
-
         # Handle key/index navigation
         match = re2.match(
             r"([a-zA-Z_]\w*)\[(\d+)\]$", part
@@ -113,9 +111,48 @@ class AttributeParser(BaseParser):
             np.ndarray: Boolean array indicating whether each record satisfies the comparison.
         """
         values = resolve_path_batch(records, field_selector)
+        if target_value is None and "*" in field_selector:
+            target_value = [None]
         return np.array(
             await LogicEvaluator.compare(values, operator, target_value), dtype=bool
         )
+
+    async def post_type(self, records, operator, post_names):
+        matches_by_type = {}
+
+        if "quote" in post_names:
+            values = resolve_path_batch(records, "embed.$type")
+            matches_by_type["quote"] = np.array(
+                await LogicEvaluator.compare(values, operator, EMBED_TYPES["post"]),
+                dtype=bool,
+            )
+
+        if "reply" in post_names:
+            values = resolve_path_batch(records, "reply")
+            matches_by_type["reply"] = np.array(
+                await LogicEvaluator.compare(values, "!=", None),
+                dtype=bool,
+            )
+
+        # Convert boolean arrays into lists of type labels
+        labeled_types = []
+        for i in range(len(records)):
+            types = [key if matches_by_type.get(key, np.zeros(len(records), dtype=bool))[i] else "not"
+                     for key in matches_by_type]
+            filtered_types = [t for t in types if t != "not"]
+            labeled_types.append(" | ".join(filtered_types) if filtered_types else "not")
+
+        values = np.array(labeled_types)
+        if operator in ["in", "=="]:
+            return np.array(
+                await LogicEvaluator.compare(values, operator, post_names),
+                dtype=bool,
+            )
+        elif operator in ["not_in", "!="]:
+            return ~np.array(
+                await LogicEvaluator.compare(values, operator, post_names),
+                dtype=bool,
+            )
 
     async def embed_type(self, records, operator, embed_name):
         """
@@ -194,3 +231,4 @@ class AttributeParser(BaseParser):
         # Register attribute comparison operation
         await logic_evaluator.add_operation("attribute_compare", self.attribute_compare)
         await logic_evaluator.add_operation("embed_type", self.embed_type)
+        await logic_evaluator.add_operation("post_type", self.post_type)
