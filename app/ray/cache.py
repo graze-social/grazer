@@ -31,7 +31,7 @@ class Cache(TimingBase):
         self.lock = Lock()
         super().__init__()
 
-    async def report_output(self, data):
+    async def report_output(self, data, force_write=False):
         """
         Append data to the outputs list and flush to Egress when the batch size is reached.
 
@@ -40,7 +40,7 @@ class Cache(TimingBase):
         """
         async with self.lock:
             self.outputs.append(data)
-            if len(self.outputs) >= self.batch_size:
+            if len(self.outputs) >= self.batch_size or force_write:
                 await self.flush_to_egress()
 
     async def flush_to_egress(self):

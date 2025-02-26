@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import json
 import asyncio
 import websockets
@@ -90,7 +90,8 @@ class Jetstream:
         while current_end > start_cursor:
             one_min_ago = current_end - 60_000_000
             time_range_start = max(one_min_ago, start_cursor)
-            logger.info(f"Reading slice [{time_range_start} -> {current_end}]")
+            utc_time = datetime.fromtimestamp(time_range_start / 1_000_000, tz=timezone.utc)
+            logger.info(f"Reading slice from {utc_time} - [{time_range_start} -> {current_end}]")
 
             # Fetch the data for this 1-minute slice, yielding as soon as we get it
             async for record in Jetstream.fetch_minute_data(
