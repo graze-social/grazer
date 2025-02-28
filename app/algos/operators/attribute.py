@@ -119,11 +119,11 @@ class AttributeParser(BaseParser):
 
     async def post_type(self, records, operator, post_names):
         matches_by_type = {}
-
+        set_post_names = set(post_names)
         if "quote" in post_names:
             values = resolve_path_batch(records, "embed.$type")
             matches_by_type["quote"] = np.array(
-                await LogicEvaluator.compare(values, operator, EMBED_TYPES["post"]),
+                await LogicEvaluator.compare(values, "==", EMBED_TYPES["post"]),
                 dtype=bool,
             )
 
@@ -140,19 +140,13 @@ class AttributeParser(BaseParser):
             types = [key if matches_by_type.get(key, np.zeros(len(records), dtype=bool))[i] else "not"
                      for key in matches_by_type]
             filtered_types = [t for t in types if t != "not"]
-            labeled_types.append(" | ".join(filtered_types) if filtered_types else "not")
+            labeled_types.append(filtered_types if filtered_types else ["not"])
 
-        values = np.array(labeled_types)
+        values = np.array([bool(len(set(l)&set_post_names)) for l in labeled_types])
         if operator in ["in", "=="]:
-            return np.array(
-                await LogicEvaluator.compare(values, operator, post_names),
-                dtype=bool,
-            )
+            return values
         elif operator in ["not_in", "!="]:
-            return ~np.array(
-                await LogicEvaluator.compare(values, operator, post_names),
-                dtype=bool,
-            )
+            return ~values
 
     async def embed_type(self, records, operator, embed_name):
         """
