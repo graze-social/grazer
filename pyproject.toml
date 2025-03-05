@@ -63,7 +63,7 @@ img_build = { shell = "docker build -t {args: grazer:local} ." }
 # Intialize Ray
 ray_init = { shell = "ray stop && ray start --head --dashboard-host=0.0.0.0 --dashboard-port 8080" }
 
-# NOTE: These all run in the background and
+# NOTE: The following commands start a process in the background and dump stdout to a nohup.out file in the root directory
 # Cache Worker
 start_cache_worker = { shell = "nohup python run_ray_cache.py --name cache:main --num-cpus 2 --num-gpus 0 &" }
 
