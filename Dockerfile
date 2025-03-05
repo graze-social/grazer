@@ -1,11 +1,8 @@
-###############################
-### STAGE 01 - Dependencies ###
-###############################
-
 ARG PYTHON_VERSION=3.11
 ARG DISTRO=slim
+ARG USE_UV=true
 
-FROM python:${PYTHON_VERSION}-${DISTRO} as builder
+FROM python:${PYTHON_VERSION}-${DISTRO}
 
 # Optional Cache buster
 ENV UPDATED_AT=03-03-2025
@@ -38,7 +35,12 @@ RUN apt-get install -y libre2-dev cmake ninja-build
 COPY --from=ghcr.io/astral-sh/uv:0.6.3 /uv /uvx /bin/
 
 # Copy src directory
-COPY . .
+COPY pyproject.toml .
+COPY pdm.lock .
+COPY main.py .
+COPY app/ .
+
+
 
 # Install PDM
 ENV PDM_VERSION=2.22.3
@@ -47,28 +49,12 @@ RUN pip install -U pdm==${PDM_VERSION}
 # Disable pdm update check
 ENV PDM_CHECK_UPDATE=false
 
-# Using `uv` for speed of build
-RUN pdm config use_uv true
+# Use `uv` for build speed
+RUN pdm config use_uv ${USE_UV}
 RUN pdm sync --prod \
     --no-self \
     --no-editable \
     --fail-fast
-
-###############################
-### STAGE 02 - App ###
-###############################
-FROM python:${PYTHON_VERSION}-${DISTRO} as app
-
-COPY --from=builder /grazer/.venv /grazer/.venv
-COPY --from=builder /grazer/main.py .
-COPY --from=builder /grazer/app /grazer/app
-COPY --from=builder /grazer/scripts /grazer/scripts
-COPY --from=builder /grazer/pyproject.toml /grazer/pyproject.toml
-COPY --from=builder /grazer/pdm.lock /grazer/pdm.lock
-
-
-ENV PATH="/grazer/.venv/bin:$PATH"
-
 
 # Please see list of scripts in pyproject.toml
 # CMD ["pdm", "start_all_workers"]
