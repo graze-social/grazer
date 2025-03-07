@@ -37,9 +37,13 @@ COPY --from=ghcr.io/astral-sh/uv:0.6.3 /uv /uvx /bin/
 # Copy src directory
 COPY pyproject.toml .
 COPY pdm.lock .
-COPY main.py .
-COPY app/ .
-
+COPY app/ app
+COPY startup_ray.sh .
+COPY run_ray_cache.py .
+COPY run_ray_cpu_worker.py .
+COPY run_ray_gpu_worker.py .
+COPY run_ray_network_worker.py .
+COPY run_runpod_worker.py .
 
 
 # Install PDM
