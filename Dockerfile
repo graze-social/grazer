@@ -1,13 +1,15 @@
-# Use an official Python image as the base
-FROM python:3.11-slim
+ARG PYTHON_VERSION=3.11
+ARG DISTRO=slim
+ARG USE_UV=true
+
+FROM python:${PYTHON_VERSION}-${DISTRO}
+
+# Optional Cache buster
+ENV UPDATED_AT=03-03-2025
 
 # Set working directory
-WORKDIR /app
+WORKDIR /grazer
 
-# Copy requirements file
-COPY requirements1.txt .
-COPY requirements2.txt .
-COPY requirements3.txt .
 RUN apt-get update && apt-get install -y \
     gcc \
     g++ \
@@ -22,12 +24,41 @@ RUN apt-get update && apt-get install -y \
     unzip \
     zip \
     htop \
+    curl \
     && apt-get clean
 
 # Install dependencies
-RUN pip install -r requirements1.txt
-RUN pip install -r requirements2.txt
 RUN apt-get install -y libre2-dev cmake ninja-build
-RUN pip install -r requirements3.txt
-# Copy the application code
-COPY . .
+
+# Install UV
+# TODO: Pin the uv image SHA
+COPY --from=ghcr.io/astral-sh/uv:0.6.3 /uv /uvx /bin/
+
+# Copy src directory
+COPY pyproject.toml .
+COPY pdm.lock .
+COPY app/ app
+COPY startup_ray.sh .
+COPY run_ray_cache.py .
+COPY run_ray_cpu_worker.py .
+COPY run_ray_gpu_worker.py .
+COPY run_ray_network_worker.py .
+COPY run_runpod_worker.py .
+
+
+# Install PDM
+ENV PDM_VERSION=2.22.3
+RUN pip install -U pdm==${PDM_VERSION}
+
+# Disable pdm update check
+ENV PDM_CHECK_UPDATE=false
+
+# Use `uv` for build speed
+RUN pdm config use_uv ${USE_UV}
+RUN pdm sync --prod \
+    --no-self \
+    --no-editable \
+    --fail-fast
+
+# Please see list of scripts in pyproject.toml
+# CMD ["pdm", "start_all_workers"]
