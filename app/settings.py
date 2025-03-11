@@ -1,6 +1,6 @@
 import os
 
-REDIS_URL = os.getenv("REDIS_URL")
+REDIS_URL = os.getenv("REDIS_URL", "redis://redis:6379")
 HOSTNAME = "https://api.graze.social"
 JETSTREAM_URL = os.getenv(
     "JETSTREAM_URL",

@@ -1,0 +1,1 @@
+pdm run pytest --cov=app --cov-report=term-missing tests

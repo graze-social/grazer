@@ -159,32 +159,25 @@ class LogicEvaluator:
             return await self._evaluate_condition(cond, records, active_indices)
 
     async def _evaluate_scores(self, cond, records, indices):
-        """
-        Evaluates a single condition on a subset of records specified by indices.
-        Ensures that the condition is a leaf-level operation.
-        """
         if not indices:
             return []
-
+    
         sub_records = [records[i] for i in indices]
-        # Leaf-level condition
+    
         for op, params in cond.items():
             if op in self.operations:
-                if "get_ml_scores" in dir(self.operations[op].__self__):
-                    sub_results = await self.operations[op].__self__.get_ml_scores(
-                        sub_records, *params
-                    )
+                operation = self.operations[op]
+                if hasattr(operation, "__self__") and hasattr(operation.__self__, "get_ml_scores"):
+                    sub_results = await operation.__self__.get_ml_scores(sub_records, *params)
                 else:
-                    sub_results = await self.operations[op](sub_records, *params)
-                    sub_results = sub_results.astype(int)
-                results = [0] * len(records)
-                for idx, res in zip(indices, sub_results):
-                    results[idx] = float(res)
-                return results
-            else:
-                raise ValueError(f"Unknown operation '{op}'")
+                    sub_results = await operation(sub_records, *params)
+                    sub_results = np.array(sub_results).astype(float)
 
-        raise ValueError("Invalid condition structure.")
+                results = [0.0] * len(records)
+                for idx, res in zip(indices, sub_results):
+                    results[idx] = res
+                return results
+        raise ValueError(f"Unknown operation '{op}'")
 
     async def _evaluate_condition(self, cond, records, indices):
         """
