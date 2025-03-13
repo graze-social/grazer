@@ -4,7 +4,10 @@ from app.settings import REDIS_URL, REDIS_DELETE_POST_QUEUE
 
 
 class RedisClient:
-    REDIS_CLIENT = aioredis.from_url(REDIS_URL, decode_responses=True)
+    try:
+        REDIS_CLIENT = aioredis.from_url(REDIS_URL, decode_responses=True)
+    except:
+        REDIS_CLIENT = None
 
     @classmethod
     async def push_delete_transactions(cls, deletes):

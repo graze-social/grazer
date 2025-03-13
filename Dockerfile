@@ -10,6 +10,7 @@ ENV UPDATED_AT=03-03-2025
 # Set working directory
 WORKDIR /grazer
 
+# Install OS dependencies
 RUN apt-get update && apt-get install -y \
     gcc \
     g++ \
@@ -27,24 +28,9 @@ RUN apt-get update && apt-get install -y \
     curl \
     && apt-get clean
 
-# Install dependencies
-RUN apt-get install -y libre2-dev cmake ninja-build
-
 # Install UV
 # TODO: Pin the uv image SHA
 COPY --from=ghcr.io/astral-sh/uv:0.6.3 /uv /uvx /bin/
-
-# Copy src directory
-COPY pyproject.toml .
-COPY pdm.lock .
-COPY app/ app
-COPY startup_ray.sh .
-COPY run_ray_cache.py .
-COPY run_ray_cpu_worker.py .
-COPY run_ray_gpu_worker.py .
-COPY run_ray_network_worker.py .
-COPY run_runpod_worker.py .
-
 
 # Install PDM
 ENV PDM_VERSION=2.22.3
@@ -55,10 +41,26 @@ ENV PDM_CHECK_UPDATE=false
 
 # Use `uv` for build speed
 RUN pdm config use_uv ${USE_UV}
+
+# Copy dependency specification files first to leverage caching
+COPY pyproject.toml pdm.lock ./
+
+# Install Python dependencies
 RUN pdm sync --prod \
     --no-self \
     --no-editable \
     --fail-fast
+
+# Now copy the rest of your application code
+COPY app/ app
+COPY tests/ tests
+COPY startup_ray.sh .
+COPY run_ray_cache.py .
+COPY run_ray_cpu_worker.py .
+COPY run_ray_gpu_worker.py .
+COPY run_ray_network_worker.py .
+COPY run_runpod_worker.py .
+COPY test.sh .
 
 # Please see list of scripts in pyproject.toml
 # CMD ["pdm", "start_all_workers"]
