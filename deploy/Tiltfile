@@ -1,0 +1,26 @@
+# load helm extensions
+load('ext://helm_resource', 'helm_resource', 'helm_repo')
+# don't deploy anywhere else
+if k8s_context() != 'k3d-grazer': fail
+# if k8s_namespace() != 'grazer': fail
+
+# This assumes you have setup a k3d registry
+registry = "k3d-registry:5111"
+image_slug = ("%s/grazer:remote" % registry)
+
+# need to run this as a local() fn
+# docker_build(ref=image_slug, context="../", dockerfile="../Dockerfile.remote")
+
+# Add KubeRay chart repo
+helm_repo("kuberay", "https://ray-project.github.io/kuberay-helm/")
+
+# Install the KubeRay Operator
+helm_resource("kuberay-operator", "kuberay/kuberay-operator", flags=["--version", "1.3.0"])
+
+
+
+# TODO: pass image arch from Tilt startup args
+helm_resource("raycluster", "./chart/grazer", flags=["--version", "1.3.0", "--set", ("image.repository=%s/grazer" % registry ), "--set", "image.tag=remote"])
+
+
+# k8s_resource(workload="raycluster:svc", port_forwards=[port_forward(6379, 6379, )])

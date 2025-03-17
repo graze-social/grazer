@@ -26,12 +26,12 @@ dependencies = [
     "pyre2==0.3.6",
     "sentry-sdk==2.19.0",
     "timm==1.0.11",
-    "ray==2.41.0",
+    "ray[client]>=2.41.0",
     "cachetools==5.5.1",
-    "aiorwlock==1.5.0",
+    "aiorwlock>=1.5.0",
     "sentry-sdk",
     "numpy",
-    "uvicorn==0.34.0"
+    "uvicorn==0.34.0",
 ]
 
 [dependency-groups]
@@ -96,3 +96,8 @@ start_all_workers.composite = [
 ]
 
 start_all_workers.env = { RAY_DEDUP_LOGS = "0", REDIS_URL = "redis://localhost:6379", SENTRY_DSN = "https://foo:bar@example.com/12345" }
+start_workers = { shell = "ray job submit --runtime-env --working-dir $HOME/G/grazer -- python run_ray_cache.py", env = { RAY_DEDUP_LOGS = "0", REDIS_URL = "redis://localhost:6379", SENTRY_DSN = "https://foo:bar@example.com/12345", RAY_ADDRESS = "http://127.0.0.1:8265" } }
+
+
+# NEW start workers in a Ray Cluster
+test_workers = { cmd = "python start_cluster_workers.py", env = { RAY_DEDUP_LOGS = "0", REDIS_URL = "redis://localhost:6379", SENTRY_DSN = "https://foo:bar@example.com/12345" } }
