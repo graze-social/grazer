@@ -118,6 +118,8 @@ class EntityParser(BaseParser):
                         await self.network_worker.get_or_set_handle_did.remote(value)
                     )
                     resolved_values.add(resolved_value)
+        elif entity_type == "domains":
+            resolved_values = {e.removeprefix("www.") for e in values}
         return resolved_values
 
     async def matches_entities(self, records, entity_type, values, insensitive=True):

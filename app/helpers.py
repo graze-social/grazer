@@ -81,9 +81,10 @@ def create_exception_json(exc: Exception) -> dict:
 
 
 def get_url_domain(url: str) -> bool:
-    """Return True if the given URL's domain is exactly media.tenor.com."""
+    """Return domain, ignoring a leading 'www.'."""
     parsed = urlparse(url)
-    return parsed.netloc.lower()
+    domain = parsed.netloc.lower().removeprefix("www.")
+    return domain
 
 
 def get_all_links(records):

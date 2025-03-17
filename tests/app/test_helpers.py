@@ -98,9 +98,10 @@ def test_create_exception_json():
         assert "ValueError" in "".join(result["error_stack_trace"])  # stack trace check
 
 def test_get_url_domain_basic():
+    """Checks for removing leading www."""
     url = "https://www.example.com/some/path?query=param"
     domain = get_url_domain(url)
-    assert domain == "www.example.com"
+    assert domain == "example.com"
 
 def test_get_url_domain_no_scheme():
     url = "www.EXAMPLE.com"
