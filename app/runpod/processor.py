@@ -40,17 +40,16 @@ class RunpodProcessor(RunpodBase):
         random.shuffle(manifests)
         # await run_precache(dispatcher, records, [{}], all_operators)
         for manifest_chunk in chunk(manifests, 1000):
-            hydrations = []
+            hydrated_manifests = []
             algorithm_ids = []
             for algorithm_id, manifest in manifest_chunk:
                 if manifest:
-                    hydrations.append(
+                    hydrated_manifests.append(
                         LogicEvaluator.rehydrate_single_manifest(
                             manifest, all_operators
                         )
                     )
                     algorithm_ids.append(algorithm_id)
-            hydrated_manifests = await asyncio.gather(*hydrations)
             manifest_data = list(zip(algorithm_ids, hydrated_manifests))
             await dispatcher.distribute_tasks(records, manifest_data)
             while len(asyncio.all_tasks()) > 100:

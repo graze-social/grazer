@@ -304,7 +304,7 @@ class LogicEvaluator:
         return condition
 
     @staticmethod
-    async def rehydrate_single_manifest(manifest, condition_map):
+    def rehydrate_single_manifest(manifest, condition_map):
         """
         Rehydrates a single manifest by replacing IDs in the manifest with
         their corresponding conditions from the condition map.
@@ -316,7 +316,6 @@ class LogicEvaluator:
         Returns:
             dict: The rehydrated manifest with condition parameters.
         """
-
         def rehydrate_condition(condition):
             """
             Recursively replaces IDs with condition parameters.
@@ -324,14 +323,14 @@ class LogicEvaluator:
             if isinstance(condition, int):
                 # Replace the integer ID with its corresponding condition
                 condition_data = condition_map.get(condition)
-                if not condition_data:
-                    raise ValueError(
-                        f"Condition ID {condition} not found in condition_map."
-                    )
-                operator_name = condition_data.get(
-                    "operator_name"
-                )  # Replace this with operator name lookup if necessary
-                return {operator_name: condition_data["condition_parameters"]}
+                if condition_data and condition_data.get("algorithm_component_id"):
+                    result = condition_data["condition_parameters"]
+                else:
+                    if not condition_data:
+                        raise ValueError(f"Condition ID {condition} not found in condition_map.")
+                    operator_name = condition_data.get("operator_name")
+                    result = {operator_name: condition_data["condition_parameters"]}
+                return result
             elif isinstance(condition, dict):
                 # Rehydrate nested conditions in a dictionary
                 return {
@@ -344,7 +343,6 @@ class LogicEvaluator:
                 return [rehydrate_condition(sub_cond) for sub_cond in condition]
             else:
                 raise ValueError(f"Unexpected condition format: {condition}")
-
         # Rehydrate the manifest
         if manifest:
             rehydrated_manifest = {
