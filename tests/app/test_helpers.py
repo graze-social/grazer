@@ -13,7 +13,62 @@ from app.helpers import (
     get_url_domain,
     get_all_links,
     transform_dict,
+    check_empty_string,
+    is_list_of_lists,
 )
+def test_check_empty_string_basic():
+    value = np.array([["", "test"], ["hello", "world"]], dtype=object)
+    threshold = ""
+    result = check_empty_string(value, threshold)
+    expected = np.array([True, False], dtype=bool)
+    assert np.array_equal(result, expected)
+
+def test_check_empty_string_all_true():
+    value = np.array([["", ""], ["", ""]], dtype=object)
+    threshold = ""
+    result = check_empty_string(value, threshold)
+    expected = np.array([True, True], dtype=bool)
+    assert np.array_equal(result, expected)
+
+def test_check_empty_string_all_false():
+    value = np.array([["foo", "bar"], ["baz", "qux"]], dtype=object)
+    threshold = ""
+    result = check_empty_string(value, threshold)
+    expected = np.array([False, False], dtype=bool)
+    assert np.array_equal(result, expected)
+
+def test_check_empty_string_mixed_data_types():
+    value = np.array([["", 1], [2, ""]], dtype=object)
+    threshold = ""
+    result = check_empty_string(value, threshold)
+    expected = np.array([True, True], dtype=bool)
+    assert np.array_equal(result, expected)
+
+def test_check_empty_string_empty_list():
+    value = np.array([], dtype=object)
+    threshold = ""
+    result = check_empty_string(value, threshold)
+    expected = np.array([], dtype=bool)
+    assert np.array_equal(result, expected)
+
+def test_check_empty_string_raises_valueerror():
+    with pytest.raises(ValueError, match="Input must be a list or NumPy array"):
+        check_empty_string(42, "")
+
+def test_is_list_of_lists_true():
+    assert is_list_of_lists([['a', 'b'], ['c', 'd']]) is True
+    assert is_list_of_lists(np.array([[1, 2], [3, 4]])) is True
+
+def test_is_list_of_lists_false():
+    assert is_list_of_lists(['a', 'b', 'c']) is False
+    assert is_list_of_lists(np.array(['a', 'b', 'c'], dtype=object)) is False
+    assert is_list_of_lists([1, 2, 3]) is False
+    assert is_list_of_lists(np.array([1, 2, 3])) is False
+
+def test_is_list_of_lists_edge_cases():
+    assert is_list_of_lists([[[]]]) is True  # List of lists, even if empty
+    assert is_list_of_lists(np.array([[], []], dtype=object)) is True
+    assert is_list_of_lists([[], "not a list"]) is False
 
 def test_chunk_empty_iterable():
     result = list(chunk([], 3))
@@ -128,7 +183,7 @@ def test_get_all_links_partial_keys():
         {"commit": {"record": {"embed": {"external": {}}}}},
     ]
     result = get_all_links(records)
-    assert result == [None, None, None, None]
+    assert result == [[], [], [], []]
 
 def test_get_all_links_normal():
     records = [
@@ -148,7 +203,7 @@ def test_get_all_links_normal():
         },
     ]
     result = get_all_links(records)
-    assert result == ["http://example.com/link1", "http://example.com/link2"]
+    assert result == [["http://example.com/link1"], ["http://example.com/link2"]]
 
 def test_transform_dict_simple():
     data = {"hello": "world"}

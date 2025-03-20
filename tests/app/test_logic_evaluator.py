@@ -280,8 +280,7 @@ def test_sort_conditions(evaluator):
     assert sorted_cond["and"][1] == {"mock_op": [1]}
 
 
-@pytest.mark.asyncio
-async def test_rehydrate_single_manifest_basic():
+def test_rehydrate_single_manifest_basic():
     manifest = {
         "filter": 123,
         "other_field": "unchanged"
@@ -292,14 +291,13 @@ async def test_rehydrate_single_manifest_basic():
             "condition_parameters": [2, 3],
         }
     }
-    result = await LogicEvaluator.rehydrate_single_manifest(manifest, condition_map)
+    result = LogicEvaluator.rehydrate_single_manifest(manifest, condition_map)
     # The filter key is replaced by { "mock_op": [2, 3] }
     assert result["filter"] == {"mock_op": [2, 3]}
     assert result["other_field"] == "unchanged"
 
 
-@pytest.mark.asyncio
-async def test_rehydrate_single_manifest_nested():
+def test_rehydrate_single_manifest_nested():
     manifest = {
         "filter": {
             "and": [123, {"or": [456, 789]}]
@@ -310,7 +308,7 @@ async def test_rehydrate_single_manifest_nested():
         456: {"operator_name": "mock_scores_op", "condition_parameters": [9]},
         789: {"operator_name": "mock_op", "condition_parameters": [2, 3]},
     }
-    rehydrated = await LogicEvaluator.rehydrate_single_manifest(manifest, condition_map)
+    rehydrated = LogicEvaluator.rehydrate_single_manifest(manifest, condition_map)
     # rehydrated => {
     #   "filter": {
     #     "and": [
@@ -331,14 +329,12 @@ async def test_rehydrate_single_manifest_nested():
     assert or_part[1] == {"mock_op": [2, 3]}
 
 
-@pytest.mark.asyncio
-async def test_rehydrate_single_manifest_no_manifest():
-    result = await LogicEvaluator.rehydrate_single_manifest(None, {})
+def test_rehydrate_single_manifest_no_manifest():
+    result = LogicEvaluator.rehydrate_single_manifest(None, {})
     assert result == {}
 
 
-@pytest.mark.asyncio
-async def test_rehydrate_single_manifest_missing_condition():
+def test_rehydrate_single_manifest_missing_condition():
     manifest = {"filter": 999}
     with pytest.raises(ValueError, match="Condition ID 999 not found in condition_map."):
-        await LogicEvaluator.rehydrate_single_manifest(manifest, {})
+        LogicEvaluator.rehydrate_single_manifest(manifest, {})

@@ -20,6 +20,7 @@ class RunpodProcessor(RunpodBase):
             elif transaction.get("commit", {}).get("operation") == "delete":
                 deletes.append(transaction)
         if deletes:
+            print(f"Delete length is {len(deletes)}")
             await RedisClient.push_delete_transactions(deletes)
         return records
 

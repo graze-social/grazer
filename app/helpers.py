@@ -5,6 +5,22 @@ import traceback
 import sys
 from itertools import islice
 from typing import List
+def check_empty_string(value, threshold):
+    """Return a boolean NumPy array where each element is True if '' is in that element."""
+    if isinstance(value, np.ndarray):
+        return np.array([(threshold in sub) for sub in value], dtype=bool)
+    elif isinstance(value, list):
+        return np.array([(threshold in sub) for sub in value], dtype=bool)
+    else:
+        raise ValueError("Input must be a list or NumPy array")
+
+
+def is_list_of_lists(value):
+    """Check if the value is a list of lists or a NumPy array of lists."""
+    if isinstance(value, (list, np.ndarray)):
+        if all(isinstance(sub, (list, np.ndarray)) for sub in value):
+            return True
+    return False
 
 
 def chunk(iterable, size):
@@ -80,21 +96,30 @@ def create_exception_json(exc: Exception) -> dict:
     }
 
 
-def get_url_domain(url: str) -> bool:
-    """Return domain, ignoring a leading 'www.'."""
+def get_url_domain(url: str) -> str:
+    """Return domain, ignoring a leading 'www.', ensuring compatibility with both str and bytes."""
     parsed = urlparse(url)
-    domain = parsed.netloc.lower().removeprefix("www.")
+    
+    # Ensure netloc is always a string
+    netloc = parsed.netloc
+    if isinstance(netloc, bytes):
+        netloc = netloc.decode("utf-8")
+    domain = netloc.lower().removeprefix("www.")
     return domain
 
 
 def get_all_links(records):
-    return [
-        (
+    url_sets = []
+    for record in records:
+        facet_urls = [feature["uri"] for facet in record["commit"]["record"].get("facets", []) for feature in facet.get("features", []) if feature.get("$type") == "app.bsky.richtext.facet#link"]
+        primary_url = (
             (record["commit"]["record"].get("embed", {}) or {}).get("external", {})
             or {}
         ).get("uri")
-        for record in records
-    ]
+        if primary_url:
+            facet_urls.insert(0, primary_url)
+        url_sets.append(facet_urls)
+    return url_sets
 
 
 def transform_dict(data, omitted_keys=None):

@@ -167,7 +167,7 @@ class AttributeParser(BaseParser):
                 values, "==", EMBED_TYPES["link"]
             )
             gif_domains = np.array(
-                [get_url_domain(e) == "media.tenor.com" for e in get_all_links(records)]
+                [True in [get_url_domain(ee) == "media.tenor.com" for ee in e] for e in get_all_links(records)]
             )
             if embed_name == "gif":
                 if operator == "==":

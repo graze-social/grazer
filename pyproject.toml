@@ -77,7 +77,7 @@ start_cache_worker = { shell = "nohup python run_ray_cache.py --name cache:main 
 start_network_worker = { shell = "nohup python run_ray_network_worker.py --name network:main --num-workers 5 --num-cpus 0.1 --num-gpus 0 &" }
 
 # GPU Worker
-start_gpu_worker = { shell = "nohup python run_ray_network_worker.py --name network:main --num-workers 5 --num-cpus 0.1 --num-gpus 0 &" }
+start_gpu_worker = { shell = "nohup python run_ray_gpu_worker.py --name gpu --num-workers 3 --num-cpus 0.5 --num-gpus 0.2 &" }
 
 # CPU Worker
 start_cpu_worker = { shell = "nohup python run_ray_cpu_worker.py --name cpu:main --num-workers 6 --num-cpus 0.5 --num-gpus 0 &" }
@@ -86,7 +86,7 @@ start_cpu_worker = { shell = "nohup python run_ray_cpu_worker.py --name cpu:main
 start_runpod_worker = { cmd = [
     "python3",
     "run_runpod_worker.py",
-], env = { REDIS_URL = "redis://localhost:6379" } }
+]}
 
 tail_output = { shell = "tail -f -n 300 nohup.out" }
 

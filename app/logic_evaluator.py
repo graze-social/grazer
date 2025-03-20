@@ -1,5 +1,5 @@
 import numpy as np
-from app.helpers import is_truthy
+from app.helpers import is_truthy, is_list_of_lists
 
 
 class LogicEvaluator:
@@ -205,7 +205,10 @@ class LogicEvaluator:
     async def compare(value, operator, threshold):
         """Performs comparison based on the specified operator."""
         if operator == "==":
-            return value == threshold
+            if is_list_of_lists(value):
+                return check_empty_string(value, threshold)
+            else:
+                return value == threshold
         elif operator == ">=":
             if threshold == None:
                 return value == threshold
@@ -227,7 +230,10 @@ class LogicEvaluator:
             else:
                 return value < threshold
         elif operator == "!=":
-            return value != threshold
+            if is_list_of_lists(value):
+                return ~check_empty_string(value, threshold)
+            else:
+                return value != threshold
         elif operator == "in":
             return np.isin(value, threshold)
         elif operator == "not_in":

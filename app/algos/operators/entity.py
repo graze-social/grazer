@@ -119,7 +119,8 @@ class EntityParser(BaseParser):
                     )
                     resolved_values.add(resolved_value)
         elif entity_type == "domains":
-            resolved_values = {e.removeprefix("www.") for e in values}
+            #Kind of dumb but safest possible way to clean up potentially bad input
+            resolved_values = {e.removeprefix("https://").removeprefix("http://").removeprefix("www.").removesuffix("/") for e in values}
         return resolved_values
 
     async def matches_entities(self, records, entity_type, values, insensitive=True):
@@ -130,7 +131,7 @@ class EntityParser(BaseParser):
         values = await self.get_resolved_values(entity_type, values)
         comparison_frozenset = frozenset([e.lower() for e in values if e])
         if entity_type == "domains":
-            record_values = [set([get_url_domain(e)]) for e in get_all_links(records)]
+            record_values = [set([get_url_domain(ee) for ee in e]) for e in get_all_links(records)]
         elif entity_type == "labels":
             record_values = EntityParser.get_all_labels(records)
         else:
