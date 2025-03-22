@@ -8,7 +8,7 @@ from app.algos.manager import AlgoManager
 from app.helpers import create_exception_json
 from app.logger import logger
 from app.ray.timing_base import TimingBase, measure_time
-
+from app.sentry import sentry_sdk
 
 @ray.remote(max_concurrency=5)
 class CPUWorker(TimingBase):
@@ -72,6 +72,7 @@ class CPUWorker(TimingBase):
                 response["matches"] = matched_records
                 count = len(response["matches"])
             except Exception as e:
+                sentry_sdk.capture_exception(e)
                 logger.error(
                     f"Error while processing records with algorithm {algorithm_id}. "
                     f"Error: {e}"

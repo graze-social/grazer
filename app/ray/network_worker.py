@@ -10,7 +10,7 @@ from app.algorithm_asset_cacher import AlgorithmAssetCacher
 from app.helpers import dict_to_sorted_string, is_truthy
 from app.settings import HOSTNAME
 from app.ray.timing_base import TimingBase, measure_time
-
+from app.sentry import sentry_sdk
 
 @ray.remote(max_concurrency=100)
 class NetworkWorker(TimingBase):
@@ -110,6 +110,7 @@ class NetworkWorker(TimingBase):
                     except (aiohttp.ClientError, asyncio.TimeoutError) as e:
                         print(f"Error fetching image from {url}: {e}")
                     except Exception as e:
+                        sentry_sdk.capture_exception(e)
                         print(f"Unexpected error fetching image from {url}: {e}")
                         break
                     finally:

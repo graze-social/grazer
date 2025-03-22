@@ -1,5 +1,5 @@
 from app.runpod.base import RunpodBase
-
+from app.sentry import sentry_sdk
 
 class RunpodAuditor(RunpodBase):
     @classmethod
@@ -7,6 +7,7 @@ class RunpodAuditor(RunpodBase):
         try:
             return await manager.audit_records(records)
         except Exception as e:
+            sentry_sdk.capture_exception(e)
             await cls.publish_status(
                 task_id,
                 {

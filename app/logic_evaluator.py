@@ -196,7 +196,7 @@ class LogicEvaluator:
                 for idx, res in zip(indices, sub_results):
                     results[idx] = res
                 return results
-            else:
+            elif op != "metadata":
                 raise ValueError(f"Unknown operation '{op}'")
 
         raise ValueError("Invalid condition structure.")

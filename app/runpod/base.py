@@ -1,7 +1,7 @@
 from app.redis import RedisClient
 from app.algos.manager import AlgoManager
 from app.logger import logger
-
+from app.sentry import sentry_sdk
 
 class RunpodBase:
     @classmethod
@@ -20,6 +20,7 @@ class RunpodBase:
                 dispatcher.cache,
             )
         except Exception:
+            sentry_sdk.capture_exception(e)
             await cls.publish_status(
                 task_id,
                 {
