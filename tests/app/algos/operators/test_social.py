@@ -44,7 +44,7 @@ async def test_check_memberships():
     parser = SocialParser()
     logic_evaluator = LogicEvaluator()
     records = [{"did": "did1"}, {"did": "did2"}]
-    result = await logic_evaluator.compare(np.array(["did1", "did2"]), "in", ["did1"])
+    result = logic_evaluator.compare(np.array(["did1", "did2"]), "in", ["did1"])
     assert np.array_equal(result, np.array([True, False]))
 
 @pytest.mark.asyncio

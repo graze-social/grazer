@@ -52,7 +52,7 @@ class TransformerParser(BaseParser):
         similarities = await self.get_ml_scores(
             records, field_selector, model_params, comparator, threshold
         )
-        return await LogicEvaluator.compare(similarities, comparator, threshold)
+        return LogicEvaluator.compare(similarities, comparator, threshold)
 
     async def register_operations(self, logic_evaluator):
         await logic_evaluator.add_operation(

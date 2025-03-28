@@ -208,31 +208,31 @@ async def test_compare():
     including threshold=None cases.
     """
     # operator == 
-    assert await LogicEvaluator.compare(5, "==", 5) is True
-    assert await LogicEvaluator.compare(5, "==", 4) is False
+    assert LogicEvaluator.compare(5, "==", 5) is True
+    assert LogicEvaluator.compare(5, "==", 4) is False
     # operator !=
-    assert await LogicEvaluator.compare(5, "!=", 4) is True
-    assert await LogicEvaluator.compare(5, "!=", 5) is False
+    assert LogicEvaluator.compare(5, "!=", 4) is True
+    assert LogicEvaluator.compare(5, "!=", 5) is False
     # operator >=
-    assert await LogicEvaluator.compare(5, ">=", 5) is True
-    assert await LogicEvaluator.compare(4, ">=", None) is False  # special case
+    assert LogicEvaluator.compare(5, ">=", 5) is True
+    assert LogicEvaluator.compare(4, ">=", None) is False  # special case
     # operator <=
-    assert await LogicEvaluator.compare(5, "<=", 5) is True
-    assert await LogicEvaluator.compare(5, "<=", None) is False  # special case
+    assert LogicEvaluator.compare(5, "<=", 5) is True
+    assert LogicEvaluator.compare(5, "<=", None) is False  # special case
     # operator >
-    assert await LogicEvaluator.compare(6, ">", 5) is True
-    assert await LogicEvaluator.compare(5, ">", 5) is False
-    assert await LogicEvaluator.compare(5, ">", None) is False
+    assert LogicEvaluator.compare(6, ">", 5) is True
+    assert LogicEvaluator.compare(5, ">", 5) is False
+    assert LogicEvaluator.compare(5, ">", None) is False
     # operator <
-    assert await LogicEvaluator.compare(4, "<", 5) is True
-    assert await LogicEvaluator.compare(5, "<", None) is False
+    assert LogicEvaluator.compare(4, "<", 5) is True
+    assert LogicEvaluator.compare(5, "<", None) is False
     # operator in
-    assert all(await LogicEvaluator.compare(np.array([1,2]), "in", [1,2,3]))
+    assert all(LogicEvaluator.compare(np.array([1,2]), "in", [1,2,3]))
     # operator not_in
-    assert not any(await LogicEvaluator.compare(np.array([1,2]), "not_in", [1,2,3]))
+    assert not any(LogicEvaluator.compare(np.array([1,2]), "not_in", [1,2,3]))
     # unknown comparator
     with pytest.raises(ValueError, match="Unknown comparator 'abcd'"):
-        await LogicEvaluator.compare(5, "abcd", 5)
+        LogicEvaluator.compare(5, "abcd", 5)
 
 
 @pytest.mark.asyncio

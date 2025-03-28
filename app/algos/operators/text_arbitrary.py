@@ -79,7 +79,7 @@ class TextArbitraryParser(HuggingfaceClassifierParser):
         """
 
         scores = await self.get_ml_scores(records, category, comparator, threshold)
-        bools = await LogicEvaluator.compare(scores, comparator, threshold)
+        bools = LogicEvaluator.compare(scores, comparator, threshold)
         return bools
 
     async def register_operations(self, logic_evaluator):

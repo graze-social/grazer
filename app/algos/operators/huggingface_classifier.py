@@ -51,5 +51,5 @@ class HuggingfaceClassifierParser(BaseParser):
 
     async def classifier_operator(self, records, category, comparator, threshold):
         scores = await self.get_ml_scores(records, category, comparator, threshold)
-        bools = await LogicEvaluator.compare(scores, comparator, threshold)
+        bools = LogicEvaluator.compare(scores, comparator, threshold)
         return bools.tolist()

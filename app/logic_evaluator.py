@@ -1,5 +1,5 @@
 import numpy as np
-from app.helpers import is_truthy, is_list_of_lists
+from app.helpers import is_truthy, is_list_of_lists, check_empty_string
 
 
 class LogicEvaluator:
@@ -202,7 +202,7 @@ class LogicEvaluator:
         raise ValueError("Invalid condition structure.")
 
     @staticmethod
-    async def compare(value, operator, threshold):
+    def compare(value, operator, threshold):
         """Performs comparison based on the specified operator."""
         if operator == "==":
             if is_list_of_lists(value):

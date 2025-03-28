@@ -191,7 +191,7 @@ class ImageParser(BaseParser):
         scores = np.array(
             [cid_to_scores.get(c) for c in all_cids if cid_to_scores.get(c)]
         )
-        bools = await LogicEvaluator.compare(scores, comparator, threshold)
+        bools = LogicEvaluator.compare(scores, comparator, threshold)
         out_bools = []
         i = 0
         for c in all_cids:
