@@ -3,7 +3,7 @@ from hashlib import sha256
 from app.logic_evaluator import LogicEvaluator
 from app.models.text_arbitrary_classifier import TextArbitraryClassifier
 from app.algos.operators.huggingface_classifier import HuggingfaceClassifierParser
-
+from app.helpers import extract_all_text_fields
 
 def get_cache_key(model_name, text, labels, multi_label):
     joined_labels = "|".join(labels)
@@ -68,7 +68,7 @@ class TextArbitraryParser(HuggingfaceClassifierParser):
         Compute scores for a specific category from the zero-shot classification output.
         """
         labels = [category, f"not_{category}"]
-        texts = [record["commit"]["record"]["text"] for record in records]
+        texts = extract_all_text_fields(records)
         predictions = await self.get_predictions(texts, labels)
         return np.array([pred.get(category, 0.0) for pred in predictions])
 

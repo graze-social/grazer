@@ -4,7 +4,40 @@ import re2
 import traceback
 import sys
 from itertools import islice
-from typing import List
+from typing import List, Dict, Any
+
+def extract_all_text_fields(records: List[Dict[str, Any]]) -> List[str]:
+    """Extract all relevant textual content from records including post text, image alt text, and link preview text."""
+    def safe_get(d: Dict, path: List[str]) -> Any:
+        for key in path:
+            if isinstance(d, dict) and key in d:
+                d = d[key]
+            else:
+                return None
+        return d
+    def gather_text(record: Dict[str, Any]) -> str:
+        parts = []
+        # Top-level post text
+        text = record.get("text")
+        if text:
+            parts.append(text)
+        # ALT text from images
+        images = safe_get(record, ["embed", "images"])
+        if images and isinstance(images, list):
+            for img in images:
+                alt = img.get("alt")
+                if alt:
+                    parts.append(alt)
+        # Text from link previews
+        external = safe_get(record, ["embed", "external"])
+        if external and isinstance(external, dict):
+            for key in ["title", "description"]:
+                val = external.get(key)
+                if val:
+                    parts.append(val)
+        return "\n".join(parts)
+    return [gather_text(e["commit"]["record"]) for e in records]
+
 def check_empty_string(value, threshold):
     """Return a boolean NumPy array where each element is True if '' is in that element."""
     if isinstance(value, np.ndarray):

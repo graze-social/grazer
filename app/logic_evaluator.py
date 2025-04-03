@@ -202,30 +202,55 @@ class LogicEvaluator:
         raise ValueError("Invalid condition structure.")
 
     @staticmethod
+    def _normalize_comparison_inputs(value, threshold):
+        """
+        Normalize threshold and all elements in value.
+        - If threshold is numeric (int/float), treat None/'' in value as 0.
+        - Otherwise, treat None/'' in both threshold and value as ''.
+        Handles both flat and nested arrays.
+        """
+        is_numeric = isinstance(threshold, (int, float))
+
+        def normalize(x):
+            if x is None or x == '':
+                return 0 if is_numeric else ''
+            return x
+
+        threshold = normalize(threshold)
+
+        if is_list_of_lists(value):
+            value = np.array([[normalize(elem) for elem in row] for row in value])
+        else:
+            value = np.array([normalize(elem) for elem in value])
+
+        return value, threshold
+
+    @staticmethod
     def compare(value, operator, threshold):
         """Performs comparison based on the specified operator."""
+        value, threshold = LogicEvaluator._normalize_comparison_inputs(value, threshold)
         if operator == "==":
             if is_list_of_lists(value):
                 return check_empty_string(value, threshold)
             else:
                 return value == threshold
         elif operator == ">=":
-            if threshold == None:
+            if threshold == '':
                 return value == threshold
             else:
                 return value >= threshold
         elif operator == "<=":
-            if threshold == None:
+            if threshold == '':
                 return value == threshold
             else:
                 return value <= threshold
         elif operator == ">":
-            if threshold == None:
+            if threshold == '':
                 return value == threshold
             else:
                 return value > threshold
         elif operator == "<":
-            if threshold == None:
+            if threshold == '':
                 return value == threshold
             else:
                 return value < threshold
