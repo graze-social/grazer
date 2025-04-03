@@ -6,6 +6,9 @@ import sys
 from itertools import islice
 from typing import List, Dict, Any
 
+def is_likely_domain_or_url(term: str) -> bool:
+    return '.' in term or term.startswith('http')
+
 def extract_all_text_fields(records: List[Dict[str, Any]]) -> List[str]:
     """Extract all relevant textual content from records including post text, image alt text, and link preview text."""
     def safe_get(d: Dict, path: List[str]) -> Any:

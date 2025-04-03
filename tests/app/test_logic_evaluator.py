@@ -203,37 +203,87 @@ async def test_evaluate_with_audit_unknown_operator(evaluator):
 
 @pytest.mark.asyncio
 async def test_compare():
-    """
-    Test the static compare method with all supported operators,
-    including threshold=None cases.
-    """
-    # operator == 
-    assert LogicEvaluator.compare(5, "==", 5) is True
-    assert LogicEvaluator.compare(5, "==", 4) is False
+    """Test the static compare method with all supported operators and edge cases."""
+    # operator ==
+    assert np.array_equal(LogicEvaluator.compare(np.array([5]), "==", 5), np.array([True]))
+    assert np.array_equal(LogicEvaluator.compare(np.array([5]), "==", 4), np.array([False]))
+    assert np.array_equal(LogicEvaluator.compare(np.array([None]), "==", ''), np.array([True]))
+    assert np.array_equal(LogicEvaluator.compare(np.array(['']), "==", None), np.array([True]))
+    assert np.array_equal(LogicEvaluator.compare(np.array(['foo']), "==", None), np.array([False]))
+    assert np.array_equal(LogicEvaluator.compare(np.array([None, '']), "==", ''), np.array([True, True]))
+
     # operator !=
-    assert LogicEvaluator.compare(5, "!=", 4) is True
-    assert LogicEvaluator.compare(5, "!=", 5) is False
+    assert np.array_equal(LogicEvaluator.compare(np.array([5]), "!=", 4), np.array([True]))
+    assert np.array_equal(LogicEvaluator.compare(np.array([5]), "!=", 5), np.array([False]))
+    assert np.array_equal(LogicEvaluator.compare(np.array([None]), "!=", ''), np.array([False]))
+    assert np.array_equal(LogicEvaluator.compare(np.array(['x']), "!=", None), np.array([True]))
+
     # operator >=
-    assert LogicEvaluator.compare(5, ">=", 5) is True
-    assert LogicEvaluator.compare(4, ">=", None) is False  # special case
+    assert np.array_equal(LogicEvaluator.compare(np.array([5]), ">=", 5), np.array([True]))
+    assert np.array_equal(LogicEvaluator.compare(np.array([4]), ">=", None), np.array([False]))
+    assert np.array_equal(LogicEvaluator.compare(np.array([None]), ">=", 4), np.array([False]))
+    assert np.array_equal(LogicEvaluator.compare(np.array(['']), ">=", ''), np.array([True]))  # not numeric
+
     # operator <=
-    assert LogicEvaluator.compare(5, "<=", 5) is True
-    assert LogicEvaluator.compare(5, "<=", None) is False  # special case
+    assert np.array_equal(LogicEvaluator.compare(np.array([5]), "<=", 5), np.array([True]))
+    assert np.array_equal(LogicEvaluator.compare(np.array([5]), "<=", None), np.array([False]))
+    assert np.array_equal(LogicEvaluator.compare(np.array([None]), "<=", 5), np.array([True]))
+
     # operator >
-    assert LogicEvaluator.compare(6, ">", 5) is True
-    assert LogicEvaluator.compare(5, ">", 5) is False
-    assert LogicEvaluator.compare(5, ">", None) is False
+    assert np.array_equal(LogicEvaluator.compare(np.array([6]), ">", 5), np.array([True]))
+    assert np.array_equal(LogicEvaluator.compare(np.array([5]), ">", 5), np.array([False]))
+    assert np.array_equal(LogicEvaluator.compare(np.array([5]), ">", None), np.array([False]))
+
     # operator <
-    assert LogicEvaluator.compare(4, "<", 5) is True
-    assert LogicEvaluator.compare(5, "<", None) is False
+    assert np.array_equal(LogicEvaluator.compare(np.array([4]), "<", 5), np.array([True]))
+    assert np.array_equal(LogicEvaluator.compare(np.array([5]), "<", None), np.array([False]))
+
     # operator in
-    assert all(LogicEvaluator.compare(np.array([1,2]), "in", [1,2,3]))
+    assert all(LogicEvaluator.compare(np.array([1, 2]), "in", [1, 2, 3]))
+    assert all(LogicEvaluator.compare(np.array([None, '']), "in", ['', 'x']))
+    assert not any(LogicEvaluator.compare(np.array(['a', 'b']), "in", ['x', 'y']))
+
     # operator not_in
-    assert not any(LogicEvaluator.compare(np.array([1,2]), "not_in", [1,2,3]))
+    assert not any(LogicEvaluator.compare(np.array([1, 2]), "not_in", [1, 2, 3]))
+    assert all(LogicEvaluator.compare(np.array(['a', 'b']), "not_in", ['x', 'y']))
+    assert not any(LogicEvaluator.compare(np.array([None, '']), "not_in", ['', 'a']))
+
+    # mixed numeric with None
+    assert all(LogicEvaluator.compare(np.array([None, '', 3]), "in", [3, '', 'x']))
+    assert np.array_equal(LogicEvaluator.compare(np.array([None]), "==", None), np.array([True]))
+    assert np.array_equal(LogicEvaluator.compare(np.array(['']), "==", ''), np.array([True]))
+    assert np.array_equal(LogicEvaluator.compare(np.array(['abc']), "!=", ''), np.array([True]))
+    assert LogicEvaluator.compare(np.array([1, 2, None]), "!=", '')[2] == False
+
+    # nested list (list of lists) - string values
+    nested_str = np.array([['a', None], ['b', '']], dtype=object)
+    result_eq_str = LogicEvaluator.compare(nested_str, '==', '')
+    assert result_eq_str.shape == (2,)
+    assert result_eq_str[0] is np.True_  # None becomes ''
+    assert result_eq_str[1] is np.True_  # '' == ''
+
+    result_neq_str = LogicEvaluator.compare(nested_str, '!=', '')
+    assert result_neq_str[0] is np.False_  # 'a' != ''
+    assert result_neq_str[1] is np.False_
+
+    # nested list (list of lists) - int values
+    nested_int = np.array([[1, None], [0, '']], dtype=object)
+    result_eq_int = LogicEvaluator.compare(nested_int, '==', '')
+    assert result_eq_int.shape == (2,)
+    assert result_eq_int[0] is np.True_   # None becomes ''
+    assert result_eq_int[1] is np.True_   # '' == ''
+    assert result_eq_int[0] is np.True_  # 1 != ''
+    assert result_eq_int[1] is np.True_  # 0 != ''
+
+    result_neq_int = LogicEvaluator.compare(nested_int, '!=', '')
+    assert result_neq_int[0] is np.False_
+    assert result_neq_int[1] is np.False_
+    assert result_neq_int[0] is np.False_
+    assert result_neq_int[1] is np.False_
+
     # unknown comparator
     with pytest.raises(ValueError, match="Unknown comparator 'abcd'"):
-        LogicEvaluator.compare(5, "abcd", 5)
-
+        LogicEvaluator.compare(np.array([5]), "abcd", 5)
 
 @pytest.mark.asyncio
 async def test_extract_conditions():

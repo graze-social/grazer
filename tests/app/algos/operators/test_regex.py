@@ -44,6 +44,58 @@ async def test_allow_operator():
     assert np.array_equal(result, np.array([True, False]))
 
 @pytest.mark.asyncio
+async def test_allow_operator_domain_match():
+    parser = RegexParser()
+    parser.get_record_texts = MagicMock(return_value=np.array([
+        "https://forum.obsidian.md/t/how-can-i-reorder-list-items/86981",
+        "This is unrelated."
+    ]))
+    
+    result = await parser.allow_operator(None, "text", ["obsidian.md"])
+    assert np.array_equal(result, np.array([True, False]))
+
+@pytest.mark.asyncio
+async def test_allow_operator_does_not_match_embedded_domain():
+    parser = RegexParser()
+    parser.get_record_texts = MagicMock(return_value=np.array([
+        "https://notobsidian.md5rocks.com",  # shouldn't match
+    ]))
+    
+    result = await parser.allow_operator(None, "text", ["obsidian.md"])
+    assert np.array_equal(result, np.array([False]))
+
+@pytest.mark.asyncio
+async def test_allow_operator_word_boundary_respected():
+    parser = RegexParser()
+    parser.get_record_texts = MagicMock(return_value=np.array([
+        "theapple", "an apple a day"
+    ]))
+    
+    result = await parser.allow_operator(None, "text", ["apple"])
+    assert np.array_equal(result, np.array([False, True]))
+
+@pytest.mark.asyncio
+async def test_allow_operator_escaped_regex_characters():
+    parser = RegexParser()
+    parser.get_record_texts = MagicMock(return_value=np.array([
+        "hello.world", "hello+world", "hello*world"
+    ]))
+    
+    result = await parser.allow_operator(None, "text", ["hello.world", "hello+world", "hello*world"])
+    assert np.array_equal(result, np.array([True, True, True]))
+
+@pytest.mark.asyncio
+async def test_allow_operator_multiple_domains():
+    parser = RegexParser()
+    parser.get_record_texts = MagicMock(return_value=np.array([
+        "Visit obsidian.md or notion.so for more.",
+        "Nothing to see here."
+    ]))
+    
+    result = await parser.allow_operator(None, "text", ["obsidian.md", "notion.so"])
+    assert np.array_equal(result, np.array([True, False]))
+
+@pytest.mark.asyncio
 async def test_deny_operator():
     parser = RegexParser()
     parser.allow_operator = AsyncMock(return_value=np.array([True, False]))

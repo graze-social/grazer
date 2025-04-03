@@ -15,7 +15,80 @@ from app.helpers import (
     transform_dict,
     check_empty_string,
     is_list_of_lists,
+    extract_all_text_fields,
 )
+def make_record(embed=None, text=None):
+    return {
+        "commit": {
+            "record": {
+                **({"text": text} if text is not None else {}),
+                **({"embed": embed} if embed is not None else {})
+            }
+        }
+    }
+
+def test_text_only():
+    records = [make_record(text="Hello world!")]
+    assert extract_all_text_fields(records) == ["Hello world!"]
+
+def test_text_and_image_alts():
+    records = [make_record(
+        text="Main text",
+        embed={
+            "images": [
+                {"alt": "Image 1 alt"},
+                {"alt": "Image 2 alt"},
+                {"alt": ""},  # should be ignored
+                {}            # missing alt
+            ]
+        }
+    )]
+    assert extract_all_text_fields(records) == ["Main text\nImage 1 alt\nImage 2 alt"]
+
+def test_external_link_only():
+    records = [make_record(
+        embed={
+            "external": {
+                "title": "Article Title",
+                "description": "Article description here."
+            }
+        }
+    )]
+    assert extract_all_text_fields(records) == ["Article Title\nArticle description here."]
+
+def test_external_link_partial():
+    records = [make_record(embed={"external": {"description": "Just description"}})]
+    assert extract_all_text_fields(records) == ["Just description"]
+
+def test_all_sources_present():
+    records = [make_record(
+        text="Text here",
+        embed={
+            "images": [{"alt": "Alt text"}],
+            "external": {
+                "title": "Title",
+                "description": "Desc"
+            }
+        }
+    )]
+    assert extract_all_text_fields(records) == ["Text here\nAlt text\nTitle\nDesc"]
+
+def test_missing_everything():
+    records = [make_record()]
+    assert extract_all_text_fields(records) == [""]
+
+def test_malformed_embed_structures():
+    records = [make_record(embed={"images": "not a list"})]
+    assert extract_all_text_fields(records) == [""]
+
+def test_multiple_records():
+    records = [
+        make_record(text="First"),
+        make_record(embed={"images": [{"alt": "Second alt"}]}),
+        make_record(embed={"external": {"title": "Third"}})
+    ]
+    assert extract_all_text_fields(records) == ["First", "Second alt", "Third"]
+
 def test_check_empty_string_basic():
     value = np.array([["", "test"], ["hello", "world"]], dtype=object)
     threshold = ""
