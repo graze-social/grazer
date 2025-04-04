@@ -1,5 +1,5 @@
 import numpy as np
-from app.helpers import is_truthy, is_list_of_lists, check_empty_string
+from app.helpers import is_truthy, is_list_of_lists, check_empty_string, normalize_element_for_logic_eval
 
 
 class LogicEvaluator:
@@ -210,32 +210,11 @@ class LogicEvaluator:
         Handles both flat and nested arrays.
         """
         is_numeric = isinstance(threshold, (int, float))
-
-        def normalize(x, is_numeric=False):
-            """
-            Returns either x, or if x is None/empty/blank, returns
-            0 if is_numeric=True, otherwise ''.
-            """
-            if x is None:
-                return 0 if is_numeric else ''
-
-            # Only check == '' if it's actually a string.
-            if isinstance(x, str) and x == '':
-                return 0 if is_numeric else ''
-
-            # Optionally handle arrays however you want (e.g. treat "empty" arrays).
-            if isinstance(x, np.ndarray):
-                if x.size == 0:
-                    return 0 if is_numeric else ''
-
-            return x
-
-        threshold = normalize(threshold)
-
+        threshold = normalize_element_for_logic_eval(threshold, is_numeric)
         if is_list_of_lists(value):
-            value = np.array([[normalize(elem) for elem in row] for row in value])
+            value = np.array([[normalize_element_for_logic_eval(elem, is_numeric) for elem in row] for row in value])
         else:
-            value = np.array([normalize(elem) for elem in value])
+            value = np.array([normalize_element_for_logic_eval(elem, is_numeric) for elem in value])
 
         return value, threshold
 
