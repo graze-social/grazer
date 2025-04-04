@@ -211,9 +211,23 @@ class LogicEvaluator:
         """
         is_numeric = isinstance(threshold, (int, float))
 
-        def normalize(x):
-            if x is None or x == '':
+        def normalize(x, is_numeric=False):
+            """
+            Returns either x, or if x is None/empty/blank, returns
+            0 if is_numeric=True, otherwise ''.
+            """
+            if x is None:
                 return 0 if is_numeric else ''
+
+            # Only check == '' if it's actually a string.
+            if isinstance(x, str) and x == '':
+                return 0 if is_numeric else ''
+
+            # Optionally handle arrays however you want (e.g. treat "empty" arrays).
+            if isinstance(x, np.ndarray):
+                if x.size == 0:
+                    return 0 if is_numeric else ''
+
             return x
 
         threshold = normalize(threshold)
