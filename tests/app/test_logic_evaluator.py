@@ -201,6 +201,52 @@ async def test_evaluate_with_audit_unknown_operator(evaluator):
         await evaluator.evaluate_with_audit(cond, records)
 
 
+def is_equal(a, b):
+    if isinstance(a, np.ndarray) and isinstance(b, np.ndarray):
+        return np.array_equal(a, b)
+    return a == b
+
+@pytest.mark.parametrize("value,threshold,expected_value,expected_threshold", [
+    # Numeric threshold, flat value
+    ([1, 2, None], 5, np.array([1, 2, 0]), 5),
+    ([None, '', 3], 0, np.array([0, 0, 3]), 0),
+
+    # Numeric-like string threshold
+    ([None, ''], '0.7', np.array([0, 0]), 0.7),
+    ([1.2, None], '3.14', np.array([1.2, 0]), 3.14),
+
+    # String threshold (not numeric-like)
+    ([None, '', 'x'], 'foo', np.array(['', '', 'x']), 'foo'),
+
+    # Nested arrays, numeric threshold
+    ([[None, 1], [2, '']], 0, np.array([[0, 1], [2, 0]]), 0),
+
+    # Nested arrays, string threshold (non-numeric)
+    ([['a', None], ['', 'b']], 'bar', np.array([['a', ''], ['', 'b']]), 'bar'),
+
+    # Threshold is None
+    ([None, 1], None, np.array(['', 1]), ''),
+
+    # Threshold is empty string, non-numeric
+    ([None, ''], '', np.array(['', '']), ''),
+
+    # Threshold is empty string but castable
+    ([None, 1.5], '0.0', np.array([0, 1.5]), 0.0),
+
+    # Threshold is a float, input includes string numbers
+    (['1.1', ''], 2.2, np.array(['1.1', 0]), 2.2),  # NOTE: values are not coerced to float
+
+    # Threshold is string int, value is numeric
+    ([1, 2, 3], '4', np.array([1, 2, 3]), 4.0),
+
+    # Threshold is numeric but value is stringy
+    (['', ''], 1.0, np.array([0, 0]), 1.0),
+])
+def test_normalize_comparison_inputs(value, threshold, expected_value, expected_threshold):
+    result_value, result_threshold = LogicEvaluator._normalize_comparison_inputs(value, threshold)
+    assert is_equal(result_value, expected_value)
+    assert result_threshold == expected_threshold
+
 @pytest.mark.asyncio
 async def test_compare():
     """Test the static compare method with all supported operators and edge cases."""
@@ -228,6 +274,7 @@ async def test_compare():
     assert np.array_equal(LogicEvaluator.compare(np.array([5]), "<=", 5), np.array([True]))
     assert np.array_equal(LogicEvaluator.compare(np.array([5]), "<=", None), np.array([False]))
     assert np.array_equal(LogicEvaluator.compare(np.array([None]), "<=", 5), np.array([True]))
+    assert np.array_equal(LogicEvaluator.compare(np.array([0.2]), "<=", "0.7"), np.array([True]))
 
     # operator >
     assert np.array_equal(LogicEvaluator.compare(np.array([6]), ">", 5), np.array([True]))

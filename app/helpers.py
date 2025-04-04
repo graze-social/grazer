@@ -5,6 +5,16 @@ import traceback
 import sys
 from itertools import islice
 from typing import List, Dict, Any
+def is_numeric_like(x):
+    """
+    Returns True if x can be safely converted to a float.
+    """
+    try:
+        float(x)
+        return True
+    except (TypeError, ValueError):
+        return False
+
 def normalize_element_for_logic_eval(x, is_numeric=False):
     """
     Returns either x, or if x is None/empty/blank, returns
@@ -12,13 +22,10 @@ def normalize_element_for_logic_eval(x, is_numeric=False):
     """
     if x is None:
         return 0 if is_numeric else ''
-    # Only check == '' if it's actually a string.
     if isinstance(x, str) and x == '':
         return 0 if is_numeric else ''
-    # Optionally handle arrays however you want (e.g. treat "empty" arrays).
-    if isinstance(x, np.ndarray):
-        if x.size == 0:
-            return 0 if is_numeric else ''
+    if isinstance(x, np.ndarray) and x.size == 0:
+        return 0 if is_numeric else ''
     return x
 
 def is_likely_domain_or_url(term: str) -> bool:
