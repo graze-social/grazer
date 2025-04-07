@@ -27,7 +27,6 @@ def main(name, num_cpus, num_gpus, namespace):
     # Keep the script running to maintain the actor
     try:
         import time
-
         while True:
             time.sleep(10)
     except KeyboardInterrupt:

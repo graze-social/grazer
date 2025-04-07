@@ -19,6 +19,7 @@ RUN apt-get update && apt-get install -y \
     git \
     pkg-config \
     libre2-dev \
+    pybind11-dev \
     tmux \
     nano \
     rsync \
@@ -46,6 +47,10 @@ RUN pdm config use_uv ${USE_UV}
 COPY pyproject.toml pdm.lock ./
 
 # Install Python dependencies
+ENV CMAKE_PREFIX_PATH=/usr
+# Pre-install pyre2 to avoid CMake failure during PDM sync
+RUN pip install pyre2==0.3.6
+
 RUN pdm sync --prod \
     --no-self \
     --no-editable \
