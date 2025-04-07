@@ -171,3 +171,5 @@ cython_debug/
 .pypirc
 .pdm-python
 nohup.out
+.DS_Store
+*/**/.DS_Store
