@@ -4,7 +4,7 @@ import re2
 
 from app.algos.base import BaseParser
 from app.algos.operators.attribute import resolve_path_batch
-
+from app.helpers import is_likely_domain_or_url
 
 class RegexParser(BaseParser):
     def get_record_texts(self, records, field_selector):
@@ -61,11 +61,15 @@ class RegexParser(BaseParser):
         # Adjust boundary pattern to avoid matches around invalid delimiters like '.'
         if treat_as_regex:
             combined_pattern = "|".join(
-                rf"(?<![\w\-/])(?<!\.){term}(?![\w-])" for term in terms_list
+                rf"{term}(?![\w-])" if is_likely_domain_or_url(term)
+                else rf"(?<![\w\-/])(?<!\.){term}(?![\w-])"
+                for term in terms_list
             )
         else:
             combined_pattern = "|".join(
-                rf"(?<![\w\-/])(?<!\.){re2.escape(term)}(?![\w-])" for term in terms_list
+                rf"{re2.escape(term)}(?![\w-])" if is_likely_domain_or_url(term)
+                else rf"(?<![\w\-/])(?<!\.){re2.escape(term)}(?![\w-])"
+                for term in terms_list
             )
         field_values = self.get_record_texts(records, field_selector)
         flags = re2.IGNORECASE if insensitive else 0

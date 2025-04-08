@@ -25,7 +25,7 @@ class SocialParser(BaseParser):
 
     async def check_memberships(self, records, operator, comparison_set):
         records_array = np.array([record["did"] for record in records])
-        return await LogicEvaluator.compare(records_array, operator, comparison_set)
+        return LogicEvaluator.compare(records_array, operator, comparison_set)
 
     async def starter_pack_member(self, records, starter_pack_url, operator):
         """Resolve the attribute path and apply a comparison operation using LogicEvaluator.compare."""

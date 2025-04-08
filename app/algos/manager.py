@@ -4,6 +4,7 @@ from app.algos.operators.entity import EntityParser
 from app.algos.operators.regex import RegexParser
 from app.algos.operators.transformer import TransformerParser
 from app.algos.operators.attribute import AttributeParser
+from app.algos.operators.logic import LogicParser
 from app.algos.operators.social import SocialParser
 from app.algos.operators.moderation import ModerationParser
 from app.algos.operators.emotion_sentiment import EmotionSentimentParser
@@ -59,6 +60,7 @@ class AlgoManager:
         instance.parsers["attribute"] = await AttributeParser.initialize(instance)
         instance.parsers["social"] = await SocialParser.initialize(instance)
         instance.parsers["moderation"] = await ModerationParser.initialize(instance)
+        instance.parsers["logic"] = await LogicParser.initialize(instance)
         instance.parsers["emotion_sentiment"] = await EmotionSentimentParser.initialize(
             instance
         )

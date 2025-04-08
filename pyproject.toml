@@ -27,11 +27,17 @@ dependencies = [
     "sentry-sdk==2.19.0",
     "timm==1.0.11",
     "ray[client]>=2.41.0",
+    "ray==2.43.0",
     "cachetools==5.5.1",
     "aiorwlock>=1.5.0",
     "sentry-sdk",
     "numpy",
     "uvicorn==0.34.0",
+    "pytest==8.3.5",
+    "pytest-cov==6.0.0",
+    "pytest-mock==3.14.0",
+    "pytest-asyncio==0.25.3",
+    "grpcio==1.71.0",
 ]
 
 [dependency-groups]
@@ -72,16 +78,13 @@ start_cache_worker = { shell = "nohup python run_ray_cache.py --name cache:main 
 start_network_worker = { shell = "nohup python run_ray_network_worker.py --name network:main --num-workers 5 --num-cpus 0.1 --num-gpus 0 &" }
 
 # GPU Worker
-start_gpu_worker = { shell = "nohup python run_ray_network_worker.py --name network:main --num-workers 5 --num-cpus 0.1 --num-gpus 0 &" }
+start_gpu_worker = { shell = "nohup python run_ray_gpu_worker.py --name gpu --num-workers 3 --num-cpus 0.5 --num-gpus 0.2 &" }
 
 # CPU Worker
 start_cpu_worker = { shell = "nohup python run_ray_cpu_worker.py --name cpu:main --num-workers 6 --num-cpus 0.5 --num-gpus 0 &" }
 
 # Runpod Worker
-start_runpod_worker = { cmd = [
-    "python3",
-    "run_runpod_worker.py",
-], env = { REDIS_URL = "redis://localhost:6379" } }
+start_runpod_worker = { cmd = ["python3", "run_runpod_worker.py"] }
 
 tail_output = { shell = "tail -f -n 300 nohup.out" }
 

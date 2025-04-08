@@ -1,7 +1,7 @@
 from app.runpod.base import RunpodBase
 from app.jetstream import Jetstream
 from app.redis import RedisClient
-
+from app.sentry import sentry_sdk
 
 class RunpodBacktester(RunpodBase):
     @classmethod
@@ -43,6 +43,7 @@ class RunpodBacktester(RunpodBase):
                         list(reversed(batch))
                     )
                 except Exception as e:
+                    sentry_sdk.capture_exception(e)
                     await cls.publish_status(
                         task_id,
                         {

@@ -1,5 +1,5 @@
 import numpy as np
-from app.helpers import is_truthy
+from app.helpers import is_truthy, is_list_of_lists, check_empty_string, normalize_element_for_logic_eval, is_numeric_like
 
 
 class LogicEvaluator:
@@ -159,32 +159,25 @@ class LogicEvaluator:
             return await self._evaluate_condition(cond, records, active_indices)
 
     async def _evaluate_scores(self, cond, records, indices):
-        """
-        Evaluates a single condition on a subset of records specified by indices.
-        Ensures that the condition is a leaf-level operation.
-        """
         if not indices:
             return []
-
+    
         sub_records = [records[i] for i in indices]
-        # Leaf-level condition
+    
         for op, params in cond.items():
             if op in self.operations:
-                if "get_ml_scores" in dir(self.operations[op].__self__):
-                    sub_results = await self.operations[op].__self__.get_ml_scores(
-                        sub_records, *params
-                    )
+                operation = self.operations[op]
+                if hasattr(operation, "__self__") and hasattr(operation.__self__, "get_ml_scores"):
+                    sub_results = await operation.__self__.get_ml_scores(sub_records, *params)
                 else:
-                    sub_results = await self.operations[op](sub_records, *params)
-                    sub_results = sub_results.astype(int)
-                results = [0] * len(records)
-                for idx, res in zip(indices, sub_results):
-                    results[idx] = float(res)
-                return results
-            else:
-                raise ValueError(f"Unknown operation '{op}'")
+                    sub_results = await operation(sub_records, *params)
+                    sub_results = np.array(sub_results).astype(float)
 
-        raise ValueError("Invalid condition structure.")
+                results = [0.0] * len(records)
+                for idx, res in zip(indices, sub_results):
+                    results[idx] = res
+                return results
+        raise ValueError(f"Unknown operation '{op}'")
 
     async def _evaluate_condition(self, cond, records, indices):
         """
@@ -203,38 +196,66 @@ class LogicEvaluator:
                 for idx, res in zip(indices, sub_results):
                     results[idx] = res
                 return results
-            else:
+            elif op != "metadata":
                 raise ValueError(f"Unknown operation '{op}'")
 
         raise ValueError("Invalid condition structure.")
 
     @staticmethod
-    async def compare(value, operator, threshold):
+    def _normalize_comparison_inputs(value, threshold):
+        """
+        Normalize threshold and all elements in value.
+        - If threshold is numeric-like (can be cast to float), cast it and treat as numeric.
+        - Normalize None/'' as 0 for numeric, or '' otherwise.
+        Handles both flat and nested arrays.
+        """
+        is_numeric = isinstance(threshold, (int, float)) or is_numeric_like(threshold)
+        if is_numeric and not isinstance(threshold, (int, float)):
+            threshold = float(threshold)
+
+        threshold = normalize_element_for_logic_eval(threshold, is_numeric)
+    
+        if is_list_of_lists(value):
+            value = np.array([[normalize_element_for_logic_eval(elem, is_numeric) for elem in row] for row in value])
+        else:
+            value = np.array([normalize_element_for_logic_eval(elem, is_numeric) for elem in value])
+
+        return value, threshold
+
+    @staticmethod
+    def compare(value, operator, threshold):
         """Performs comparison based on the specified operator."""
+        value, threshold = LogicEvaluator._normalize_comparison_inputs(value, threshold)
         if operator == "==":
-            return value == threshold
+            if is_list_of_lists(value):
+                return check_empty_string(value, threshold)
+            else:
+                return value == threshold
         elif operator == ">=":
-            if threshold == None:
+            if threshold == '':
                 return value == threshold
             else:
                 return value >= threshold
         elif operator == "<=":
-            if threshold == None:
+            if threshold == '':
                 return value == threshold
             else:
                 return value <= threshold
         elif operator == ">":
-            if threshold == None:
+            if threshold == '':
                 return value == threshold
             else:
                 return value > threshold
         elif operator == "<":
-            if threshold == None:
+            if threshold == '':
                 return value == threshold
             else:
                 return value < threshold
         elif operator == "!=":
-            return value != threshold
+            if is_list_of_lists(value):
+                return ~check_empty_string(value, threshold)
+            else:
+                return value != threshold
         elif operator == "in":
             return np.isin(value, threshold)
         elif operator == "not_in":
@@ -311,7 +332,7 @@ class LogicEvaluator:
         return condition
 
     @staticmethod
-    async def rehydrate_single_manifest(manifest, condition_map):
+    def rehydrate_single_manifest(manifest, condition_map):
         """
         Rehydrates a single manifest by replacing IDs in the manifest with
         their corresponding conditions from the condition map.
@@ -323,7 +344,6 @@ class LogicEvaluator:
         Returns:
             dict: The rehydrated manifest with condition parameters.
         """
-
         def rehydrate_condition(condition):
             """
             Recursively replaces IDs with condition parameters.
@@ -331,14 +351,14 @@ class LogicEvaluator:
             if isinstance(condition, int):
                 # Replace the integer ID with its corresponding condition
                 condition_data = condition_map.get(condition)
-                if not condition_data:
-                    raise ValueError(
-                        f"Condition ID {condition} not found in condition_map."
-                    )
-                operator_name = condition_data.get(
-                    "operator_name"
-                )  # Replace this with operator name lookup if necessary
-                return {operator_name: condition_data["condition_parameters"]}
+                if condition_data and condition_data.get("algorithm_component_id"):
+                    result = condition_data["condition_parameters"]
+                else:
+                    if not condition_data:
+                        raise ValueError(f"Condition ID {condition} not found in condition_map.")
+                    operator_name = condition_data.get("operator_name")
+                    result = {operator_name: condition_data["condition_parameters"]}
+                return result
             elif isinstance(condition, dict):
                 # Rehydrate nested conditions in a dictionary
                 return {
@@ -351,7 +371,6 @@ class LogicEvaluator:
                 return [rehydrate_condition(sub_cond) for sub_cond in condition]
             else:
                 raise ValueError(f"Unexpected condition format: {condition}")
-
         # Rehydrate the manifest
         if manifest:
             rehydrated_manifest = {

@@ -5,8 +5,21 @@ services:
     platform: linux/amd64
     build: .
     container_name: grazer
+    shm_size: "7gb"  # Allocates 7GB to shared memory (for Ray
+    environment:
+      - RAY_memory_monitor_error_threshold=0.9
+      - RAY_worker_register_timeout_s=10
+      - RAY_verbose_exceptions=1
     volumes:
       - .:/app
     env_file:
       - .env
     command: ["tail", "-f", "/dev/null"]
+    deploy:
+      resources:
+        limits:
+          cpus: "2.0"
+          memory: "8g"
+        reservations:
+          cpus: "1.0"
+          memory: "4g"

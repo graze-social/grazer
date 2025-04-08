@@ -68,7 +68,7 @@ RUN pdm sync --prod \
 # Please see list of scripts in pyproject.toml
 # CMD ["pdm", "start_all_workers"]
 
-FROM rayproject/ray:2.43.0-py311-aarch64 as remote
+FROM rayproject/ray:2.41.0-py311-aarch64 as remote
 
 WORKDIR /grazer
 

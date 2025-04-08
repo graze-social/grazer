@@ -114,7 +114,7 @@ class AttributeParser(BaseParser):
         if target_value is None and "*" in field_selector:
             target_value = [None]
         return np.array(
-            await LogicEvaluator.compare(values, operator, target_value), dtype=bool
+            LogicEvaluator.compare(values, operator, target_value), dtype=bool
         )
 
     async def post_type(self, records, operator, post_names):
@@ -123,14 +123,14 @@ class AttributeParser(BaseParser):
         if "quote" in post_names:
             values = resolve_path_batch(records, "embed.$type")
             matches_by_type["quote"] = np.array(
-                await LogicEvaluator.compare(values, "==", EMBED_TYPES["post"]),
+                LogicEvaluator.compare(values, "==", EMBED_TYPES["post"]),
                 dtype=bool,
             )
 
         if "reply" in post_names:
             values = resolve_path_batch(records, "reply")
             matches_by_type["reply"] = np.array(
-                await LogicEvaluator.compare(values, "!=", None),
+                LogicEvaluator.compare(values, "!=", None),
                 dtype=bool,
             )
 
@@ -163,11 +163,11 @@ class AttributeParser(BaseParser):
         """
         if embed_name == "gif" or embed_name == "link":
             values = resolve_path_batch(records, "embed.$type")
-            is_link_type = await LogicEvaluator.compare(
+            is_link_type = LogicEvaluator.compare(
                 values, "==", EMBED_TYPES["link"]
             )
             gif_domains = np.array(
-                [get_url_domain(e) == "media.tenor.com" for e in get_all_links(records)]
+                [True in [get_url_domain(ee) == "media.tenor.com" for ee in e] for e in get_all_links(records)]
             )
             if embed_name == "gif":
                 if operator == "==":
@@ -194,7 +194,7 @@ class AttributeParser(BaseParser):
                 ]
             )
             return np.array(
-                await LogicEvaluator.compare(values, operator, EMBED_TYPES[embed_name]),
+                LogicEvaluator.compare(values, operator, EMBED_TYPES[embed_name]),
                 dtype=bool,
             )
         elif embed_name == "image_group":
@@ -211,13 +211,13 @@ class AttributeParser(BaseParser):
                 ]
             )
             return np.array(
-                await LogicEvaluator.compare(values, operator, EMBED_TYPES[embed_name]),
+                LogicEvaluator.compare(values, operator, EMBED_TYPES[embed_name]),
                 dtype=bool,
             )
         else:
             values = resolve_path_batch(records, "embed.$type")
             return np.array(
-                await LogicEvaluator.compare(values, operator, EMBED_TYPES[embed_name]),
+                LogicEvaluator.compare(values, operator, EMBED_TYPES[embed_name]),
                 dtype=bool,
             )
 

@@ -4,7 +4,81 @@ import re2
 import traceback
 import sys
 from itertools import islice
-from typing import List
+from typing import List, Dict, Any
+def is_numeric_like(x):
+    """
+    Returns True if x can be safely converted to a float.
+    """
+    try:
+        float(x)
+        return True
+    except (TypeError, ValueError):
+        return False
+
+def normalize_element_for_logic_eval(x, is_numeric=False):
+    """
+    Returns either x, or if x is None/empty/blank, returns
+    0 if is_numeric=True, otherwise ''.
+    """
+    if x is None:
+        return 0 if is_numeric else ''
+    if isinstance(x, str) and x == '':
+        return 0 if is_numeric else ''
+    if isinstance(x, np.ndarray) and x.size == 0:
+        return 0 if is_numeric else ''
+    return x
+
+def is_likely_domain_or_url(term: str) -> bool:
+    return '.' in term or term.startswith('http')
+
+def extract_all_text_fields(records: List[Dict[str, Any]]) -> List[str]:
+    """Extract all relevant textual content from records including post text, image alt text, and link preview text."""
+    def safe_get(d: Dict, path: List[str]) -> Any:
+        for key in path:
+            if isinstance(d, dict) and key in d:
+                d = d[key]
+            else:
+                return None
+        return d
+    def gather_text(record: Dict[str, Any]) -> str:
+        parts = []
+        # Top-level post text
+        text = record.get("text")
+        if text:
+            parts.append(text)
+        # ALT text from images
+        images = safe_get(record, ["embed", "images"])
+        if images and isinstance(images, list):
+            for img in images:
+                alt = img.get("alt")
+                if alt:
+                    parts.append(alt)
+        # Text from link previews
+        external = safe_get(record, ["embed", "external"])
+        if external and isinstance(external, dict):
+            for key in ["title", "description"]:
+                val = external.get(key)
+                if val:
+                    parts.append(val)
+        return "\n".join(parts)
+    return [gather_text(e["commit"]["record"]) for e in records]
+
+def check_empty_string(value, threshold):
+    """Return a boolean NumPy array where each element is True if '' is in that element."""
+    if isinstance(value, np.ndarray):
+        return np.array([(threshold in sub) for sub in value], dtype=bool)
+    elif isinstance(value, list):
+        return np.array([(threshold in sub) for sub in value], dtype=bool)
+    else:
+        raise ValueError("Input must be a list or NumPy array")
+
+
+def is_list_of_lists(value):
+    """Check if the value is a list of lists or a NumPy array of lists."""
+    if isinstance(value, (list, np.ndarray)):
+        if all(isinstance(sub, (list, np.ndarray)) for sub in value):
+            return True
+    return False
 
 
 def chunk(iterable, size):
@@ -80,20 +154,30 @@ def create_exception_json(exc: Exception) -> dict:
     }
 
 
-def get_url_domain(url: str) -> bool:
-    """Return True if the given URL's domain is exactly media.tenor.com."""
+def get_url_domain(url: str) -> str:
+    """Return domain, ignoring a leading 'www.', ensuring compatibility with both str and bytes."""
     parsed = urlparse(url)
-    return parsed.netloc.lower()
+    
+    # Ensure netloc is always a string
+    netloc = parsed.netloc
+    if isinstance(netloc, bytes):
+        netloc = netloc.decode("utf-8")
+    domain = netloc.lower().removeprefix("www.")
+    return domain
 
 
 def get_all_links(records):
-    return [
-        (
+    url_sets = []
+    for record in records:
+        facet_urls = [feature["uri"] for facet in record["commit"]["record"].get("facets", []) for feature in facet.get("features", []) if feature.get("$type") == "app.bsky.richtext.facet#link"]
+        primary_url = (
             (record["commit"]["record"].get("embed", {}) or {}).get("external", {})
             or {}
         ).get("uri")
-        for record in records
-    ]
+        if primary_url:
+            facet_urls.insert(0, primary_url)
+        url_sets.append(facet_urls)
+    return url_sets
 
 
 def transform_dict(data, omitted_keys=None):

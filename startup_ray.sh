@@ -4,7 +4,7 @@ RAY_DEDUP_LOGS=0 pdm start_cache_worker
 RAY_DEDUP_LOGS=0 pdm start_network_worker
 RAY_DEDUP_LOGS=0 pdm start_gpu_worker
 RAY_DEDUP_LOGS=0 pdm start_cpu_worker
-pdm start_runpod_worker
+sleep 10 && pdm start_runpod_worker
 # ray stop && ray start --head --dashboard-host=0.0.0.0 --dashboard-port 80
 # (sleep 5 && RAY_DEDUP_LOGS=0 python run_ray_cache.py --name cache:main --num-cpus 2 --num-gpus 0) &
 # (sleep 5 && RAY_DEDUP_LOGS=0 python run_ray_network_worker.py --name network:main --num-workers 5 --num-cpus 0.1 --num-gpus 0) &

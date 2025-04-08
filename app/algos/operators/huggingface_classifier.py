@@ -2,7 +2,7 @@ import numpy as np
 from hashlib import sha256
 from app.logic_evaluator import LogicEvaluator
 from app.algos.base import BaseParser
-
+from app.helpers import extract_all_text_fields
 
 class HuggingfaceClassifierParser(BaseParser):
     async def precache_text_predictions(self, texts, model_name):
@@ -45,11 +45,11 @@ class HuggingfaceClassifierParser(BaseParser):
         return [all_out_probs[text] for text in texts]
 
     async def get_ml_scores(self, records, category, comparator, threshold):
-        sampled_texts = [e["commit"]["record"]["text"] for e in records]
+        sampled_texts = extract_all_text_fields(records)
         probabilities = await self.get_probabilities(sampled_texts, self.MODEL_NAME)
         return np.array([e.get(category, 0) for e in probabilities])
 
     async def classifier_operator(self, records, category, comparator, threshold):
         scores = await self.get_ml_scores(records, category, comparator, threshold)
-        bools = await LogicEvaluator.compare(scores, comparator, threshold)
+        bools = LogicEvaluator.compare(scores, comparator, threshold)
         return bools.tolist()
