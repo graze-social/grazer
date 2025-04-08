@@ -5,7 +5,7 @@ ARG USE_UV=true
 FROM python:${PYTHON_VERSION}-${DISTRO}
 
 # Optional Cache buster
-ENV UPDATED_AT=03-03-2025
+ENV UPDATED_AT=04-08-2025:00:00:01
 
 # Set working directory
 WORKDIR /grazer
@@ -19,7 +19,6 @@ RUN apt-get update && apt-get install -y \
     git \
     pkg-config \
     libre2-dev \
-    pybind11-dev \
     tmux \
     nano \
     rsync \
@@ -47,13 +46,10 @@ RUN pdm config use_uv ${USE_UV}
 COPY pyproject.toml pdm.lock ./
 
 # Install Python dependencies
-ENV CMAKE_PREFIX_PATH=/usr
-# Pre-install pyre2 to avoid CMake failure during PDM sync
-RUN pip install pyre2==0.3.6
-
-RUN pdm sync --prod \
-    --no-self \
+RUN pdm sync \
+    --no-isolation \
     --no-editable \
+    --no-self \
     --fail-fast
 
 # Now copy the rest of your application code
