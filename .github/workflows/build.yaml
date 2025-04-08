@@ -70,3 +70,15 @@ jobs:
             ${{env.CONTAINER_REPO}}:${{ inputs.tag }}
           builder: ${{ steps.setup_buildx.name }}
           platforms: linux/amd64
+
+      - name: discord_notify_hook
+        uses: stegzilla/discord-notify@v2
+        with:
+          webhook_url: ${{ secrets.DEV_CHANNEL_DISCORD_WEBHOOK }}
+          title: "Grazer ${{ inputs.tag }} Built and Pushed"
+          message: "**Download: ${{secrets.CONTAINER_REPO}}:${{inputs.tag}}**"
+          include_image: true
+          custom_image_url: https://avatars.githubusercontent.com/u/196731666?s=400&v=4
+          avatar_url: https://avatars.githubusercontent.com/u/196731666?s=48&v=4
+          username: Graze Deploy Bot
+          colour: "#0090ff"
