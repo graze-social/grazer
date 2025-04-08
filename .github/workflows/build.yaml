@@ -15,19 +15,11 @@ on:
           - Dockerfile.remote
 jobs:
   build_and_deploy_aip:
-    name: build_and_deploy_aip
-    permissions:
-      contents: write
-      id-token: write
-    env:
-      AWS_REGION: us-east-1
-
+    name: build_grazer
     runs-on: ubuntu-latest
     steps:
       - name: checkout
         uses: actions/checkout@v3
-        with:
-          ref: ${{inputs.branch}}
 
       - name: setup_python
         uses: actions/setup-python@v4
@@ -67,7 +59,7 @@ jobs:
           context: .
           push: true
           tags: |
-            ${{env.CONTAINER_REPO}}:${{ inputs.tag }}
+            ${{secrets.CONTAINER_REPO}}:${{ inputs.tag }}
           builder: ${{ steps.setup_buildx.name }}
           platforms: linux/amd64
 
