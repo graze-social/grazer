@@ -1,5 +1,3 @@
-
-
 ARG RAY_VERSION=2.43.0
 ARG GRAZER_REPO=[placeholder]
 ARG GRAZER_TAG=latest
