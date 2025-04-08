@@ -47,8 +47,9 @@ dev = [
     "flake8>=7.1.2",
     "pytest>=8.3.5",
 ]
-
-cluster = ["ray[client]==2.43.0"]
+cluster = [
+    "ray[client]==2.43.0",
+]
 
 [build-system]
 requires = ["setuptools", "wheel", "ninja"]
