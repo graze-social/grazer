@@ -49,7 +49,7 @@ dev = [
 ]
 
 [build-system]
-requires = ["setuptools", "wheel"]
+requires = ["setuptools", "wheel", "ninja"]
 build-backend = "setuptools.build_meta"
 
 [tool.pdm.scripts]
@@ -83,10 +83,7 @@ start_gpu_worker = { shell = "nohup python run_ray_gpu_worker.py --name gpu --nu
 start_cpu_worker = { shell = "nohup python run_ray_cpu_worker.py --name cpu:main --num-workers 6 --num-cpus 0.5 --num-gpus 0 &" }
 
 # Runpod Worker
-start_runpod_worker = { cmd = [
-    "python3",
-    "run_runpod_worker.py",
-]}
+start_runpod_worker = { cmd = ["python3", "run_runpod_worker.py"] }
 
 tail_output = { shell = "tail -f -n 300 nohup.out" }
 

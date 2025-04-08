@@ -67,7 +67,7 @@ jobs:
         uses: stegzilla/discord-notify@v2
         with:
           webhook_url: ${{ secrets.DEV_CHANNEL_DISCORD_WEBHOOK }}
-          title: "Grazer ${{ inputs.tag }} Built and Pushed"
+          title: "Grazer `${{ inputs.tag }}` Built and Pushed"
           message: "**Download: ${{secrets.CONTAINER_REPO}}:${{inputs.tag}}**"
           include_image: true
           custom_image_url: https://avatars.githubusercontent.com/u/196731666?s=400&v=4
