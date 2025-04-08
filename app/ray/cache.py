@@ -4,7 +4,8 @@ from asyncio import Lock
 from cachetools import LRUCache, TTLCache
 from app.egress import Egress
 from app.ray.timing_base import TimingBase, measure_time
-
+from app.telemetry import Telemetry
+from app.sentry import sentry_sdk
 
 @ray.remote(max_concurrency=1000)
 class Cache(TimingBase):
@@ -29,6 +30,7 @@ class Cache(TimingBase):
         self.outputs = []
         self.batch_size = batch_size
         self.lock = Lock()
+        self.telemetry = None
         super().__init__()
 
     async def report_output(self, data, force_write=False):
@@ -49,7 +51,15 @@ class Cache(TimingBase):
         """
         if not self.outputs:
             return
-        await Egress.send_results(self.outputs, f"{self.key_prefix}:output")
+        if self.outputs:
+            try:
+                if not self.telemetry:
+                   self.telemetry = Telemetry("grazer")
+                self.telemetry.record_gauge("output_queue_dump_size", len(self.outputs))
+                self.telemetry.record_gauge("output_queue_content_size", sum([len(e.get("matches", []) or []) for e in self.outputs]))
+            except Exception as e:
+                sentry_sdk.capture_exception(e)
+            await Egress.send_results(self.outputs, f"{self.key_prefix}:output")
         self.outputs = []
 
     @measure_time
