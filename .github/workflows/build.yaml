@@ -6,11 +6,6 @@ on:
         type: string
         required: true
         description: tags for the image artifact
-      branch:
-        type: string
-        required: true
-        description: "target branch to check out and build"
-
       dockerfile:
         type: choice
         required: false
