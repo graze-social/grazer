@@ -98,5 +98,3 @@ class Telemetry:
             self._histograms[name] = self.meter.create_histogram(name, description=f"Histogram for {name}", unit="ms")
         self._histograms[name].record(value, attributes or {})
 
-
-telemetry = Telemetry("grazer")
