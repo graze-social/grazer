@@ -43,6 +43,8 @@ jobs:
       - name: setup_qemu
         if: ${{ inputs.build_manifest }}
         uses: docker/setup-qemu-action@v2
+        with:
+          platforms: linux/amd64
 
       - name: setup_buildx
         uses: docker/setup-buildx-action@v2
