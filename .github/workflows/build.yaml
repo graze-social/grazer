@@ -49,6 +49,7 @@ jobs:
         if: ${{ inputs.build_manifest }}
         with:
           platforms: linux/amd64,linux/arm64
+          driver: docker
 
       - name: configure_aws_credentials
         uses: aws-actions/configure-aws-credentials@v4 # More information on this action can be found below in the 'AWS Credentials' section
