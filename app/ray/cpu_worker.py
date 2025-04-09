@@ -9,6 +9,7 @@ from app.helpers import create_exception_json
 from app.logger import logger
 from app.ray.timing_base import TimingBase, measure_time
 from app.sentry import sentry_sdk
+from app.telemetry import Telemetry
 
 @ray.remote(max_concurrency=5)
 class CPUWorker(TimingBase):
@@ -35,6 +36,7 @@ class CPUWorker(TimingBase):
         self.semaphore = Semaphore(30)
         self.active_tasks = 0
         self._max_concurrency = 5
+        self.telemetry = None
         super().__init__()
 
     async def max_concurrency(self):
@@ -102,6 +104,9 @@ class CPUWorker(TimingBase):
             List of processed record results.
         """
         processes = []
+        if not self.telemetry:
+           self.telemetry = Telemetry("grazer")
+        self.telemetry.record_gauge("input_queue_dump_size", len(records))
         for algorithm_id, manifest in manifests:
             processes.append(self.process_manifest(algorithm_id, manifest, records))
         results = await asyncio.gather(*processes)
