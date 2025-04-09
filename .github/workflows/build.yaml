@@ -48,7 +48,6 @@ jobs:
         uses: docker/setup-buildx-action@v2
         if: ${{ inputs.build_manifest }}
         with:
-          platforms: linux/amd64,linux/arm64
           driver: docker
 
       - name: configure_aws_credentials
