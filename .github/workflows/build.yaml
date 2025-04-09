@@ -5,11 +5,11 @@ on:
       tag:
         type: string
         required: true
-        description: tags for the image artifact
+        description: Tag for the built image artifact. For building the cluster image, this tag must previously exist for the base image.
       dockerfile:
         type: choice
         required: false
-        description: the target Dockerfile to build
+        description: The target Dockerfile to build. To build the cluster image, selected grazer tags get prefixed with `cluster-`
         options:
           - Dockerfile
           - Dockerfile.cluster
@@ -71,7 +71,7 @@ jobs:
           builder: ${{ steps.setup_buildx.name }}
           platforms: linux/amd64
           build-args: |
-            GRAZER_REPO=${{ secrets.CONTAINER_REPO_REPO }}
+            GRAZER_REPO=${{ secrets.CONTAINER_REPO }}
             GRAZER_TAG=${{ inputs.tag }}
 
       - name: discord_notify_hook
