@@ -74,6 +74,7 @@ jobs:
         with:
           file: ${{inputs.dockerfile}}
           context: .
+          no-cache: true
           push: true
           tags: |
             ${{secrets.CONTAINER_REPO}}:${{env.RELEASE_TAG}}
@@ -89,6 +90,7 @@ jobs:
         with:
           file: ${{inputs.dockerfile}}
           context: .
+          no-cache: true
           push: true
           tags: |
             ${{secrets.CONTAINER_REPO}}:${{env.RELEASE_TAG}}
