@@ -1,4 +1,4 @@
-name: build_private_grazer_algos_image
+name: Build Grazer [Private]
 on:
   workflow_dispatch:
     inputs:
@@ -20,7 +20,7 @@ on:
         description: Build a manifest or a single image
 
 jobs:
-  build_and_deploy_aip:
+  build_grazer:
     name: build_grazer
     runs-on: ubuntu-latest
     steps:
