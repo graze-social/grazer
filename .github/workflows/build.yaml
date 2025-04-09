@@ -13,6 +13,12 @@ on:
         options:
           - Dockerfile
           - Dockerfile.cluster
+      build_manifest:
+        type: boolean
+        default: false
+        required: true
+        description: Build a manifest or a single image
+
 jobs:
   build_and_deploy_aip:
     name: build_grazer
@@ -26,9 +32,6 @@ jobs:
         with:
           python-version: "3.12.6"
 
-      - name: setup_qemu
-        uses: docker/setup-qemu-action@v2
-
       - name: derive_tag
         run: |
           if [[ "${{inputs.dockerfile}}" == *".cluster" ]]; then
@@ -37,8 +40,13 @@ jobs:
               echo "RELEASE_TAG=${{inputs.tag}}" >> $GITHUB_ENV;
           fi
 
+      - name: setup_qemu
+        if: ${{ inputs.build_manifest }}
+        uses: docker/setup-qemu-action@v2
+
       - name: setup_buildx
         uses: docker/setup-buildx-action@v2
+        if: ${{ inputs.build_manifest }}
         with:
           platforms: linux/amd64,linux/arm64
 
@@ -60,8 +68,9 @@ jobs:
         with:
           mask-password: "false"
 
-      - name: build_and_push.remote
+      - name: build_and_push.manifest
         uses: docker/build-push-action@v4
+        if: ${{ inputs.build_manifest }}
         with:
           file: ${{inputs.dockerfile}}
           context: .
@@ -70,6 +79,19 @@ jobs:
             ${{secrets.CONTAINER_REPO}}:${{env.RELEASE_TAG}}
           builder: ${{ steps.setup_buildx.name }}
           platforms: linux/amd64
+          build-args: |
+            GRAZER_REPO=${{ secrets.CONTAINER_REPO }}
+            GRAZER_TAG=${{ inputs.tag }}
+
+      - name: build_and_push.single
+        if: ${{ !inputs.build_manifest}}
+        uses: docker/build-push-action@v4
+        with:
+          file: ${{inputs.dockerfile}}
+          context: .
+          push: true
+          tags: |
+            ${{secrets.CONTAINER_REPO}}:${{env.RELEASE_TAG}}
           build-args: |
             GRAZER_REPO=${{ secrets.CONTAINER_REPO }}
             GRAZER_TAG=${{ inputs.tag }}
