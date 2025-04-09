@@ -40,8 +40,12 @@ jobs:
               echo "RELEASE_TAG=${{inputs.tag}}" >> $GITHUB_ENV;
           fi
 
-      - name: setup_qemu
+      - name: setup_qemu.manifest
         if: ${{ inputs.build_manifest }}
+        uses: docker/setup-qemu-action@v2
+
+      - name: setup_qemu.single
+        if: ${{ !inputs.build_manifest }}
         uses: docker/setup-qemu-action@v2
         with:
           platforms: linux/amd64
