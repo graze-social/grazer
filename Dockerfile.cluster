@@ -1,0 +1,15 @@
+ARG RAY_VERSION=2.43.0
+ARG GRAZER_REPO=[placeholder]
+ARG GRAZER_TAG=latest
+
+FROM ${GRAZER_REPO}:${GRAZER_TAG} as grazer
+
+ENV UPDATED_AT 04-08-2025
+
+# Noop
+
+FROM rayproject/ray:${RAY_VERSION}-py311-aarch64 as remote
+
+WORKDIR /grazer
+
+COPY --from=grazer /grazer /grazer/
