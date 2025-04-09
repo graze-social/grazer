@@ -5,7 +5,7 @@ ARG USE_UV=true
 FROM python:${PYTHON_VERSION}-${DISTRO}
 
 # Optional Cache buster
-ENV UPDATED_AT=04-08-2025:00:00:01
+ENV UPDATED_AT=04-08-2025:00:00:02
 
 # Set working directory
 WORKDIR /grazer
@@ -47,8 +47,8 @@ COPY pyproject.toml pdm.lock ./
 
 # Install Python dependencies
 RUN pdm sync \
+    --prod \
     --no-isolation \
-    --no-editable \
     --no-self \
     --fail-fast
 
