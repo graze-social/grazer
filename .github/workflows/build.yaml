@@ -17,7 +17,7 @@ on:
         type: boolean
         default: false
         required: true
-        description: Build a manifest or a single image
+        description: Build a multi-arch manifest?
 
 jobs:
   build_grazer:
@@ -26,11 +26,6 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v3
-
-      - name: setup_python
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.12.6"
 
       - name: derive_tag
         run: |
@@ -105,7 +100,6 @@ jobs:
           context: .
           no-cache: true
           push: true
-          platforms: linux/amd64
           tags: |
             ${{secrets.CONTAINER_REPO}}:${{env.RELEASE_TAG}}
           build-args: |
