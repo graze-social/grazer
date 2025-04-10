@@ -50,7 +50,7 @@ jobs:
         with:
           platforms: linux/amd64
 
-      - name: setup_buildx
+      - name: setup_buildx_manifest
         uses: docker/setup-buildx-action@v2
         if: ${{ inputs.build_manifest }}
         with:
@@ -60,7 +60,6 @@ jobs:
         uses: docker/setup-buildx-action@v2
         if: ${{ !inputs.build_manifest }}
         with:
-          platforms: linux/amd64
           driver: docker
 
       - name: configure_aws_credentials
@@ -91,7 +90,7 @@ jobs:
           push: true
           tags: |
             ${{secrets.CONTAINER_REPO}}:${{env.RELEASE_TAG}}
-          builder: ${{ steps.setup_buildx.name }}
+          builder: ${{ steps.setup_buildx_manifest.name }}
           platforms: linux/amd64, linux/arm64
           build-args: |
             GRAZER_REPO=${{ secrets.CONTAINER_REPO }}
@@ -102,6 +101,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           file: ${{inputs.dockerfile}}
+          builder: ${{ steps.setup_buildx_single.name }}
           context: .
           no-cache: true
           push: true
