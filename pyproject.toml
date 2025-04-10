@@ -44,17 +44,13 @@ dependencies = [
     "opentelemetry-instrumentation-requests>=0.52b1",
 ]
 
+[project.optional-dependencies]
+build = ["cython>=3.0.12", "ninja>=1.11.1.3", "setuptools>=75.8.2"]
+cluster = ["ray[client]==2.43.0"]
+
 [dependency-groups]
-dev = [
-    "cython>=3.0.12",
-    "ninja>=1.11.1.3",
-    "setuptools>=75.8.2",
-    "flake8>=7.1.2",
-    "pytest>=8.3.5",
-]
-cluster = [
-    "ray[client]==2.43.0",
-]
+dev = ["flake8>=7.1.2", "pytest>=8.3.5"]
+
 
 [build-system]
 requires = ["setuptools", "wheel", "ninja"]

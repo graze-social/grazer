@@ -47,6 +47,8 @@ COPY pyproject.toml pdm.lock ./
 
 # Install Python dependencies
 RUN pdm sync \
+    -G build \
+    -G cluster \
     --no-isolation \
     --no-editable \
     --no-self \
