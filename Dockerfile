@@ -1,6 +1,6 @@
 ARG PYTHON_VERSION=3.11
 ARG DISTRO=slim
-ARG USE_UV=false
+ARG USE_UV=true
 
 FROM python:${PYTHON_VERSION}-${DISTRO}
 
@@ -43,12 +43,13 @@ ENV PDM_CHECK_UPDATE=false
 RUN pdm config use_uv ${USE_UV}
 
 # Copy dependency specification files first to leverage caching
-COPY pyproject.toml pdm.lock ./
+COPY pyproject.toml pdm.lock py311-linux.lock ./
 
 # Install Python dependencies
 RUN pdm sync \
     -G build \
     -G cluster \
+    -L py311-linux.lock \
     --no-isolation \
     --no-editable \
     --no-self \
