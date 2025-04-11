@@ -1,4 +1,4 @@
-name: Build Grazer [Private]
+name: Build Grazer [Private][Simple]
 on:
   workflow_dispatch:
     inputs:
@@ -20,7 +20,7 @@ on:
         description: Build a multi-arch manifest?
 
 jobs:
-  build_grazer:
+  build_grazer_simple:
     name: build_grazer
     runs-on: ubuntu-latest
     steps:
