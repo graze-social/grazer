@@ -3,6 +3,7 @@ on:
   pull_request:
     types:
       - closed
+      - synchronize
     branches:
       - main
     paths-ignore:
@@ -65,7 +66,7 @@ jobs:
           BUILDER: "${{needs.setup.outputs.buildkit_builder}}"
           VERSION_TAG: ${{needs.setup.outputs.version_tag}}.client
         with:
-          builder: "$BUILDER"
+          # builder: "$BUILDER"
           context: .
           push: true
           tags: |
@@ -81,17 +82,28 @@ jobs:
           BUILDER: "${{needs.setup.outputs.buildkit_builder}}"
           VERSION_TAG: ${{needs.setup.outputs.version_tag}}.cluster
         with:
-          builder: "$BUILDER"
+          # builder: "$BUILDER"
           context: .
           file: Dockerfile.cluster
           push: true
           tags: |
             ${{secrets.CONTAINER_REPO}}:$VERSION_TAG
 
+  create_release:
+    runs-on: [ubuntu-latest]
+    needs: [setup, build_client, build_cluster]
+    steps:
+      - name: create_release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_RELEASE_TOKEN }}
+          VERSION_TAG: ${{needs.setup.outputs.version_tag}}
+        run: |-
+          gh release create ${{ env.VERSION_TAG }} -t ${{ env.VERSION_TAG }} -n "Release version image available: ${{ env.ECR_REPO }}:${{ env.VERSION_TAG }}"
+
   notify:
     runs-on: [ubuntu-latest]
     if: ${{ contains(join(needs.*.result, ','), 'success') }}
-    needs: [build_client, build_cluster]
+    needs: [build_client, build_cluster, create_release]
     steps:
       - name: discord_notify_hook
         uses: stegzilla/discord-notify@v2
