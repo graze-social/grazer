@@ -139,10 +139,10 @@ jobs:
     steps:
       - name: create_release
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_RELEASE_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
           VERSION_TAG: ${{needs.setup.outputs.version_tag}}
         run: |-
-          gh release create ${{ env.VERSION_TAG }} -t ${{ env.VERSION_TAG }} -n "Release version image available: ${{ env.ECR_REPO }}:${{ env.VERSION_TAG }}"
+          gh release create ${{ env.VERSION_TAG }} -t ${{ env.VERSION_TAG }} -n "Release version image available: ${{ secrets.CONTAINER_REPO }}:${{ env.VERSION_TAG }}"
 
   notify:
     runs-on: [ubuntu-latest]
