@@ -68,7 +68,7 @@ FROM python:${PYTHON_VERSION}-${DISTRO} AS grazer
 WORKDIR /grazer
 
 # Reinstall PDM
-# TODO: can we copy this to I wonder?
+# TODO: can we copy this to I wonder
 ENV PDM_VERSION=2.23.1
 RUN pip install -U pdm==${PDM_VERSION}
 
