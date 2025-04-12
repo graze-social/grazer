@@ -26,7 +26,8 @@ jobs:
       - uses: actions/cache@v4
         with:
           path: .
-          key: ${{runner.os}}-git-folder-grazer
+          key: ${{runner.os}}-git-folder-grazer-${{ github.head_ref }}.${{ github.sha }}
+          restore-keys: ${{runner.os}}-git-folder-grazer-
           save-always: true
 
       - name: setup_svu
@@ -66,13 +67,15 @@ jobs:
       - uses: actions/cache@v4
         with:
           path: .
-          key: ${{runner.os}}-git-folder-
+          key: ${{runner.os}}-git-folder-${{ github.head_ref }}.${{ github.sha }}
+          restore-keys: ${{runner.os}}-git-folder-grazer-
 
       - name: setup_buildx
         id: setup_buildx
         uses: docker/setup-buildx-action@v2
         with:
           platforms: linux/amd64,linux/arm64
+
       - name: build_and_push
         uses: docker/build-push-action@v4
         with:
@@ -90,7 +93,8 @@ jobs:
       - uses: actions/cache@v4
         with:
           path: .
-          key: ${{runner.os}}-git-folder-
+          key: ${{runner.os}}-git-folder-${{ github.head_ref }}.${{ github.sha }}
+          restore-keys: ${{runner.os}}-git-folder-grazer-
 
       - name: setup_buildx
         id: setup_buildx
