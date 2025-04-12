@@ -67,7 +67,7 @@ jobs:
           BUILDER: "${{needs.setup.outputs.buildkit_builder}}"
           VERSION_TAG: ${{needs.setup.outputs.version_tag}}.client
         with:
-          builder: $BUILDER
+          builder: "$BUILDER"
           context: .
           push: true
           tags: |
@@ -83,7 +83,7 @@ jobs:
           BUILDER: "${{needs.setup.outputs.buildkit_builder}}"
           VERSION_TAG: ${{needs.setup.outputs.version_tag}}.cluster
         with:
-          builder: $BUILDER
+          builder: "$BUILDER"
           context: .
           file: Dockerfile.cluster
           push: true
