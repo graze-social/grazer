@@ -40,6 +40,8 @@ jobs:
         uses: docker/setup-buildx-action@v2
         with:
           platforms: linux/amd64,linux/arm64
+          # Share builder with downstream jobs
+          cleanup: false
 
       - name: configure_aws_credentials
         uses: aws-actions/configure-aws-credentials@v4 # More information on this action can be found below in the 'AWS Credentials' section
