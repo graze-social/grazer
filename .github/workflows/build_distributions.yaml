@@ -15,8 +15,7 @@ jobs:
   setup:
     outputs:
       version_tag: ${{ steps.create_tag.outputs.VERSION_TAG }}
-      buildkit_builder: ${{steps.setup_buildx.outputs.name}}
-    name: build_grazer
+      buildkit_builder: ${{steps.setup_buildx.name}}
     runs-on: ubuntu-latest
     steps:
       - name: checkout
