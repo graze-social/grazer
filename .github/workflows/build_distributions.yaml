@@ -75,12 +75,13 @@ jobs:
         uses: docker/setup-buildx-action@v2
         with:
           platforms: linux/amd64,linux/arm64
-      - run: ls .
+      - run: cat ./Dockerfile
       - name: build_and_push
         uses: docker/build-push-action@v4
         with:
           builder: ${{steps.setup_buildx.name}}
           context: .
+          file: Dockerfile
           push: true
           tags: |
             ${{secrets.CONTAINER_REPO}}:${{needs.setup.outputs.version_tag}}.client
