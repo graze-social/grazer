@@ -13,11 +13,6 @@ on:
         options:
           - Dockerfile
           - Dockerfile.cluster
-      build_manifest:
-        type: boolean
-        default: false
-        required: true
-        description: Build a multi-arch manifest?
 
 jobs:
   build_grazer:
