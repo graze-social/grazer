@@ -1,0 +1,55 @@
+name: Build Grazer Distributions
+on:
+  pull_request:
+    types:
+      - closed
+      - synchronize
+      - reopened
+    branches:
+      - main
+    paths-ignore:
+      - .github/**/*
+      - deploy/**/*
+      - tests/**/*
+jobs:
+  setup:
+    name: build_grazer
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: setup_svu
+        run: curl -kL https://github.com/caarlos0/svu/releases/download/v3.2.2/svu_3.2.2_linux_amd64.tar.gz | tar zx && mv svu /usr/local/bin/svu && chmod +x /usr/local/bin/svu
+
+      - name: create_tag
+        run: |
+          echo "VERSION_TAG=$(svu next)" >> $GITHUB_ENV
+
+      - name: setup_qemu
+        uses: docker/setup-qemu-action@v2
+
+      - name: setup_buildx
+        uses: docker/setup-buildx-action@v2
+        with:
+          platforms: linux/amd64,linux/arm64
+
+      - name: configure_aws_credentials
+        uses: aws-actions/configure-aws-credentials@v4 # More information on this action can be found below in the 'AWS Credentials' section
+        with:
+          aws-access-key-id: ${{ secrets.ECR_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.ECR_SECRET_ACCESS_KEY }}
+          role-to-assume: ${{ secrets.ECR_ASSUME_ROLE }}
+          role-external-id: grazebuilder
+          role-duration-seconds: 1200
+          role-session-name: grazebuild
+          role-skip-session-tagging: true
+          aws-region: ${{ secrets.CONTAINER_REGION }}
+
+      - name: login_to_ecr
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+        with:
+          mask-password: "true"

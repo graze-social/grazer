@@ -1,5 +1,16 @@
 name: Build Grazer [Private]
 on:
+  pull_request:
+    types:
+      - closed
+      - synchronize
+      - reopened
+    branches:
+      - main
+    paths-ignore:
+      - .github/**/*
+      - deploy/**/*
+      - tests/**/*
   workflow_dispatch:
     inputs:
       tag:
@@ -13,11 +24,6 @@ on:
         options:
           - Dockerfile
           - Dockerfile.cluster
-      build_manifest:
-        type: boolean
-        default: false
-        required: true
-        description: Build a multi-arch manifest?
 
 jobs:
   build_grazer:
