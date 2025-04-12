@@ -12,6 +12,7 @@ on:
       - tests/**/*
 jobs:
   setup:
+    name: setup
     outputs:
       version_tag: ${{ steps.create_tag.outputs.VERSION_TAG }}
       buildkit_builder: ${{steps.setup_buildx.outputs.name}}
