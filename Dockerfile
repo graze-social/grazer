@@ -11,6 +11,7 @@ ENV UPDATED_AT=04-08-2025:00:00:02
 WORKDIR /grazer
 
 # Install OS dependencies
+# NOTE: Might need to keep libre2-dev
 RUN apt-get update && apt-get install -y \
     gcc \
     g++ \
