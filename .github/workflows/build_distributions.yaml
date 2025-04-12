@@ -62,12 +62,13 @@ jobs:
   build_client:
     runs-on: [ubuntu-latest]
     needs: [setup]
+    env:
+      BUILDER: "${{needs.setup.outputs.buildkit_builder}}"
+      VERSION_TAG: ${{needs.setup.outputs.version_tag}}.client
     steps:
+      - run: echo "${{toJSON(needs.setup.outputs)}}"
       - name: build_and_push
         uses: docker/build-push-action@v4
-        env:
-          BUILDER: "${{needs.setup.outputs.buildkit_builder}}"
-          VERSION_TAG: ${{needs.setup.outputs.version_tag}}.client
         with:
           builder: "$BUILDER"
           context: .
