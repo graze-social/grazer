@@ -15,7 +15,6 @@ jobs:
     name: setup
     outputs:
       version_tag: ${{ steps.create_tag.outputs.VERSION_TAG }}
-      context: ${{steps.checkout.outputs}}
     runs-on: ubuntu-latest
     steps:
       - name: checkout
@@ -27,7 +26,8 @@ jobs:
       - uses: actions/cache@v4
         with:
           path: .
-          key: ${{runner.os}}-git-folder-
+          key: ${{runner.os}}-git-folder-grazer
+          save-always: true
 
       - name: setup_svu
         run: curl -kL https://github.com/caarlos0/svu/releases/download/v3.2.2/svu_3.2.2_linux_amd64.tar.gz | tar zx && mv svu /usr/local/bin/svu && chmod +x /usr/local/bin/svu
@@ -66,7 +66,9 @@ jobs:
       - uses: actions/cache@v4
         with:
           path: .
-          key: ${{runner.os}}-git-folder-
+          key: ${{runner.os}}-git-folder-grazer
+          lookup-only: true
+          fail-on-cache-miss: true
 
       - name: setup_buildx
         id: setup_buildx
