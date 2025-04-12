@@ -14,6 +14,7 @@ jobs:
     name: setup
     outputs:
       version_tag: ${{ steps.create_tag.outputs.VERSION_TAG }}
+      registry: ${{ steps.login_to_ecr.outputs.registry }}
     runs-on: ubuntu-latest
     steps:
       - name: checkout
@@ -38,8 +39,21 @@ jobs:
           echo "VERSION_TAG=$(svu next)" >> $GITHUB_ENV
           echo "VERSION_TAG=$(svu next)" >> $GITHUB_OUTPUT
 
+      - name: setup_qemu
+        uses: docker/setup-qemu-action@v2
+
+  build_client:
+    runs-on: [ubuntu-latest]
+    needs: [setup]
+    steps:
+      - uses: actions/cache@v4
+        with:
+          path: .
+          key: ${{runner.os}}-git-folder-${{ github.head_ref }}.${{ github.sha }}
+          restore-keys: ${{runner.os}}-git-folder-grazer-
+
       - name: configure_aws_credentials
-        uses: aws-actions/configure-aws-credentials@v4 # More information on this action can be found below in the 'AWS Credentials' section
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.ECR_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.ECR_SECRET_ACCESS_KEY }}
@@ -55,19 +69,6 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v2
         with:
           mask-password: "true"
-
-      - name: setup_qemu
-        uses: docker/setup-qemu-action@v2
-
-  build_client:
-    runs-on: [ubuntu-latest]
-    needs: [setup]
-    steps:
-      - uses: actions/cache@v4
-        with:
-          path: .
-          key: ${{runner.os}}-git-folder-${{ github.head_ref }}.${{ github.sha }}
-          restore-keys: ${{runner.os}}-git-folder-grazer-
 
       - name: setup_buildx
         id: setup_buildx
@@ -94,6 +95,24 @@ jobs:
           path: .
           key: ${{runner.os}}-git-folder-${{ github.head_ref }}.${{ github.sha }}
           restore-keys: ${{runner.os}}-git-folder-grazer-
+
+      - name: configure_aws_credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.ECR_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.ECR_SECRET_ACCESS_KEY }}
+          role-to-assume: ${{ secrets.ECR_ASSUME_ROLE }}
+          role-external-id: grazebuilder
+          role-duration-seconds: 1200
+          role-session-name: grazebuild
+          role-skip-session-tagging: true
+          aws-region: ${{ secrets.CONTAINER_REGION }}
+
+      - name: login_to_ecr
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+        with:
+          mask-password: "true"
 
       - name: setup_buildx
         id: setup_buildx
