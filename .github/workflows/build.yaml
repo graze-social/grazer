@@ -1,16 +1,5 @@
 name: Build Grazer [Private]
 on:
-  pull_request:
-    types:
-      - closed
-      - synchronize
-      - reopened
-    branches:
-      - main
-    paths-ignore:
-      - .github/**/*
-      - deploy/**/*
-      - tests/**/*
   workflow_dispatch:
     inputs:
       tag:
