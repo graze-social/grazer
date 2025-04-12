@@ -86,5 +86,3 @@ COPY test.sh .
 
 # Please see list of scripts in pyproject.toml
 # CMD ["pdm", "start_all_workers"]
-
-# du --max-depth=1 -h .venv/lib/python3.11/site-packages | sort -r -k1,1n | grep nvidia
