@@ -13,6 +13,9 @@ on:
       - tests/**/*
 jobs:
   setup:
+    outputs:
+      version_tag: ${{ steps.create_tag.outputs.VERSION_TAG }}
+      buildkit_builder: ${{steps.setup_buildx.outputs.name}}
     name: build_grazer
     runs-on: ubuntu-latest
     steps:
@@ -27,6 +30,7 @@ jobs:
       - name: create_tag
         run: |
           echo "VERSION_TAG=$(svu next)" >> $GITHUB_ENV
+          echo "VERSION_TAG=$(svu next)" >> $GITHUB_OUTPUT
 
       - name: setup_qemu
         uses: docker/setup-qemu-action@v2
@@ -53,3 +57,46 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v2
         with:
           mask-password: "true"
+  build_client:
+    runs-on: [ubuntu-latest]
+    needs: [setup]
+    steps:
+      - name: build_and_push
+        uses: docker/build-push-action@v4
+        with:
+          builder: ${{needs.setup.outputs.buildkit_builder}}
+          context: .
+          push: true
+          tags: |
+            ${{secrets.CONTAINER_REPO}}:${{needs.setup.outputs.version_tag}}.client
+
+  build_cluster:
+    runs-on: [ubuntu-latest]
+    needs: [setup]
+    steps:
+      - name: build_and_push
+        uses: docker/build-push-action@v4
+        with:
+          builder: ${{needs.setup.outputs.buildkit_builder}}
+          context: .
+          file: Dockerfile.cluster
+          push: true
+          tags: |
+            ${{secrets.CONTAINER_REPO}}:${{needs.setup.outputs.version_tag}}.cluster
+
+  notify:
+    runs-on: [ubuntu-latest]
+    if: ${{ contains(join(needs.*.result, ','), 'success') }}
+    needs: [build_client, build_cluster]
+    steps:
+      - name: discord_notify_hook
+        uses: stegzilla/discord-notify@v2
+        with:
+          webhook_url: ${{ secrets.DEV_CHANNEL_DISCORD_WEBHOOK }}
+          title: "Grazer `${{ needs.setup.outputs.version_tag }}` Images Built and Pushed"
+          message: "**Download: ${{secrets.CONTAINER_REPO}}:${{needs.setup.outputs.version_tag}}.(client|cluster)**"
+          include_image: true
+          custom_image_url: https://avatars.githubusercontent.com/u/196731666?s=400&v=4
+          avatar_url: https://avatars.githubusercontent.com/u/196731666?s=48&v=4
+          username: Graze Deploy Bot
+          colour: "#0090ff"
