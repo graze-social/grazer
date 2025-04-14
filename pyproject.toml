@@ -95,7 +95,7 @@ tail_output = { shell = "tail -f -n 300 nohup.out" }
 
 # Starts all ray workers and tails the log output
 start_all_workers.composite = [
-    # "ray_init",
+    "ray_init",
     "start_cache_worker",
     "start_network_worker",
     "start_cpu_worker",
