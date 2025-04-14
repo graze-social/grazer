@@ -45,10 +45,13 @@ cluster = ["ray[client]==2.43.0"]
 
 
 [dependency-groups]
-dev = ["flake8>=7.1.2",     "pytest==8.3.5",
-"pytest-cov==6.0.0",
-"pytest-mock==3.14.0",
-"pytest-asyncio==0.25.3",]
+dev = [
+    "flake8>=7.1.2",
+    "pytest==8.3.5",
+    "pytest-cov==6.0.0",
+    "pytest-mock==3.14.0",
+    "pytest-asyncio==0.25.3",
+]
 
 
 [build-system]
@@ -92,7 +95,7 @@ tail_output = { shell = "tail -f -n 300 nohup.out" }
 
 # Starts all ray workers and tails the log output
 start_all_workers.composite = [
-    "ray_init",
+    # "ray_init",
     "start_cache_worker",
     "start_network_worker",
     "start_cpu_worker",
@@ -101,3 +104,8 @@ start_all_workers.composite = [
 ]
 
 start_all_workers.env = { RAY_DEDUP_LOGS = "0", REDIS_URL = "redis://localhost:6379", SENTRY_DSN = "https://foo:bar@example.com/12345" }
+
+register_actors = { env = { RAY_ADDRESS = "ray://localhost:10001", REDIS_URL = "redis://localhost:6379", SENTRY_DSN = "https://foo:bar@example.com/12345" }, cmd = [
+    "python3",
+    "register_actors.py",
+] }

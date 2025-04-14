@@ -84,7 +84,7 @@ COPY run_ray_cpu_worker.py .
 COPY run_ray_gpu_worker.py .
 COPY run_ray_network_worker.py .
 COPY run_runpod_worker.py .
-COPY test.sh .
+COPY register_actors.py .
 
 # Please see list of scripts in pyproject.toml
 # CMD ["pdm", "start_all_workers"]
