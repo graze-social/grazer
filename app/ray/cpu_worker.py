@@ -57,6 +57,7 @@ class CPUWorker(TimingBase):
                 "compute_time": datetime.utcnow().isoformat(),
                 "uuid": str(uuid.uuid4()),
             }
+            operable = False
             try:
                 algo_manager = await AlgoManager.initialize(
                     manifest,
@@ -66,16 +67,22 @@ class CPUWorker(TimingBase):
                     self.cache,
                 )
                 gpu_accelerated = await algo_manager.is_gpu_accelerated()
+                # operable = await algo_manager.is_operable()
+                matched_records = []
+                # if operable:
                 matched_records, _, timing = await algo_manager.matching_records(
                     records
                 )
+                # else:
+                #     sentry_sdk.capture_exception(Exception("Could not process for #{algorithm_id}, was not operable!"))
                 response["compute_environment"] = "gpu" if gpu_accelerated else "cpu"
                 response["compute_amount"] = timing
                 response["matches"] = matched_records
                 count = len(response["matches"])
             except Exception as e:
                 sentry_sdk.capture_exception(e)
-                logger.error(
+                sentry_sdk.capture_exception(Exception("Could not process for #{algorithm_id}, error was {e}"))
+                print(
                     f"Error while processing records with algorithm {algorithm_id}. "
                     f"Error: {e}"
                 )

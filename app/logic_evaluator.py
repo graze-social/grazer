@@ -7,6 +7,7 @@ class LogicEvaluator:
         self.operations = {}
         self.gpu_accelerable_operations = set()
         self.gpu_accelerable_custom_operations = set()
+        self.fully_custom_operations = set()
 
     @classmethod
     async def initialize(cls):
@@ -14,7 +15,7 @@ class LogicEvaluator:
         return cls()
 
     async def add_operation(
-        self, name, func, gpu_accelerable=False, gpu_accelerable_custom=False
+        self, name, func, gpu_accelerable=False, gpu_accelerable_custom=False, fully_custom=False
     ):
         """Registers a custom operation."""
         self.operations[name] = func
@@ -22,6 +23,8 @@ class LogicEvaluator:
             self.gpu_accelerable_operations.add(name)
         if gpu_accelerable_custom:
             self.gpu_accelerable_custom_operations.add(name)
+        if fully_custom:
+            self.fully_custom_operations.add(name)
 
     async def evaluate_with_audit(self, cond, records):
         """
