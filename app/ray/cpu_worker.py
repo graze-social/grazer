@@ -67,14 +67,14 @@ class CPUWorker(TimingBase):
                     self.cache,
                 )
                 gpu_accelerated = await algo_manager.is_gpu_accelerated()
-                # operable = await algo_manager.is_operable()
+                operable = await algo_manager.is_operable()
                 matched_records = []
-                # if operable:
-                matched_records, _, timing = await algo_manager.matching_records(
-                    records
-                )
-                # else:
-                #     sentry_sdk.capture_exception(Exception("Could not process for #{algorithm_id}, was not operable!"))
+                if operable:
+                    matched_records, _, timing = await algo_manager.matching_records(
+                        records
+                    )
+                else:
+                    sentry_sdk.capture_exception(Exception("Could not process for #{algorithm_id}, was not operable!"))
                 response["compute_environment"] = "gpu" if gpu_accelerated else "cpu"
                 response["compute_amount"] = timing
                 response["matches"] = matched_records
