@@ -6,6 +6,7 @@ from datetime import datetime, timedelta, timezone
 import websockets
 import aioboto3
 from redis import asyncio as aioredis
+from types_aiobotocore_sqs.client import SQSClient
 
 from app.logger import logger
 from app.settings import JETSTREAM_URL as SETTINGS_JETSTREAM_URL
@@ -13,7 +14,7 @@ from app.sentry import sentry_sdk
 
 class Jetstream:
     """Consume Bluesky Jetstream and (optionally) forward *app.bsky.feed.post*
-    messages to an AWS SQS queue.
+    messages to an AWS SQS queue.
 
     **Design refresh (2025‑04‑15)** — The forwarder now mirrors the original
     RunPod design: a dedicated *producer* task reads the WebSocket nonstop and
@@ -48,7 +49,7 @@ class Jetstream:
 
     @staticmethod
     def _validate_raw_message(raw: str) -> str | None:
-        if "leiarcaica" in raw.lower() or len(raw) > 100_000:
+        if len(raw) > 100_000:
             return None
         try:
             data = json.loads(raw)
@@ -74,23 +75,34 @@ class Jetstream:
     @classmethod
     async def _send_batch_to_sqs(cls, batch: list[str]):
         """Send a batch to SQS using an *aioboto3* session.
-
-        Some Alpine / slim images ship an old aioboto3 build where the module‑level
-        helper ``aioboto3.client`` is missing.  We therefore instantiate an
-        explicit session (works on every version).
+        
+        Uses the __aenter__ approach to create the SQS client.
         """
         if not batch:
             return
+            
         session = aioboto3.Session()
-        async with session.client("sqs", region_name=cls.AWS_REGION) as sqs:
+        
+        try:
+            # Use __aenter__ approach as demonstrated in the coworker's example
+            sqs = await session.client("sqs", region_name=cls.AWS_REGION).__aenter__()
+            sqs: SQSClient  # Type hint for better IDE support
+            
             for chunk in cls._chunk(batch, cls.MAX_SQS_BATCH):
                 entries = [{"Id": str(i), "MessageBody": body} for i, body in enumerate(chunk)]
                 try:
                     resp = await sqs.send_message_batch(QueueUrl=cls.SQS_QUEUE_URL, Entries=entries)
+                    if failed := resp.get("Failed"):
+                        logger.error("%d SQS failures: %s", len(failed), failed)
                 except Exception as e:
-                    import code;code.interact(local=dict(globals(), **locals())) 
-                if failed := resp.get("Failed"):
-                    logger.error("%d SQS failures: %s", len(failed), failed)
+                    logger.error("SQS send_message_batch error: %s", e)
+                    sentry_sdk.capture_exception(e)
+            
+            # Close the client explicitly
+            await sqs.close()
+        except Exception as e:
+            logger.error("SQS connection error: %s", e)
+            sentry_sdk.capture_exception(e)
 
     # ------------------------------------------------------------------
     # Producer / flusher pair
@@ -158,7 +170,7 @@ class Jetstream:
             except KeyboardInterrupt:
                 break
             except Exception as exc:  # noqa: BLE001
-                logger.warning("stream_to_sqs error (%s); reconnecting in 5 s", exc)
+                logger.warning("stream_to_sqs error (%s); reconnecting in 5 s", exc)
                 sentry_sdk.capture_exception(exc)
                 await asyncio.sleep(5)
 
