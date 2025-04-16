@@ -82,13 +82,21 @@ class AlgoManager:
         # instance.algorithm_manifest = instance.logic_evaluator.sort_conditions(instance.algorithm_manifest)
         return instance
 
-    async def is_gpu_accelerated(self):
+    async def condition_keys(self):
         conditions = await self.logic_evaluator.extract_conditions(
             self.algorithm_manifest.get("filter", []) or []
         )
         condition_keys = {
             key for keys in [e.keys() for e in conditions] for key in keys
         }
+        return condition_keys
+
+    async def is_operable(self):
+        condition_keys = await self.condition_keys()
+        return len(condition_keys - (set(self.logic_evaluator.operations.keys()) | set('metadata'))) == 0
+
+    async def is_gpu_accelerated(self):
+        condition_keys = await self.condition_keys()
         return len(condition_keys & self.logic_evaluator.gpu_accelerable_operations) > 0
 
     async def matching_records(self, records):

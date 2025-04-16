@@ -2,14 +2,68 @@
 # It is not intended for manual editing.
 
 [metadata]
-groups = ["default", "cluster", "dev"]
+groups = ["default", "build", "cluster", "streamer"]
 strategy = ["inherit_metadata"]
 lock_version = "4.5.0"
-content_hash = "sha256:cd6b6d645b8e08655ec4382b3368954205de8b1f9e29e7672310723e2f65147c"
+content_hash = "sha256:3608a49181918db0c5b956d96369435cd4ae488b8ee55aea41df614a4a5bf672"
 
 [[metadata.targets]]
 requires_python = "==3.11.11"
 platform = "manylinux_2_17_x86_64"
+
+[[package]]
+name = "aioboto3"
+version = "14.1.0"
+requires_python = "<4.0,>=3.8"
+summary = "Async boto3 wrapper"
+groups = ["streamer"]
+marker = "python_full_version == \"3.11.11\""
+dependencies = [
+    "aiobotocore[boto3]==2.21.1",
+    "aiofiles>=23.2.1",
+]
+files = [
+    {file = "aioboto3-14.1.0-py3-none-any.whl", hash = "sha256:f8547032bc4f90966b22869c1295d890c161549f4e8919f32853571ceb6fd0c6"},
+    {file = "aioboto3-14.1.0.tar.gz", hash = "sha256:9d59b536ae8a951b9413ce151bf77df9c7cfe2cbaa2c4c240c066f384305c932"},
+]
+
+[[package]]
+name = "aiobotocore"
+version = "2.21.1"
+requires_python = ">=3.8"
+summary = "Async client for aws services using botocore and aiohttp"
+groups = ["streamer"]
+marker = "python_full_version == \"3.11.11\""
+dependencies = [
+    "aiohttp<4.0.0,>=3.9.2",
+    "aioitertools<1.0.0,>=0.5.1",
+    "botocore<1.37.2,>=1.37.0",
+    "jmespath<2.0.0,>=0.7.1",
+    "multidict<7.0.0,>=6.0.0",
+    "python-dateutil<3.0.0,>=2.1",
+    "wrapt<2.0.0,>=1.10.10",
+]
+files = [
+    {file = "aiobotocore-2.21.1-py3-none-any.whl", hash = "sha256:bd7c49a6d6f8a3d9444b0a94417c8da13813b5c7eec1c4f0ec2db7e8ce8f23e7"},
+    {file = "aiobotocore-2.21.1.tar.gz", hash = "sha256:010357f43004413e92a9d066bb0db1f241aeb29ffed306e9197061ffc94e6577"},
+]
+
+[[package]]
+name = "aiobotocore"
+version = "2.21.1"
+extras = ["boto3"]
+requires_python = ">=3.8"
+summary = "Async client for aws services using botocore and aiohttp"
+groups = ["streamer"]
+marker = "python_full_version == \"3.11.11\""
+dependencies = [
+    "aiobotocore==2.21.1",
+    "boto3<1.37.2,>=1.37.0",
+]
+files = [
+    {file = "aiobotocore-2.21.1-py3-none-any.whl", hash = "sha256:bd7c49a6d6f8a3d9444b0a94417c8da13813b5c7eec1c4f0ec2db7e8ce8f23e7"},
+    {file = "aiobotocore-2.21.1.tar.gz", hash = "sha256:010357f43004413e92a9d066bb0db1f241aeb29ffed306e9197061ffc94e6577"},
+]
 
 [[package]]
 name = "aiodns"
@@ -26,11 +80,23 @@ files = [
 ]
 
 [[package]]
+name = "aiofiles"
+version = "24.1.0"
+requires_python = ">=3.8"
+summary = "File support for asyncio."
+groups = ["streamer"]
+marker = "python_full_version == \"3.11.11\""
+files = [
+    {file = "aiofiles-24.1.0-py3-none-any.whl", hash = "sha256:b4ec55f4195e3eb5d7abd1bf7e061763e864dd4954231fb8539a0ef8bb8260e5"},
+    {file = "aiofiles-24.1.0.tar.gz", hash = "sha256:22a075c9e5a3810f0c2e48f3008c94d68c65d763b9b03857924c99e57355166c"},
+]
+
+[[package]]
 name = "aiohappyeyeballs"
 version = "2.6.1"
 requires_python = ">=3.9"
 summary = "Happy Eyeballs for asyncio"
-groups = ["default"]
+groups = ["default", "streamer"]
 marker = "python_full_version == \"3.11.11\""
 files = [
     {file = "aiohappyeyeballs-2.6.1-py3-none-any.whl", hash = "sha256:f349ba8f4b75cb25c99c5c2d84e997e485204d2902a9597802b0371f09331fb8"},
@@ -42,7 +108,7 @@ name = "aiohttp"
 version = "3.11.2"
 requires_python = ">=3.9"
 summary = "Async http client/server framework (asyncio)"
-groups = ["default"]
+groups = ["default", "streamer"]
 marker = "python_full_version == \"3.11.11\""
 dependencies = [
     "aiohappyeyeballs>=2.3.0",
@@ -94,6 +160,21 @@ files = [
 ]
 
 [[package]]
+name = "aioitertools"
+version = "0.12.0"
+requires_python = ">=3.8"
+summary = "itertools and builtins for AsyncIO and mixed iterables"
+groups = ["streamer"]
+marker = "python_full_version == \"3.11.11\""
+dependencies = [
+    "typing-extensions>=4.0; python_version < \"3.10\"",
+]
+files = [
+    {file = "aioitertools-0.12.0-py3-none-any.whl", hash = "sha256:fc1f5fac3d737354de8831cbba3eb04f79dd649d8f3afb4c5b114925e662a796"},
+    {file = "aioitertools-0.12.0.tar.gz", hash = "sha256:c2a9055b4fbb7705f561b9d86053e8af5d10cc845d22c32008c43490b2d8dd6b"},
+]
+
+[[package]]
 name = "aiorwlock"
 version = "1.5.0"
 requires_python = ">=3.9"
@@ -110,7 +191,7 @@ name = "aiosignal"
 version = "1.3.2"
 requires_python = ">=3.9"
 summary = "aiosignal: a list of registered asynchronous callbacks"
-groups = ["default", "cluster"]
+groups = ["default", "cluster", "streamer"]
 marker = "python_full_version == \"3.11.11\""
 dependencies = [
     "frozenlist>=1.1.0",
@@ -156,7 +237,7 @@ files = [
 [[package]]
 name = "atproto"
 version = "0.0.53"
-requires_python = "<3.13,>=3.8"
+requires_python = ">=3.8,<3.13"
 summary = "The AT Protocol SDK"
 groups = ["default"]
 marker = "python_full_version == \"3.11.11\""
@@ -180,7 +261,7 @@ name = "attrs"
 version = "25.3.0"
 requires_python = ">=3.8"
 summary = "Classes Without Boilerplate"
-groups = ["default", "cluster"]
+groups = ["default", "cluster", "streamer"]
 marker = "python_full_version == \"3.11.11\""
 files = [
     {file = "attrs-25.3.0-py3-none-any.whl", hash = "sha256:427318ce031701fea540783410126f03899a97ffc6f61596ad581ac2e40e3bc3"},
@@ -214,27 +295,27 @@ files = [
 
 [[package]]
 name = "boto3"
-version = "1.37.33"
+version = "1.37.1"
 requires_python = ">=3.8"
 summary = "The AWS SDK for Python"
-groups = ["default"]
+groups = ["default", "streamer"]
 marker = "python_full_version == \"3.11.11\""
 dependencies = [
-    "botocore<1.38.0,>=1.37.33",
+    "botocore<1.38.0,>=1.37.1",
     "jmespath<2.0.0,>=0.7.1",
     "s3transfer<0.12.0,>=0.11.0",
 ]
 files = [
-    {file = "boto3-1.37.33-py3-none-any.whl", hash = "sha256:7b1b1bc69762975824e5a5d570880abebf634f7594f88b3dc175e8800f35be1a"},
-    {file = "boto3-1.37.33.tar.gz", hash = "sha256:4390317a1578af73f1514651bd180ba25802dcbe0a23deafa13851d54d3c3203"},
+    {file = "boto3-1.37.1-py3-none-any.whl", hash = "sha256:4320441f904435a1b85e6ecb81793192e522c737cc9ed6566014e29f0a11cb22"},
+    {file = "boto3-1.37.1.tar.gz", hash = "sha256:96d18f7feb0c1fcb95f8837b74b6c8880e1b4e35ce5f8a8f8cb243a090c278ed"},
 ]
 
 [[package]]
 name = "botocore"
-version = "1.37.33"
+version = "1.37.1"
 requires_python = ">=3.8"
 summary = "Low-level, data-driven core of boto 3."
-groups = ["default"]
+groups = ["default", "streamer"]
 marker = "python_full_version == \"3.11.11\""
 dependencies = [
     "jmespath<2.0.0,>=0.7.1",
@@ -243,8 +324,8 @@ dependencies = [
     "urllib3<1.27,>=1.25.4; python_version < \"3.10\"",
 ]
 files = [
-    {file = "botocore-1.37.33-py3-none-any.whl", hash = "sha256:4a167dfecae51e9140de24067de1c339acde5ade3dad524a4600ac2c72055e23"},
-    {file = "botocore-1.37.33.tar.gz", hash = "sha256:09b213b0d0500040f85c7daee912ea767c724e43ed61909e624c803ff6925222"},
+    {file = "botocore-1.37.1-py3-none-any.whl", hash = "sha256:c1db1bfc5d8c6b3b6d1ca6794f605294b4264e82a7e727b88e0fef9c2b9fbb9c"},
+    {file = "botocore-1.37.1.tar.gz", hash = "sha256:b194db8fb2a0ffba53568c364ae26166e7eec0445496b2ac86a6e142f3dd982f"},
 ]
 
 [[package]]
@@ -354,39 +435,6 @@ files = [
 ]
 
 [[package]]
-name = "coverage"
-version = "7.8.0"
-requires_python = ">=3.9"
-summary = "Code coverage measurement for Python"
-groups = ["dev"]
-marker = "python_full_version == \"3.11.11\""
-files = [
-    {file = "coverage-7.8.0-cp311-cp311-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:d39fc4817fd67b3915256af5dda75fd4ee10621a3d484524487e33416c6f3543"},
-    {file = "coverage-7.8.0-pp39.pp310.pp311-none-any.whl", hash = "sha256:b8194fb8e50d556d5849753de991d390c5a1edeeba50f68e3a9253fbd8bf8ccd"},
-    {file = "coverage-7.8.0-py3-none-any.whl", hash = "sha256:dbf364b4c5e7bae9250528167dfe40219b62e2d573c854d74be213e1e52069f7"},
-    {file = "coverage-7.8.0.tar.gz", hash = "sha256:7a3d62b3b03b4b6fd41a085f3574874cf946cb4604d2b4d3e8dca8cd570ca501"},
-]
-
-[[package]]
-name = "coverage"
-version = "7.8.0"
-extras = ["toml"]
-requires_python = ">=3.9"
-summary = "Code coverage measurement for Python"
-groups = ["dev"]
-marker = "python_full_version == \"3.11.11\""
-dependencies = [
-    "coverage==7.8.0",
-    "tomli; python_full_version <= \"3.11.0a6\"",
-]
-files = [
-    {file = "coverage-7.8.0-cp311-cp311-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:d39fc4817fd67b3915256af5dda75fd4ee10621a3d484524487e33416c6f3543"},
-    {file = "coverage-7.8.0-pp39.pp310.pp311-none-any.whl", hash = "sha256:b8194fb8e50d556d5849753de991d390c5a1edeeba50f68e3a9253fbd8bf8ccd"},
-    {file = "coverage-7.8.0-py3-none-any.whl", hash = "sha256:dbf364b4c5e7bae9250528167dfe40219b62e2d573c854d74be213e1e52069f7"},
-    {file = "coverage-7.8.0.tar.gz", hash = "sha256:7a3d62b3b03b4b6fd41a085f3574874cf946cb4604d2b4d3e8dca8cd570ca501"},
-]
-
-[[package]]
 name = "cryptography"
 version = "42.0.8"
 requires_python = ">=3.7"
@@ -403,9 +451,22 @@ files = [
 ]
 
 [[package]]
+name = "cython"
+version = "3.0.12"
+requires_python = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,>=2.7"
+summary = "The Cython compiler for writing C extensions in the Python language."
+groups = ["build"]
+marker = "python_full_version == \"3.11.11\""
+files = [
+    {file = "Cython-3.0.12-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:563de1728c8e48869d2380a1b76bbc1b1b1d01aba948480d68c1d05e52d20c92"},
+    {file = "Cython-3.0.12-py2.py3-none-any.whl", hash = "sha256:0038c9bae46c459669390e53a1ec115f8096b2e4647ae007ff1bf4e6dee92806"},
+    {file = "cython-3.0.12.tar.gz", hash = "sha256:b988bb297ce76c671e28c97d017b95411010f7c77fa6623dd0bb47eed1aee1bc"},
+]
+
+[[package]]
 name = "deprecated"
 version = "1.2.18"
-requires_python = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,>=2.7"
+requires_python = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 summary = "Python @deprecated decorator to deprecate old python classes, functions or methods."
 groups = ["default"]
 marker = "python_full_version == \"3.11.11\""
@@ -549,28 +610,11 @@ files = [
 ]
 
 [[package]]
-name = "flake8"
-version = "7.2.0"
-requires_python = ">=3.9"
-summary = "the modular source code checker: pep8 pyflakes and co"
-groups = ["dev"]
-marker = "python_full_version == \"3.11.11\""
-dependencies = [
-    "mccabe<0.8.0,>=0.7.0",
-    "pycodestyle<2.14.0,>=2.13.0",
-    "pyflakes<3.4.0,>=3.3.0",
-]
-files = [
-    {file = "flake8-7.2.0-py2.py3-none-any.whl", hash = "sha256:93b92ba5bdb60754a6da14fa3b93a9361fd00a59632ada61fd7b130436c40343"},
-    {file = "flake8-7.2.0.tar.gz", hash = "sha256:fa558ae3f6f7dbf2b4f22663e5343b6b6023620461f8d4ff2019ef4b5ee70426"},
-]
-
-[[package]]
 name = "frozenlist"
 version = "1.5.0"
 requires_python = ">=3.8"
 summary = "A list-like structure which implements collections.abc.MutableSequence"
-groups = ["default", "cluster"]
+groups = ["default", "cluster", "streamer"]
 marker = "python_full_version == \"3.11.11\""
 files = [
     {file = "frozenlist-1.5.0-cp311-cp311-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:9c2623347b933fcb9095841f1cc5d4ff0b278addd743e0e966cb3d460278840d"},
@@ -592,7 +636,7 @@ files = [
 
 [[package]]
 name = "googleapis-common-protos"
-version = "1.69.2"
+version = "1.70.0"
 requires_python = ">=3.7"
 summary = "Common protobufs used in Google APIs"
 groups = ["default"]
@@ -601,8 +645,8 @@ dependencies = [
     "protobuf!=4.21.1,!=4.21.2,!=4.21.3,!=4.21.4,!=4.21.5,<7.0.0,>=3.20.2",
 ]
 files = [
-    {file = "googleapis_common_protos-1.69.2-py3-none-any.whl", hash = "sha256:0b30452ff9c7a27d80bfc5718954063e8ab53dd3697093d3bc99581f5fd24212"},
-    {file = "googleapis_common_protos-1.69.2.tar.gz", hash = "sha256:3e1b904a27a33c821b4b749fd31d334c0c9c30e6113023d495e48979a3dc9c5f"},
+    {file = "googleapis_common_protos-1.70.0-py3-none-any.whl", hash = "sha256:b8bfcca8c25a2bb253e0e0b0adaf8c00773e5e6af6fd92397576680b807e0fd8"},
+    {file = "googleapis_common_protos-1.70.0.tar.gz", hash = "sha256:0e1b44e0ea153e6594f9f394fef15193a68aaaea2d843f83e2742717ca753257"},
 ]
 
 [[package]]
@@ -705,7 +749,7 @@ name = "idna"
 version = "3.10"
 requires_python = ">=3.6"
 summary = "Internationalized Domain Names in Applications (IDNA)"
-groups = ["default", "cluster"]
+groups = ["default", "cluster", "streamer"]
 marker = "python_full_version == \"3.11.11\""
 files = [
     {file = "idna-3.10-py3-none-any.whl", hash = "sha256:946d195a0d259cbba61165e88e65941f16e9b36ea6ddb97f00452bae8b1287d3"},
@@ -738,18 +782,6 @@ marker = "python_full_version == \"3.11.11\""
 files = [
     {file = "inflection-0.5.1-py2.py3-none-any.whl", hash = "sha256:f38b2b640938a4f35ade69ac3d053042959b62a0f1076a5bbaa1b9526605a8a2"},
     {file = "inflection-0.5.1.tar.gz", hash = "sha256:1a29730d366e996aaacffb2f1f1cb9593dc38e2ddd30c91250c6dde09ea9b417"},
-]
-
-[[package]]
-name = "iniconfig"
-version = "2.1.0"
-requires_python = ">=3.8"
-summary = "brain-dead simple config-ini parsing"
-groups = ["dev"]
-marker = "python_full_version == \"3.11.11\""
-files = [
-    {file = "iniconfig-2.1.0-py3-none-any.whl", hash = "sha256:9deba5723312380e77435581c6bf4935c94cbfab9b1ed33ef8d238ea168eb760"},
-    {file = "iniconfig-2.1.0.tar.gz", hash = "sha256:3abbd2e30b36733fee78f9c7f7308f2d0050e88f0087fd25c2645f63c773e1c7"},
 ]
 
 [[package]]
@@ -812,7 +844,7 @@ name = "jmespath"
 version = "1.0.1"
 requires_python = ">=3.7"
 summary = "JSON Matching Expressions"
-groups = ["default"]
+groups = ["default", "streamer"]
 marker = "python_full_version == \"3.11.11\""
 files = [
     {file = "jmespath-1.0.1-py3-none-any.whl", hash = "sha256:02e2e4cc71b5bcab88332eebf907519190dd9e6e82107fa7f83b1003a6252980"},
@@ -906,18 +938,6 @@ files = [
 ]
 
 [[package]]
-name = "mccabe"
-version = "0.7.0"
-requires_python = ">=3.6"
-summary = "McCabe checker, plugin for flake8"
-groups = ["dev"]
-marker = "python_full_version == \"3.11.11\""
-files = [
-    {file = "mccabe-0.7.0-py2.py3-none-any.whl", hash = "sha256:6c2d30ab6be0e4a46919781807b4f0d834ebdd6c6e3dca0bda5a15f863427b6e"},
-    {file = "mccabe-0.7.0.tar.gz", hash = "sha256:348e0240c33b60bbdf4e523192ef919f28cb2c3d7d5c7794f74009290f236325"},
-]
-
-[[package]]
 name = "mdurl"
 version = "0.1.2"
 requires_python = ">=3.7"
@@ -957,7 +977,7 @@ name = "multidict"
 version = "6.4.3"
 requires_python = ">=3.9"
 summary = "multidict implementation"
-groups = ["default"]
+groups = ["default", "streamer"]
 marker = "python_full_version == \"3.11.11\""
 dependencies = [
     "typing-extensions>=4.1.0; python_version < \"3.11\"",
@@ -990,6 +1010,18 @@ marker = "python_full_version == \"3.11.11\""
 files = [
     {file = "networkx-3.4.2-py3-none-any.whl", hash = "sha256:df5d4365b724cf81b8c6a7312509d0c22386097011ad1abe274afd5e9d3bbc5f"},
     {file = "networkx-3.4.2.tar.gz", hash = "sha256:307c3669428c5362aab27c8a1260aa8f47c4e91d3891f48be0141738d8d053e1"},
+]
+
+[[package]]
+name = "ninja"
+version = "1.11.1.4"
+requires_python = ">=3.7"
+summary = "Ninja is a small build system with a focus on speed"
+groups = ["build"]
+marker = "python_full_version == \"3.11.11\""
+files = [
+    {file = "ninja-1.11.1.4-py3-none-manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:096487995473320de7f65d622c3f1d16c3ad174797602218ca8c967f51ec38a0"},
+    {file = "ninja-1.11.1.4.tar.gz", hash = "sha256:6aa39f6e894e0452e5b297327db00019383ae55d5d9c57c73b04f13bf79d438a"},
 ]
 
 [[package]]
@@ -1172,7 +1204,7 @@ files = [
 
 [[package]]
 name = "opentelemetry-api"
-version = "1.32.0"
+version = "1.32.1"
 requires_python = ">=3.8"
 summary = "OpenTelemetry Python API"
 groups = ["default"]
@@ -1182,44 +1214,44 @@ dependencies = [
     "importlib-metadata<8.7.0,>=6.0",
 ]
 files = [
-    {file = "opentelemetry_api-1.32.0-py3-none-any.whl", hash = "sha256:15df743c765078611f376037b0d9111ec5c1febf2ec9440cdd919370faa1ce55"},
-    {file = "opentelemetry_api-1.32.0.tar.gz", hash = "sha256:2623280c916f9b19cad0aa4280cb171265f19fd2909b0d47e4f06f7c83b02cb5"},
+    {file = "opentelemetry_api-1.32.1-py3-none-any.whl", hash = "sha256:bbd19f14ab9f15f0e85e43e6a958aa4cb1f36870ee62b7fd205783a112012724"},
+    {file = "opentelemetry_api-1.32.1.tar.gz", hash = "sha256:a5be71591694a4d9195caf6776b055aa702e964d961051a0715d05f8632c32fb"},
 ]
 
 [[package]]
 name = "opentelemetry-exporter-otlp"
-version = "1.32.0"
+version = "1.32.1"
 requires_python = ">=3.8"
 summary = "OpenTelemetry Collector Exporters"
 groups = ["default"]
 marker = "python_full_version == \"3.11.11\""
 dependencies = [
-    "opentelemetry-exporter-otlp-proto-grpc==1.32.0",
-    "opentelemetry-exporter-otlp-proto-http==1.32.0",
+    "opentelemetry-exporter-otlp-proto-grpc==1.32.1",
+    "opentelemetry-exporter-otlp-proto-http==1.32.1",
 ]
 files = [
-    {file = "opentelemetry_exporter_otlp-1.32.0-py3-none-any.whl", hash = "sha256:8b563bee30f05415fb51e075eb6461cdaa7bcef1cc79917cfd79caf12e5bb548"},
-    {file = "opentelemetry_exporter_otlp-1.32.0.tar.gz", hash = "sha256:4c66681f8acd95dce44966842182e3690e77256e5791ceb34b76ea1c34b20463"},
+    {file = "opentelemetry_exporter_otlp-1.32.1-py3-none-any.whl", hash = "sha256:0d8bbc3c16b233b83ea8fb0278ce0f971b91b392b4cb9ec2190c56e9394965a1"},
+    {file = "opentelemetry_exporter_otlp-1.32.1.tar.gz", hash = "sha256:49ca20703e86d5ffc6db3c4b3c4831ca709c2e965fc528309b3422a0f2d6b6f8"},
 ]
 
 [[package]]
 name = "opentelemetry-exporter-otlp-proto-common"
-version = "1.32.0"
+version = "1.32.1"
 requires_python = ">=3.8"
 summary = "OpenTelemetry Protobuf encoding"
 groups = ["default"]
 marker = "python_full_version == \"3.11.11\""
 dependencies = [
-    "opentelemetry-proto==1.32.0",
+    "opentelemetry-proto==1.32.1",
 ]
 files = [
-    {file = "opentelemetry_exporter_otlp_proto_common-1.32.0-py3-none-any.whl", hash = "sha256:277a63a18768b3b460d082a489f6f80d4ae2c1e6b185bb701c6bd4e91405e4bd"},
-    {file = "opentelemetry_exporter_otlp_proto_common-1.32.0.tar.gz", hash = "sha256:2bca672f2a279c4f517115e635c0cc1269d07b2982a36681c521f7e56179a222"},
+    {file = "opentelemetry_exporter_otlp_proto_common-1.32.1-py3-none-any.whl", hash = "sha256:a1e9ad3d0d9a9405c7ff8cdb54ba9b265da16da9844fe36b8c9661114b56c5d9"},
+    {file = "opentelemetry_exporter_otlp_proto_common-1.32.1.tar.gz", hash = "sha256:da4edee4f24aaef109bfe924efad3a98a2e27c91278115505b298ee61da5d68e"},
 ]
 
 [[package]]
 name = "opentelemetry-exporter-otlp-proto-grpc"
-version = "1.32.0"
+version = "1.32.1"
 requires_python = ">=3.8"
 summary = "OpenTelemetry Collector Protobuf over gRPC Exporter"
 groups = ["default"]
@@ -1230,18 +1262,18 @@ dependencies = [
     "grpcio<2.0.0,>=1.63.2; python_version < \"3.13\"",
     "grpcio<2.0.0,>=1.66.2; python_version >= \"3.13\"",
     "opentelemetry-api~=1.15",
-    "opentelemetry-exporter-otlp-proto-common==1.32.0",
-    "opentelemetry-proto==1.32.0",
-    "opentelemetry-sdk~=1.32.0",
+    "opentelemetry-exporter-otlp-proto-common==1.32.1",
+    "opentelemetry-proto==1.32.1",
+    "opentelemetry-sdk~=1.32.1",
 ]
 files = [
-    {file = "opentelemetry_exporter_otlp_proto_grpc-1.32.0-py3-none-any.whl", hash = "sha256:85b7c42bebe48ef55866793a3123ebf357dcaf629d961b27067025fd60104dbe"},
-    {file = "opentelemetry_exporter_otlp_proto_grpc-1.32.0.tar.gz", hash = "sha256:c069c5d5f429a46fb1001f38191730939f593789c847648e4cea26dc8b6018a8"},
+    {file = "opentelemetry_exporter_otlp_proto_grpc-1.32.1-py3-none-any.whl", hash = "sha256:18f0bb17a732e73840eee562b760a40b6af6a4ab3e852bccf625c5fb04fbd2cd"},
+    {file = "opentelemetry_exporter_otlp_proto_grpc-1.32.1.tar.gz", hash = "sha256:e01157104c9f5d81fb404b66db0653a75ec606754445491c831301480c2a3950"},
 ]
 
 [[package]]
 name = "opentelemetry-exporter-otlp-proto-http"
-version = "1.32.0"
+version = "1.32.1"
 requires_python = ">=3.8"
 summary = "OpenTelemetry Collector Protobuf over HTTP Exporter"
 groups = ["default"]
@@ -1250,55 +1282,55 @@ dependencies = [
     "deprecated>=1.2.6",
     "googleapis-common-protos~=1.52",
     "opentelemetry-api~=1.15",
-    "opentelemetry-exporter-otlp-proto-common==1.32.0",
-    "opentelemetry-proto==1.32.0",
-    "opentelemetry-sdk~=1.32.0",
+    "opentelemetry-exporter-otlp-proto-common==1.32.1",
+    "opentelemetry-proto==1.32.1",
+    "opentelemetry-sdk~=1.32.1",
     "requests~=2.7",
 ]
 files = [
-    {file = "opentelemetry_exporter_otlp_proto_http-1.32.0-py3-none-any.whl", hash = "sha256:e2ffecd6d2220eaf1291a46339f109bc0a57ee7c4c6abb8174df418bf00ce01f"},
-    {file = "opentelemetry_exporter_otlp_proto_http-1.32.0.tar.gz", hash = "sha256:a5dfd94603da86e313e4f4fb8d181fd3b64a7c2a9c7b408c3653d2b1bc68d14f"},
+    {file = "opentelemetry_exporter_otlp_proto_http-1.32.1-py3-none-any.whl", hash = "sha256:3cc048b0c295aa2cbafb883feaf217c7525b396567eeeabb5459affb08b7fefe"},
+    {file = "opentelemetry_exporter_otlp_proto_http-1.32.1.tar.gz", hash = "sha256:f854a6e7128858213850dbf1929478a802faf50e799ffd2eb4d7424390023828"},
 ]
 
 [[package]]
 name = "opentelemetry-instrumentation"
-version = "0.53b0"
+version = "0.53b1"
 requires_python = ">=3.8"
 summary = "Instrumentation Tools & Auto Instrumentation for OpenTelemetry Python"
 groups = ["default"]
 marker = "python_full_version == \"3.11.11\""
 dependencies = [
     "opentelemetry-api~=1.4",
-    "opentelemetry-semantic-conventions==0.53b0",
+    "opentelemetry-semantic-conventions==0.53b1",
     "packaging>=18.0",
     "wrapt<2.0.0,>=1.0.0",
 ]
 files = [
-    {file = "opentelemetry_instrumentation-0.53b0-py3-none-any.whl", hash = "sha256:70600778fd567c9c5fbfca181378ae179c0dec3ff613171707d3d77c360ff105"},
-    {file = "opentelemetry_instrumentation-0.53b0.tar.gz", hash = "sha256:f2c21d71a3cdf28c656e3d90d247ee7558fb9b0239b3d9e9190266499dbed9d2"},
+    {file = "opentelemetry_instrumentation-0.53b1-py3-none-any.whl", hash = "sha256:c07850cecfbc51e8b357f56d5886ae5ccaa828635b220d0f5e78f941ea9a83ca"},
+    {file = "opentelemetry_instrumentation-0.53b1.tar.gz", hash = "sha256:0e69ca2c75727e8a300de671c4a2ec0e86e63a8e906beaa5d6c9f5228e8687e5"},
 ]
 
 [[package]]
 name = "opentelemetry-instrumentation-requests"
-version = "0.53b0"
+version = "0.53b1"
 requires_python = ">=3.8"
 summary = "OpenTelemetry requests instrumentation"
 groups = ["default"]
 marker = "python_full_version == \"3.11.11\""
 dependencies = [
     "opentelemetry-api~=1.12",
-    "opentelemetry-instrumentation==0.53b0",
-    "opentelemetry-semantic-conventions==0.53b0",
-    "opentelemetry-util-http==0.53b0",
+    "opentelemetry-instrumentation==0.53b1",
+    "opentelemetry-semantic-conventions==0.53b1",
+    "opentelemetry-util-http==0.53b1",
 ]
 files = [
-    {file = "opentelemetry_instrumentation_requests-0.53b0-py3-none-any.whl", hash = "sha256:d3fe68fee86e281223d5590f1c37f69b86db7dacd6d69e4a879a32c2281cc2c7"},
-    {file = "opentelemetry_instrumentation_requests-0.53b0.tar.gz", hash = "sha256:e6e1d2e9d2e98ce6993f0f4224e5f5cd42cb8843cf594aaa6ff436682c0a200a"},
+    {file = "opentelemetry_instrumentation_requests-0.53b1-py3-none-any.whl", hash = "sha256:f7e82ea8095062c471ae8329af30175b75e771ed5f8bf429a41176d9a763287f"},
+    {file = "opentelemetry_instrumentation_requests-0.53b1.tar.gz", hash = "sha256:7684555346fbdb4e4bc2859b17167ffacdbf2764c6210703b1b5a201ff355c54"},
 ]
 
 [[package]]
 name = "opentelemetry-proto"
-version = "1.32.0"
+version = "1.32.1"
 requires_python = ">=3.8"
 summary = "OpenTelemetry Python Proto"
 groups = ["default"]
@@ -1307,53 +1339,53 @@ dependencies = [
     "protobuf<6.0,>=5.0",
 ]
 files = [
-    {file = "opentelemetry_proto-1.32.0-py3-none-any.whl", hash = "sha256:f699269dc037e18fba05442580a8682c9fbd0f4c7f5addfed82c44be0c53c5ff"},
-    {file = "opentelemetry_proto-1.32.0.tar.gz", hash = "sha256:f8b70ae52f4ef8a4e4c0760e87c9071e07ece2618c080d4839bef44c0156cd44"},
+    {file = "opentelemetry_proto-1.32.1-py3-none-any.whl", hash = "sha256:fe56df31033ab0c40af7525f8bf4c487313377bbcfdf94184b701a8ccebc800e"},
+    {file = "opentelemetry_proto-1.32.1.tar.gz", hash = "sha256:bc6385ccf87768f029371535312071a2d09e6c9ebf119ac17dbc825a6a56ba53"},
 ]
 
 [[package]]
 name = "opentelemetry-sdk"
-version = "1.32.0"
+version = "1.32.1"
 requires_python = ">=3.8"
 summary = "OpenTelemetry Python SDK"
 groups = ["default"]
 marker = "python_full_version == \"3.11.11\""
 dependencies = [
-    "opentelemetry-api==1.32.0",
-    "opentelemetry-semantic-conventions==0.53b0",
+    "opentelemetry-api==1.32.1",
+    "opentelemetry-semantic-conventions==0.53b1",
     "typing-extensions>=3.7.4",
 ]
 files = [
-    {file = "opentelemetry_sdk-1.32.0-py3-none-any.whl", hash = "sha256:ed252d035c22a15536c1f603ca089298daab60850fc2f5ddfa95d95cc1c043ea"},
-    {file = "opentelemetry_sdk-1.32.0.tar.gz", hash = "sha256:5ff07fb371d1ab1189fa7047702e2e888b5403c5efcbb18083cae0d5aa5f58d2"},
+    {file = "opentelemetry_sdk-1.32.1-py3-none-any.whl", hash = "sha256:bba37b70a08038613247bc42beee5a81b0ddca422c7d7f1b097b32bf1c7e2f17"},
+    {file = "opentelemetry_sdk-1.32.1.tar.gz", hash = "sha256:8ef373d490961848f525255a42b193430a0637e064dd132fd2a014d94792a092"},
 ]
 
 [[package]]
 name = "opentelemetry-semantic-conventions"
-version = "0.53b0"
+version = "0.53b1"
 requires_python = ">=3.8"
 summary = "OpenTelemetry Semantic Conventions"
 groups = ["default"]
 marker = "python_full_version == \"3.11.11\""
 dependencies = [
     "deprecated>=1.2.6",
-    "opentelemetry-api==1.32.0",
+    "opentelemetry-api==1.32.1",
 ]
 files = [
-    {file = "opentelemetry_semantic_conventions-0.53b0-py3-none-any.whl", hash = "sha256:561da89f766ab51615c0e72b12329e0a1bc16945dbd62c8646ffc74e36a1edff"},
-    {file = "opentelemetry_semantic_conventions-0.53b0.tar.gz", hash = "sha256:05b7908e1da62d72f9bf717ed25c72f566fe005a2dd260c61b11e025f2552cf6"},
+    {file = "opentelemetry_semantic_conventions-0.53b1-py3-none-any.whl", hash = "sha256:21df3ed13f035f8f3ea42d07cbebae37020367a53b47f1ebee3b10a381a00208"},
+    {file = "opentelemetry_semantic_conventions-0.53b1.tar.gz", hash = "sha256:4c5a6fede9de61211b2e9fc1e02e8acacce882204cd770177342b6a3be682992"},
 ]
 
 [[package]]
 name = "opentelemetry-util-http"
-version = "0.53b0"
+version = "0.53b1"
 requires_python = ">=3.8"
 summary = "Web util for OpenTelemetry"
 groups = ["default"]
 marker = "python_full_version == \"3.11.11\""
 files = [
-    {file = "opentelemetry_util_http-0.53b0-py3-none-any.whl", hash = "sha256:eca40d8cd1c1149081142c44756c0a2da0be306931339b839e1b436a9de101a4"},
-    {file = "opentelemetry_util_http-0.53b0.tar.gz", hash = "sha256:521111872be0cdfd4346e15e9d4822aeeb8501b094c721ef49c26277b286084e"},
+    {file = "opentelemetry_util_http-0.53b1-py3-none-any.whl", hash = "sha256:ee7ecc1cbe4598535a95eaf7742f80c0c924843bf8f7ef3bab4963a228a94dd0"},
+    {file = "opentelemetry_util_http-0.53b1.tar.gz", hash = "sha256:7b0356584400b3406a643e244d36ff1bbb7c95e3b5ed0509d212e4a11c050a0e"},
 ]
 
 [[package]]
@@ -1373,7 +1405,7 @@ name = "packaging"
 version = "24.2"
 requires_python = ">=3.8"
 summary = "Core utilities for Python packages"
-groups = ["default", "cluster", "dev"]
+groups = ["default", "cluster"]
 marker = "python_full_version == \"3.11.11\""
 files = [
     {file = "packaging-24.2-py3-none-any.whl", hash = "sha256:09abb1bccd265c01f4a3aa3f7a7db064b36514d2cba19a2f694fe6150451a759"},
@@ -1422,18 +1454,6 @@ files = [
 ]
 
 [[package]]
-name = "pluggy"
-version = "1.5.0"
-requires_python = ">=3.8"
-summary = "plugin and hook calling mechanisms for python"
-groups = ["dev"]
-marker = "python_full_version == \"3.11.11\""
-files = [
-    {file = "pluggy-1.5.0-py3-none-any.whl", hash = "sha256:44e1ad92c8ca002de6377e165f3e0f1be63266ab4d554740532335b9d75ea669"},
-    {file = "pluggy-1.5.0.tar.gz", hash = "sha256:2cffa88e94fdc978c4c574f15f9e59b7f4201d439195c3715ca9e2486f1d0cf1"},
-]
-
-[[package]]
 name = "prettytable"
 version = "3.16.0"
 requires_python = ">=3.9"
@@ -1450,8 +1470,8 @@ files = [
 
 [[package]]
 name = "prompt-toolkit"
-version = "3.0.50"
-requires_python = ">=3.8.0"
+version = "3.0.51"
+requires_python = ">=3.8"
 summary = "Library for building powerful interactive command lines in Python"
 groups = ["default"]
 marker = "python_full_version == \"3.11.11\""
@@ -1459,8 +1479,8 @@ dependencies = [
     "wcwidth",
 ]
 files = [
-    {file = "prompt_toolkit-3.0.50-py3-none-any.whl", hash = "sha256:9b6427eb19e479d98acff65196a307c555eb567989e6d88ebbb1b509d9779198"},
-    {file = "prompt_toolkit-3.0.50.tar.gz", hash = "sha256:544748f3860a2623ca5cd6d2795e7a14f3d0e1c3c9728359013f79877fc89bab"},
+    {file = "prompt_toolkit-3.0.51-py3-none-any.whl", hash = "sha256:52742911fde84e2d423e2f9a4cf1de7d7ac4e51958f648d9540e0fb8db077b07"},
+    {file = "prompt_toolkit-3.0.51.tar.gz", hash = "sha256:931a162e3b27fc90c86f1b48bb1fb2c528c2761475e57c9c06de13311c7b54ed"},
 ]
 
 [[package]]
@@ -1468,7 +1488,7 @@ name = "propcache"
 version = "0.3.1"
 requires_python = ">=3.9"
 summary = "Accelerated property cache"
-groups = ["default"]
+groups = ["default", "streamer"]
 marker = "python_full_version == \"3.11.11\""
 files = [
     {file = "propcache-0.3.1-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:f35c7070eeec2cdaac6fd3fe245226ed2a6292d3ee8c938e5bb645b434c5f256"},
@@ -1513,18 +1533,6 @@ dependencies = [
 files = [
     {file = "pycares-4.6.0-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:e2143f0387df6b0ebf8d5a0b6a10f80dacf4f8ef74babc2e683b9f6ed7b95d4f"},
     {file = "pycares-4.6.0.tar.gz", hash = "sha256:b8a004b18a7465ac9400216bc3fad9d9966007af1ee32f4412d2b3a94e33456e"},
-]
-
-[[package]]
-name = "pycodestyle"
-version = "2.13.0"
-requires_python = ">=3.9"
-summary = "Python style guide checker"
-groups = ["dev"]
-marker = "python_full_version == \"3.11.11\""
-files = [
-    {file = "pycodestyle-2.13.0-py2.py3-none-any.whl", hash = "sha256:35863c5974a271c7a726ed228a14a4f6daf49df369d8c50cd9a6f58a5e143ba9"},
-    {file = "pycodestyle-2.13.0.tar.gz", hash = "sha256:c8415bf09abe81d9c7f872502a6eee881fbe85d8763dd5b9924bb0a01d67efae"},
 ]
 
 [[package]]
@@ -1606,18 +1614,6 @@ files = [
 ]
 
 [[package]]
-name = "pyflakes"
-version = "3.3.2"
-requires_python = ">=3.9"
-summary = "passive checker of Python programs"
-groups = ["dev"]
-marker = "python_full_version == \"3.11.11\""
-files = [
-    {file = "pyflakes-3.3.2-py2.py3-none-any.whl", hash = "sha256:5039c8339cbb1944045f4ee5466908906180f13cc99cc9949348d10f82a5c32a"},
-    {file = "pyflakes-3.3.2.tar.gz", hash = "sha256:6dfd61d87b97fba5dcfaaf781171ac16be16453be6d816147989e7f6e6a9576b"},
-]
-
-[[package]]
 name = "pygments"
 version = "2.19.1"
 requires_python = ">=3.8"
@@ -1657,77 +1653,11 @@ files = [
 ]
 
 [[package]]
-name = "pytest"
-version = "8.3.5"
-requires_python = ">=3.8"
-summary = "pytest: simple powerful testing with Python"
-groups = ["dev"]
-marker = "python_full_version == \"3.11.11\""
-dependencies = [
-    "colorama; sys_platform == \"win32\"",
-    "exceptiongroup>=1.0.0rc8; python_version < \"3.11\"",
-    "iniconfig",
-    "packaging",
-    "pluggy<2,>=1.5",
-    "tomli>=1; python_version < \"3.11\"",
-]
-files = [
-    {file = "pytest-8.3.5-py3-none-any.whl", hash = "sha256:c69214aa47deac29fad6c2a4f590b9c4a9fdb16a403176fe154b79c0b4d4d820"},
-    {file = "pytest-8.3.5.tar.gz", hash = "sha256:f4efe70cc14e511565ac476b57c279e12a855b11f48f212af1080ef2263d3845"},
-]
-
-[[package]]
-name = "pytest-asyncio"
-version = "0.25.3"
-requires_python = ">=3.9"
-summary = "Pytest support for asyncio"
-groups = ["dev"]
-marker = "python_full_version == \"3.11.11\""
-dependencies = [
-    "pytest<9,>=8.2",
-]
-files = [
-    {file = "pytest_asyncio-0.25.3-py3-none-any.whl", hash = "sha256:9e89518e0f9bd08928f97a3482fdc4e244df17529460bc038291ccaf8f85c7c3"},
-    {file = "pytest_asyncio-0.25.3.tar.gz", hash = "sha256:fc1da2cf9f125ada7e710b4ddad05518d4cee187ae9412e9ac9271003497f07a"},
-]
-
-[[package]]
-name = "pytest-cov"
-version = "6.0.0"
-requires_python = ">=3.9"
-summary = "Pytest plugin for measuring coverage."
-groups = ["dev"]
-marker = "python_full_version == \"3.11.11\""
-dependencies = [
-    "coverage[toml]>=7.5",
-    "pytest>=4.6",
-]
-files = [
-    {file = "pytest-cov-6.0.0.tar.gz", hash = "sha256:fde0b595ca248bb8e2d76f020b465f3b107c9632e6a1d1705f17834c89dcadc0"},
-    {file = "pytest_cov-6.0.0-py3-none-any.whl", hash = "sha256:eee6f1b9e61008bd34975a4d5bab25801eb31898b032dd55addc93e96fcaaa35"},
-]
-
-[[package]]
-name = "pytest-mock"
-version = "3.14.0"
-requires_python = ">=3.8"
-summary = "Thin-wrapper around the mock package for easier use with pytest"
-groups = ["dev"]
-marker = "python_full_version == \"3.11.11\""
-dependencies = [
-    "pytest>=6.2.5",
-]
-files = [
-    {file = "pytest-mock-3.14.0.tar.gz", hash = "sha256:2719255a1efeceadbc056d6bf3df3d1c5015530fb40cf347c0f9afac88410bd0"},
-    {file = "pytest_mock-3.14.0-py3-none-any.whl", hash = "sha256:0b72c38033392a5f4621342fe11e9219ac11ec9d375f8e2a0c164539e0d70f6f"},
-]
-
-[[package]]
 name = "python-dateutil"
 version = "2.9.0.post0"
 requires_python = "!=3.0.*,!=3.1.*,!=3.2.*,>=2.7"
 summary = "Extensions to the standard Python datetime module"
-groups = ["default"]
+groups = ["default", "streamer"]
 marker = "python_full_version == \"3.11.11\""
 dependencies = [
     "six>=1.5",
@@ -1972,17 +1902,17 @@ files = [
 
 [[package]]
 name = "s3transfer"
-version = "0.11.4"
+version = "0.11.3"
 requires_python = ">=3.8"
 summary = "An Amazon S3 Transfer Manager"
-groups = ["default"]
+groups = ["default", "streamer"]
 marker = "python_full_version == \"3.11.11\""
 dependencies = [
-    "botocore<2.0a.0,>=1.37.4",
+    "botocore<2.0a.0,>=1.36.0",
 ]
 files = [
-    {file = "s3transfer-0.11.4-py3-none-any.whl", hash = "sha256:ac265fa68318763a03bf2dc4f39d5cbd6a9e178d81cc9483ad27da33637e320d"},
-    {file = "s3transfer-0.11.4.tar.gz", hash = "sha256:559f161658e1cf0a911f45940552c696735f5c74e64362e515f333ebed87d679"},
+    {file = "s3transfer-0.11.3-py3-none-any.whl", hash = "sha256:ca855bdeb885174b5ffa95b9913622459d4ad8e331fc98eb01e6d5eb6a30655d"},
+    {file = "s3transfer-0.11.3.tar.gz", hash = "sha256:edae4977e3a122445660c7c114bba949f9d191bae3b34a096f18a1c8c354527a"},
 ]
 
 [[package]]
@@ -2068,6 +1998,18 @@ files = [
 ]
 
 [[package]]
+name = "setuptools"
+version = "78.1.0"
+requires_python = ">=3.9"
+summary = "Easily download, build, install, upgrade, and uninstall Python packages"
+groups = ["build"]
+marker = "python_full_version == \"3.11.11\""
+files = [
+    {file = "setuptools-78.1.0-py3-none-any.whl", hash = "sha256:3e386e96793c8702ae83d17b853fb93d3e09ef82ec62722e61da5cd22376dcd8"},
+    {file = "setuptools-78.1.0.tar.gz", hash = "sha256:18fd474d4a82a5f83dac888df697af65afa82dec7323d09c3e37d1f14288da54"},
+]
+
+[[package]]
 name = "shellingham"
 version = "1.5.4"
 requires_python = ">=3.7"
@@ -2082,9 +2024,9 @@ files = [
 [[package]]
 name = "six"
 version = "1.17.0"
-requires_python = "!=3.0.*,!=3.1.*,!=3.2.*,>=2.7"
+requires_python = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*"
 summary = "Python 2 and 3 compatibility utilities"
-groups = ["default"]
+groups = ["default", "streamer"]
 marker = "python_full_version == \"3.11.11\""
 files = [
     {file = "six-1.17.0-py2.py3-none-any.whl", hash = "sha256:4721f391ed90541fddacab5acf947aa0d3dc7d27b2e1e8eda2be8970586c3274"},
@@ -2105,7 +2047,7 @@ files = [
 
 [[package]]
 name = "starlette"
-version = "0.46.1"
+version = "0.46.2"
 requires_python = ">=3.9"
 summary = "The little ASGI library that shines."
 groups = ["default"]
@@ -2115,8 +2057,8 @@ dependencies = [
     "typing-extensions>=3.10.0; python_version < \"3.10\"",
 ]
 files = [
-    {file = "starlette-0.46.1-py3-none-any.whl", hash = "sha256:77c74ed9d2720138b25875133f3a2dae6d854af2ec37dceb56aef370c1d8a227"},
-    {file = "starlette-0.46.1.tar.gz", hash = "sha256:3c88d58ee4bd1bb807c0d1acb381838afc7752f9ddaec81bbe4383611d833230"},
+    {file = "starlette-0.46.2-py3-none-any.whl", hash = "sha256:595633ce89f8ffa71a015caed34a5b2dc1c0cdb3f0f1fbd1e69339cf2abeec35"},
+    {file = "starlette-0.46.2.tar.gz", hash = "sha256:7f7361f34eed179294600af672f565727419830b54b7b084efe44bb82d2fccd5"},
 ]
 
 [[package]]
@@ -2384,7 +2326,7 @@ name = "urllib3"
 version = "2.4.0"
 requires_python = ">=3.9"
 summary = "HTTP library with thread-safe connection pooling, file post, and more."
-groups = ["default", "cluster"]
+groups = ["default", "cluster", "streamer"]
 marker = "python_full_version == \"3.11.11\""
 files = [
     {file = "urllib3-2.4.0-py3-none-any.whl", hash = "sha256:4e16665048960a0900c702d4a66415956a584919c03361cac9f1df5c5dd7e813"},
@@ -2501,7 +2443,7 @@ name = "websockets"
 version = "13.1"
 requires_python = ">=3.8"
 summary = "An implementation of the WebSocket Protocol (RFC 6455 & 7692)"
-groups = ["default"]
+groups = ["default", "streamer"]
 marker = "python_full_version == \"3.11.11\""
 files = [
     {file = "websockets-13.1-cp311-cp311-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:87c6e35319b46b99e168eb98472d6c7d8634ee37750d7693656dc766395df096"},
@@ -2514,7 +2456,7 @@ name = "wrapt"
 version = "1.17.2"
 requires_python = ">=3.8"
 summary = "Module for decorators, wrappers and monkey patching."
-groups = ["default"]
+groups = ["default", "streamer"]
 marker = "python_full_version == \"3.11.11\""
 files = [
     {file = "wrapt-1.17.2-cp311-cp311-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:1a7ed2d9d039bd41e889f6fb9364554052ca21ce823580f6a07c4ec245c1f5d6"},
@@ -2543,7 +2485,7 @@ name = "yarl"
 version = "1.19.0"
 requires_python = ">=3.9"
 summary = "Yet another URL library"
-groups = ["default"]
+groups = ["default", "streamer"]
 marker = "python_full_version == \"3.11.11\""
 dependencies = [
     "idna>=2.0",
