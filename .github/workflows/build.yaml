@@ -1,4 +1,4 @@
-name: build_private_grazer_algos_image
+name: Build Grazer [Private]
 on:
   workflow_dispatch:
     inputs:
@@ -13,21 +13,14 @@ on:
         options:
           - Dockerfile
           - Dockerfile.cluster
+
 jobs:
-  build_and_deploy_aip:
+  build_grazer:
     name: build_grazer
     runs-on: ubuntu-latest
     steps:
       - name: checkout
         uses: actions/checkout@v3
-
-      - name: setup_python
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.12.6"
-
-      - name: setup_qemu
-        uses: docker/setup-qemu-action@v2
 
       - name: derive_tag
         run: |
@@ -37,10 +30,27 @@ jobs:
               echo "RELEASE_TAG=${{inputs.tag}}" >> $GITHUB_ENV;
           fi
 
-      - name: setup_buildx
+      - name: setup_qemu.manifest
+        if: ${{ inputs.build_manifest }}
+        uses: docker/setup-qemu-action@v2
+
+      - name: setup_qemu.single
+        if: ${{ !inputs.build_manifest }}
+        uses: docker/setup-qemu-action@v2
+        with:
+          platforms: linux/amd64
+
+      - name: setup_buildx_manifest
         uses: docker/setup-buildx-action@v2
+        if: ${{ inputs.build_manifest }}
         with:
           platforms: linux/amd64,linux/arm64
+
+      - name: setup_buildx_single
+        uses: docker/setup-buildx-action@v2
+        if: ${{ !inputs.build_manifest }}
+        with:
+          driver: docker
 
       - name: configure_aws_credentials
         uses: aws-actions/configure-aws-credentials@v4 # More information on this action can be found below in the 'AWS Credentials' section
@@ -60,16 +70,33 @@ jobs:
         with:
           mask-password: "false"
 
-      - name: build_and_push.remote
+      - name: build_and_push.manifest
         uses: docker/build-push-action@v4
+        if: ${{ inputs.build_manifest }}
         with:
           file: ${{inputs.dockerfile}}
           context: .
+          no-cache: true
           push: true
           tags: |
             ${{secrets.CONTAINER_REPO}}:${{env.RELEASE_TAG}}
-          builder: ${{ steps.setup_buildx.name }}
-          platforms: linux/amd64
+          builder: ${{ steps.setup_buildx_manifest.name }}
+          platforms: linux/amd64, linux/arm64
+          build-args: |
+            GRAZER_REPO=${{ secrets.CONTAINER_REPO }}
+            GRAZER_TAG=${{ inputs.tag }}
+
+      - name: build_and_push.single
+        if: ${{ !inputs.build_manifest}}
+        uses: docker/build-push-action@v4
+        with:
+          file: ${{inputs.dockerfile}}
+          builder: ${{ steps.setup_buildx_single.name }}
+          context: .
+          no-cache: true
+          push: true
+          tags: |
+            ${{secrets.CONTAINER_REPO}}:${{env.RELEASE_TAG}}
           build-args: |
             GRAZER_REPO=${{ secrets.CONTAINER_REPO }}
             GRAZER_TAG=${{ inputs.tag }}

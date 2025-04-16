@@ -1,15 +1,45 @@
+ARG PYTHON_VERSION=3.11
+ARG DISTRO=slim
 ARG RAY_VERSION=2.43.0
-ARG GRAZER_REPO=[placeholder]
-ARG GRAZER_TAG=latest
+ARG USE_UV=false
 
-FROM ${GRAZER_REPO}:${GRAZER_TAG} as grazer
-
-ENV UPDATED_AT 04-08-2025
-
-# Noop
-
-FROM rayproject/ray:${RAY_VERSION}-py311-aarch64 as remote
+FROM rayproject/ray:${RAY_VERSION}-py311 AS builder
 
 WORKDIR /grazer
 
-COPY --from=grazer /grazer /grazer/
+COPY py311-linux-requirements.txt ./
+
+RUN sudo apt-get update && sudo apt-get install -y \
+    gcc \
+    g++ \
+    cmake \
+    ninja-build \
+    pkg-config \
+    libre2-dev \
+    rsync \
+    unzip \
+    zip \
+    curl \
+    && sudo apt-get clean
+
+RUN pip install pybind11[global]
+
+RUN pip install -r py311-linux-requirements.txt
+
+FROM rayproject/ray:${RAY_VERSION}-py311 AS cluster
+
+WORKDIR  /grazer
+
+# overwrite the prepared conda environment with the one we just built
+COPY --from=builder /home/ray/anaconda3 /home/ray/anaconda3
+
+# Now copy the rest of your application code
+COPY app/ app
+COPY startup_ray.sh .
+COPY run_ray_cache.py .
+COPY run_ray_cpu_worker.py .
+COPY run_ray_gpu_worker.py .
+COPY run_ray_network_worker.py .
+COPY run_runpod_worker.py .
+# Test file
+COPY register_actors.py .
