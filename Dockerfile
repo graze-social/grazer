@@ -65,7 +65,7 @@ ENV PDM_VERSION=2.23.1
 RUN pip install -U pdm==${PDM_VERSION}
 ENV PATH="/grazer/.venv/bin:$PATH"
 
-COPY --from=builder /grazer/.venv .venv
+COPY --from=builder /grazer/.venv .
 COPY --from=builder /grazer/pyproject.toml .
 
 # Now copy the rest of your application code
