@@ -61,6 +61,7 @@ COPY run_ray_cpu_worker.py .
 COPY run_ray_gpu_worker.py .
 COPY run_ray_network_worker.py .
 COPY run_runpod_worker.py .
+COPY run_streamer.py .
 COPY test.sh .
 
 # Please see list of scripts in pyproject.toml
