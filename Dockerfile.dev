@@ -1,0 +1,44 @@
+ARG PYTHON_VERSION=3.11.11
+ARG DISTRO=slim
+ARG USE_UV=true
+FROM python:${PYTHON_VERSION}-${DISTRO}
+
+# Optional Cache buster
+ENV UPDATED_AT=04-08-2025:00:00:02
+
+# Set working directory
+WORKDIR /grazer
+
+# Install OS dependencies
+RUN apt-get update && apt-get install -y \
+    gcc \
+    g++ \
+    cmake \
+    ninja-build \
+    git \
+    pkg-config \
+    libre2-dev \
+    libre2-9 \
+    tmux \
+    nano \
+    rsync \
+    unzip \
+    zip \
+    htop \
+    curl \
+    && apt-get clean
+
+# Install UV
+# TODO: Pin the uv image SHA
+COPY --from=ghcr.io/astral-sh/uv:0.6.3 /uv /uvx /bin/
+# Install PDM
+ENV PDM_VERSION=2.23.1
+RUN pip install -U pdm==${PDM_VERSION}
+RUN pip install pybind11[global]
+RUN pip install cython>=3.0.12 ninja>=1.11.1.3 setuptools>=75.8.2
+# Disable pdm update check
+ENV PDM_CHECK_UPDATE=false
+# Use `uv` for build speed
+RUN pdm config use_uv ${USE_UV}
+
+# Please refer to docs/DEVELOPMENT.md for instructions on how to use this image.

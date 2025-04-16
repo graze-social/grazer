@@ -5,7 +5,7 @@
 groups = ["default", "build", "cluster", "dev", "streamer"]
 strategy = ["inherit_metadata"]
 lock_version = "4.5.0"
-content_hash = "sha256:7cc3dcfe2f34094ff51b0f39034171d8e80a583bb225d46da5e360d136fd35fd"
+content_hash = "sha256:3608a49181918db0c5b956d96369435cd4ae488b8ee55aea41df614a4a5bf672"
 
 [[metadata.targets]]
 requires_python = ">=3.11,<3.13"
@@ -293,7 +293,7 @@ files = [
 [[package]]
 name = "atproto"
 version = "0.0.53"
-requires_python = "<3.13,>=3.8"
+requires_python = ">=3.8,<3.13"
 summary = "The AT Protocol SDK"
 groups = ["default"]
 dependencies = [
@@ -701,7 +701,7 @@ files = [
 [[package]]
 name = "cython"
 version = "3.0.12"
-requires_python = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,>=2.7"
+requires_python = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 summary = "The Cython compiler for writing C extensions in the Python language."
 groups = ["build"]
 files = [
@@ -728,7 +728,7 @@ files = [
 [[package]]
 name = "deprecated"
 version = "1.2.18"
-requires_python = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,>=2.7"
+requires_python = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 summary = "Python @deprecated decorator to deprecate old python classes, functions or methods."
 groups = ["default"]
 dependencies = [
@@ -2856,7 +2856,7 @@ files = [
 [[package]]
 name = "six"
 version = "1.17.0"
-requires_python = "!=3.0.*,!=3.1.*,!=3.2.*,>=2.7"
+requires_python = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*"
 summary = "Python 2 and 3 compatibility utilities"
 groups = ["default", "streamer"]
 files = [
@@ -3378,7 +3378,7 @@ name = "websockets"
 version = "13.1"
 requires_python = ">=3.8"
 summary = "An implementation of the WebSocket Protocol (RFC 6455 & 7692)"
-groups = ["default"]
+groups = ["default", "streamer"]
 files = [
     {file = "websockets-13.1-cp311-cp311-macosx_10_9_universal2.whl", hash = "sha256:61fc0dfcda609cda0fc9fe7977694c0c59cf9d749fbb17f4e9483929e3c48a19"},
     {file = "websockets-13.1-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:ceec59f59d092c5007e815def4ebb80c2de330e9588e101cf8bd94c143ec78a5"},

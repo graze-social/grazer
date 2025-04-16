@@ -43,14 +43,13 @@ COPY pyproject.toml ${LOCKFILE} ./
 # manually install for pyre2
 RUN pip install pybind11[global]
 RUN pip install cython>=3.0.12 ninja>=1.11.1.3 setuptools>=75.8.2
-RUN pdm config venv.in_project true
 RUN pdm sync \
     -G cluster \
     -L ${LOCKFILE} \
     --no-isolation \
     --no-editable \
-    --fail-fast \
- && pdm install
+    --no-self \
+    --fail-fast
 
 FROM python:${PYTHON_VERSION}-${DISTRO} AS grazer
 WORKDIR /grazer
@@ -65,12 +64,10 @@ RUN apt-get update && apt-get install -y \
 ENV PDM_VERSION=2.23.1
 RUN pip install -U pdm==${PDM_VERSION}
 ENV PATH="/grazer/.venv/bin:$PATH"
-ENV VIRTUAL_ENV=/grazer/.venv
-ENV PATH="$VIRTUAL_ENV/bin:$PATH"
-ENV PDM_IGNORE_VENV_WARNING=true
-ENV PDM_USE_VENV=true
+
 COPY --from=builder /grazer/.venv .venv
 COPY --from=builder /grazer/pyproject.toml .
+
 # Now copy the rest of your application code
 COPY app/ app
 COPY startup_ray.sh .
@@ -80,8 +77,7 @@ COPY run_ray_gpu_worker.py .
 COPY run_ray_network_worker.py .
 COPY run_runpod_worker.py .
 COPY run_streamer.py .
-COPY test.sh .
-COPY tests/ tests
 COPY register_actors.py .
+
 # Please see list of scripts in pyproject.toml
 # CMD ["pdm", "start_all_workers"]

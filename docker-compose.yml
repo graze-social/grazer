@@ -1,17 +1,19 @@
-version: '3.9'
+version: "3.9"
 
 services:
   api:
     platform: linux/amd64
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
     container_name: grazer
-    shm_size: "7gb"  # Allocates 7GB to shared memory (for Ray
+    shm_size: "7gb" # Allocates 7GB to shared memory (for Ray
     environment:
       - RAY_memory_monitor_error_threshold=0.9
       - RAY_worker_register_timeout_s=10
       - RAY_verbose_exceptions=1
     volumes:
-      - .:/app
+      - .:/grazer
     env_file:
       - .env
     command: ["tail", "-f", "/dev/null"]
