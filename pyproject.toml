@@ -93,6 +93,9 @@ start_cpu_worker = { shell = "nohup python run_ray_cpu_worker.py --name cpu:main
 # Runpod Worker
 start_runpod_worker = { cmd = ["python3", "run_runpod_worker.py"] }
 
+# Kube Worker
+start_kube_worker = { cmd = ["python3", "run_kube_worker.py"] }
+
 # Jetstreamer
 start_streamer = { cmd = ["python3", "run_streamer.py"] }
 

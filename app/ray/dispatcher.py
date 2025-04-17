@@ -71,14 +71,14 @@ class Dispatcher:
         )
         return sorted_timing_report
 
-    async def distribute_tasks(self, records, manifest_data):
+    async def distribute_tasks(self, records, manifest_data, report_output=True):
         for manifest in manifest_data:
             while True:
                 worker = random.choice(self.cpu_workers)
                 max_concurrency = await worker.max_concurrency.remote()
                 active_tasks = await worker.get_active_task_count.remote()
                 if active_tasks < max_concurrency:
-                    worker.process_batch.remote(records, [manifest])
+                    worker.process_batch.remote(records, [manifest], report_output)
                     break
                 else:
                     await asyncio.sleep(0.1)
