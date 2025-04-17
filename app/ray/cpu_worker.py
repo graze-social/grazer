@@ -46,7 +46,7 @@ class CPUWorker(TimingBase):
         return self.active_tasks
 
     @measure_time
-    async def process_manifest(self, algorithm_id, manifest, records):
+    async def process_manifest(self, algorithm_id, manifest, records, report_output=True):
         async with self.semaphore:
             count = 0
             self.active_tasks += 1
@@ -95,11 +95,12 @@ class CPUWorker(TimingBase):
                 logger.error(traceback.format_exc())
             finally:
                 print(f"Finished {algorithm_id}, took {timing}, {count} matches")
-                self.cache.report_output.remote(response)
+                if report_output:
+                    self.cache.report_output.remote(response)
                 self.active_tasks -= 1
 
     @measure_time
-    async def process_batch(self, records, manifests):
+    async def process_batch(self, records, manifests, report_output=True):
         """
         Process a batch of records using the manifest.
 
@@ -115,6 +116,6 @@ class CPUWorker(TimingBase):
            self.telemetry = Telemetry("grazer")
         self.telemetry.record_gauge("input_queue_dump_size", len(records))
         for algorithm_id, manifest in manifests:
-            processes.append(self.process_manifest(algorithm_id, manifest, records))
+            processes.append(self.process_manifest(algorithm_id, manifest, records, report_output))
         results = await asyncio.gather(*processes)
         return results
