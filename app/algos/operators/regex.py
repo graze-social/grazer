@@ -60,11 +60,7 @@ class RegexParser(BaseParser):
         """
         # Adjust boundary pattern to avoid matches around invalid delimiters like '.'
         if treat_as_regex:
-            combined_pattern = "|".join(
-                rf"{term}(?![\w-])" if is_likely_domain_or_url(term)
-                else rf"(?<![\w\-/])(?<!\.){term}(?![\w-])"
-                for term in terms_list
-            )
+            combined_pattern = "|".join(terms_list)
         else:
             combined_pattern = "|".join(
                 rf"{re2.escape(term)}(?![\w-])" if is_likely_domain_or_url(term)
