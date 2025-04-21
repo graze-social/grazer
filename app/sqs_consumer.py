@@ -1,19 +1,23 @@
+import ray
 import asyncio
 import aioboto3
 import json
 from typing import Any
 from app.logger import logger
 from app.sentry import sentry_sdk
-from app.settings import SQS_QUEUE_URL, AWS_REGION, SQS_POLLING_INTERVAL
+from app.kube.router import KubeRouter
+from app.settings import StreamerSettings
 
+settings = StreamerSettings()
 
+@ray.remote
 class SQSConsumer:
     """Consume messages from an AWS SQS queue, parse JSON, and forward them to KubeRouter."""
 
     def __init__(self):
-        self.queue_url = SQS_QUEUE_URL
-        self.aws_region = AWS_REGION
-        self.polling_interval = SQS_POLLING_INTERVAL
+        self.queue_url = settings.sqs_queue_url
+        self.aws_region = settings.aws_region
+        self.polling_interval = settings.sqs_polling_interval
         self.session = aioboto3.Session()
         self.shutdown_event = asyncio.Event()
 
@@ -52,9 +56,8 @@ class SQSConsumer:
             sentry_sdk.capture_exception(e)
             await self.delete_message(sqs, receipt_handle)
             return
-
         try:
-            await KubeRouter.process_request(data)
+            await KubeRouter.process_request(data, {}, settings.noop)
             await self.delete_message(sqs, receipt_handle)
         except Exception as e:
             logger.error("Failed to process message: %s", e)
