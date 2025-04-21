@@ -37,6 +37,7 @@ dependencies = [
     "opentelemetry-exporter-otlp>=1.31.1",
     "opentelemetry-instrumentation>=0.52b1",
     "opentelemetry-instrumentation-requests>=0.52b1",
+    "pydantic-settings",
 
 ]
 
