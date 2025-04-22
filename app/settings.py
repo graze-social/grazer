@@ -1,6 +1,5 @@
 import os
 from pydantic_settings import BaseSettings
-from typing import Optional
 
 REDIS_URL = os.getenv("REDIS_URL", "redis://redis:6379")
 HOSTNAME = "https://api.graze.social"
