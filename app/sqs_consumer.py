@@ -10,7 +10,7 @@ from app.settings import StreamerSettings
 
 settings = StreamerSettings()
 
-@ray.remote
+@ray.remote(num_cpus=0.5)
 class SQSConsumer:
     """Consume messages from an AWS SQS queue, parse JSON, and forward them to KubeRouter."""
 

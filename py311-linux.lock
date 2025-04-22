@@ -2,10 +2,10 @@
 # It is not intended for manual editing.
 
 [metadata]
-groups = ["default", "build", "cluster", "streamer"]
+groups = ["default", "build", "streamer"]
 strategy = ["inherit_metadata"]
 lock_version = "4.5.0"
-content_hash = "sha256:3608a49181918db0c5b956d96369435cd4ae488b8ee55aea41df614a4a5bf672"
+content_hash = "sha256:70ca0673c3bf5aa4c90c5b0f6ee511a0579884f2fbc14e21d5f272d99de83873"
 
 [[metadata.targets]]
 requires_python = "==3.11.11"
@@ -191,7 +191,7 @@ name = "aiosignal"
 version = "1.3.2"
 requires_python = ">=3.9"
 summary = "aiosignal: a list of registered asynchronous callbacks"
-groups = ["default", "cluster", "streamer"]
+groups = ["default", "streamer"]
 marker = "python_full_version == \"3.11.11\""
 dependencies = [
     "frozenlist>=1.1.0",
@@ -261,7 +261,7 @@ name = "attrs"
 version = "25.3.0"
 requires_python = ">=3.8"
 summary = "Classes Without Boilerplate"
-groups = ["default", "cluster", "streamer"]
+groups = ["default", "streamer"]
 marker = "python_full_version == \"3.11.11\""
 files = [
     {file = "attrs-25.3.0-py3-none-any.whl", hash = "sha256:427318ce031701fea540783410126f03899a97ffc6f61596ad581ac2e40e3bc3"},
@@ -329,6 +329,21 @@ files = [
 ]
 
 [[package]]
+name = "botocore-stubs"
+version = "1.37.38"
+requires_python = ">=3.8"
+summary = "Type annotations and code completion for botocore"
+groups = ["streamer"]
+marker = "python_full_version == \"3.11.11\""
+dependencies = [
+    "types-awscrt",
+]
+files = [
+    {file = "botocore_stubs-1.37.38-py3-none-any.whl", hash = "sha256:86bd9bdb07d6c2b3eaf6f7b464ef1dfa128debb997fff2b89ed76279123c6de9"},
+    {file = "botocore_stubs-1.37.38.tar.gz", hash = "sha256:ba4755b50649649f3129b8f29a9cfc463d65d529605dd388f1da62f836d56067"},
+]
+
+[[package]]
 name = "brotli"
 version = "1.1.0"
 summary = "Python bindings for the Brotli compression library"
@@ -371,7 +386,7 @@ name = "certifi"
 version = "2025.1.31"
 requires_python = ">=3.6"
 summary = "Python package for providing Mozilla's CA Bundle."
-groups = ["default", "cluster"]
+groups = ["default"]
 marker = "python_full_version == \"3.11.11\""
 files = [
     {file = "certifi-2025.1.31-py3-none-any.whl", hash = "sha256:ca78db4565a652026a4db2bcdf68f2fb589ea80d0be70e03929ed730746b84fe"},
@@ -398,7 +413,7 @@ name = "charset-normalizer"
 version = "3.4.1"
 requires_python = ">=3.7"
 summary = "The Real First Universal Charset Detector. Open, modern and actively maintained alternative to Chardet."
-groups = ["default", "cluster"]
+groups = ["default"]
 marker = "python_full_version == \"3.11.11\""
 files = [
     {file = "charset_normalizer-3.4.1-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:fd4ec41f914fa74ad1b8304bbc634b3de73d2a0889bd32076342a573e0779e00"},
@@ -411,7 +426,7 @@ name = "click"
 version = "8.1.8"
 requires_python = ">=3.7"
 summary = "Composable command line interface toolkit"
-groups = ["default", "cluster"]
+groups = ["default"]
 marker = "python_full_version == \"3.11.11\""
 dependencies = [
     "colorama; platform_system == \"Windows\"",
@@ -602,7 +617,7 @@ name = "filelock"
 version = "3.18.0"
 requires_python = ">=3.9"
 summary = "A platform independent file lock."
-groups = ["default", "cluster"]
+groups = ["default"]
 marker = "python_full_version == \"3.11.11\""
 files = [
     {file = "filelock-3.18.0-py3-none-any.whl", hash = "sha256:c401f4f8377c4464e6db25fff06205fd89bdd83b65eb0488ed1b160f780e21de"},
@@ -611,15 +626,15 @@ files = [
 
 [[package]]
 name = "frozenlist"
-version = "1.5.0"
-requires_python = ">=3.8"
+version = "1.6.0"
+requires_python = ">=3.9"
 summary = "A list-like structure which implements collections.abc.MutableSequence"
-groups = ["default", "cluster", "streamer"]
+groups = ["default", "streamer"]
 marker = "python_full_version == \"3.11.11\""
 files = [
-    {file = "frozenlist-1.5.0-cp311-cp311-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:9c2623347b933fcb9095841f1cc5d4ff0b278addd743e0e966cb3d460278840d"},
-    {file = "frozenlist-1.5.0-py3-none-any.whl", hash = "sha256:d994863bba198a4a518b467bb971c56e1db3f180a25c6cf7bb1949c267f748c3"},
-    {file = "frozenlist-1.5.0.tar.gz", hash = "sha256:81d5af29e61b9c8348e876d442253723928dce6433e0e76cd925cd83f1b4b817"},
+    {file = "frozenlist-1.6.0-cp311-cp311-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:e1c6bd2c6399920c9622362ce95a7d74e7f9af9bfec05fff91b8ce4b9647845a"},
+    {file = "frozenlist-1.6.0-py3-none-any.whl", hash = "sha256:535eec9987adb04701266b92745d6cdcef2e77669299359c3009c3404dd5d191"},
+    {file = "frozenlist-1.6.0.tar.gz", hash = "sha256:b99655c32c1c8e06d111e7f41c06c29a5318cb1835df23a45518e02a47c63b68"},
 ]
 
 [[package]]
@@ -654,7 +669,7 @@ name = "grpcio"
 version = "1.71.0"
 requires_python = ">=3.9"
 summary = "HTTP/2-based RPC framework"
-groups = ["default", "cluster"]
+groups = ["default"]
 marker = "python_full_version == \"3.11.11\""
 files = [
     {file = "grpcio-1.71.0-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:4dd0dfbe4d5eb1fcfec9490ca13f82b089a309dc3678e2edabc144051270a66e"},
@@ -749,7 +764,7 @@ name = "idna"
 version = "3.10"
 requires_python = ">=3.6"
 summary = "Internationalized Domain Names in Applications (IDNA)"
-groups = ["default", "cluster", "streamer"]
+groups = ["default", "streamer"]
 marker = "python_full_version == \"3.11.11\""
 files = [
     {file = "idna-3.10-py3-none-any.whl", hash = "sha256:946d195a0d259cbba61165e88e65941f16e9b36ea6ddb97f00452bae8b1287d3"},
@@ -868,7 +883,7 @@ name = "jsonschema"
 version = "4.23.0"
 requires_python = ">=3.8"
 summary = "An implementation of JSON Schema validation for Python"
-groups = ["default", "cluster"]
+groups = ["default"]
 marker = "python_full_version == \"3.11.11\""
 dependencies = [
     "attrs>=22.2.0",
@@ -888,7 +903,7 @@ name = "jsonschema-specifications"
 version = "2024.10.1"
 requires_python = ">=3.9"
 summary = "The JSON Schema meta-schemas and vocabularies, exposed as a Registry"
-groups = ["default", "cluster"]
+groups = ["default"]
 marker = "python_full_version == \"3.11.11\""
 dependencies = [
     "referencing>=0.31.0",
@@ -965,7 +980,7 @@ name = "msgpack"
 version = "1.1.0"
 requires_python = ">=3.8"
 summary = "MessagePack serializer"
-groups = ["default", "cluster"]
+groups = ["default"]
 marker = "python_full_version == \"3.11.11\""
 files = [
     {file = "msgpack-1.1.0-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:5e1da8f11a3dd397f0a32c76165cf0c4eb95b31013a94f6ecc0b280c05c91b59"},
@@ -1026,14 +1041,14 @@ files = [
 
 [[package]]
 name = "numpy"
-version = "2.2.4"
+version = "2.2.5"
 requires_python = ">=3.10"
 summary = "Fundamental package for array computing in Python"
 groups = ["default"]
 marker = "python_full_version == \"3.11.11\""
 files = [
-    {file = "numpy-2.2.4-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:f4162988a360a29af158aeb4a2f4f09ffed6a969c9776f8f3bdee9b06a8ab7e5"},
-    {file = "numpy-2.2.4.tar.gz", hash = "sha256:9ba03692a45d3eef66559efe1d1096c4b9b75c0986b5dff5530c378fb8331d4f"},
+    {file = "numpy-2.2.5-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:262d23f383170f99cd9191a7c85b9a50970fe9069b2f8ab5d786eca8a675d60b"},
+    {file = "numpy-2.2.5.tar.gz", hash = "sha256:a9c0d994680cd991b1cb772e8b297340085466a6fe964bc9d4e80f5e2f43c291"},
 ]
 
 [[package]]
@@ -1402,14 +1417,14 @@ files = [
 
 [[package]]
 name = "packaging"
-version = "24.2"
+version = "25.0"
 requires_python = ">=3.8"
 summary = "Core utilities for Python packages"
-groups = ["default", "cluster"]
+groups = ["default"]
 marker = "python_full_version == \"3.11.11\""
 files = [
-    {file = "packaging-24.2-py3-none-any.whl", hash = "sha256:09abb1bccd265c01f4a3aa3f7a7db064b36514d2cba19a2f694fe6150451a759"},
-    {file = "packaging-24.2.tar.gz", hash = "sha256:c228a6dc5e932d346bc5739379109d49e8853dd8223571c7c5b55260edc0b97f"},
+    {file = "packaging-25.0-py3-none-any.whl", hash = "sha256:29572ef2b1f17581046b3a2227d5c611fb25ec70ca1ba8554b24b0e69331a484"},
+    {file = "packaging-25.0.tar.gz", hash = "sha256:d443872c98d677bf60f6a1f2f8c1cb748e8fe762d2bf9d3148b5599295b0fc4f"},
 ]
 
 [[package]]
@@ -1501,7 +1516,7 @@ name = "protobuf"
 version = "5.29.4"
 requires_python = ">=3.8"
 summary = ""
-groups = ["default", "cluster"]
+groups = ["default"]
 marker = "python_full_version == \"3.11.11\""
 files = [
     {file = "protobuf-5.29.4-cp38-abi3-manylinux2014_x86_64.whl", hash = "sha256:d7d3f7d1d5a66ed4942d4fefb12ac4b14a29028b209d4bfb25c68ae172059922"},
@@ -1522,7 +1537,7 @@ files = [
 
 [[package]]
 name = "pycares"
-version = "4.6.0"
+version = "4.6.1"
 requires_python = ">=3.9"
 summary = "Python interface for c-ares"
 groups = ["default"]
@@ -1531,8 +1546,8 @@ dependencies = [
     "cffi>=1.5.0",
 ]
 files = [
-    {file = "pycares-4.6.0-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:e2143f0387df6b0ebf8d5a0b6a10f80dacf4f8ef74babc2e683b9f6ed7b95d4f"},
-    {file = "pycares-4.6.0.tar.gz", hash = "sha256:b8a004b18a7465ac9400216bc3fad9d9966007af1ee32f4412d2b3a94e33456e"},
+    {file = "pycares-4.6.1-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:cf56c63643e397184aefd0eddc30f99bcc0baea123cb0fd436c602bac854ec05"},
+    {file = "pycares-4.6.1.tar.gz", hash = "sha256:8a1d981206a16240eedc79b51af3293575715d4b0b971f4eb47e24839d5ab440"},
 ]
 
 [[package]]
@@ -1599,18 +1614,19 @@ files = [
 
 [[package]]
 name = "pydantic-settings"
-version = "2.8.1"
-requires_python = ">=3.8"
+version = "2.9.1"
+requires_python = ">=3.9"
 summary = "Settings management using Pydantic"
 groups = ["default"]
 marker = "python_full_version == \"3.11.11\""
 dependencies = [
     "pydantic>=2.7.0",
     "python-dotenv>=0.21.0",
+    "typing-inspection>=0.4.0",
 ]
 files = [
-    {file = "pydantic_settings-2.8.1-py3-none-any.whl", hash = "sha256:81942d5ac3d905f7f3ee1a70df5dfb62d5569c12f51a5a647defc1c3d9ee2e9c"},
-    {file = "pydantic_settings-2.8.1.tar.gz", hash = "sha256:d5c663dfbe9db9d5e1c646b2e161da12f0d734d422ee56f567d0ea2cee4e8585"},
+    {file = "pydantic_settings-2.9.1-py3-none-any.whl", hash = "sha256:59b4f431b1defb26fe620c71a7d3968a710d719f5f4cdbbdb7926edeb770f6ef"},
+    {file = "pydantic_settings-2.9.1.tar.gz", hash = "sha256:c509bf79d27563add44e8446233359004ed85066cd096d8b510f715e6ef5d268"},
 ]
 
 [[package]]
@@ -1696,7 +1712,7 @@ name = "pyyaml"
 version = "6.0.2"
 requires_python = ">=3.8"
 summary = "YAML parser and emitter for Python"
-groups = ["default", "cluster"]
+groups = ["default"]
 marker = "python_full_version == \"3.11.11\""
 files = [
     {file = "PyYAML-6.0.2-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:3ad2a3decf9aaba3d29c8f537ac4b243e36bef957511b4766cb0057d32b0be85"},
@@ -1708,7 +1724,7 @@ name = "ray"
 version = "2.43.0"
 requires_python = ">=3.9"
 summary = "Ray provides a simple, universal API for building distributed applications."
-groups = ["default", "cluster"]
+groups = ["default"]
 marker = "python_full_version == \"3.11.11\""
 dependencies = [
     "aiosignal",
@@ -1721,23 +1737,6 @@ dependencies = [
     "protobuf!=3.19.5,>=3.15.3",
     "pyyaml",
     "requests",
-]
-files = [
-    {file = "ray-2.43.0-cp311-cp311-manylinux2014_x86_64.whl", hash = "sha256:78c3bdbf182b4d019fa9a8aabd55c39bf705bb630aea064f768f305fc472d1eb"},
-]
-
-[[package]]
-name = "ray"
-version = "2.43.0"
-extras = ["client"]
-requires_python = ">=3.9"
-summary = "Ray provides a simple, universal API for building distributed applications."
-groups = ["cluster"]
-marker = "python_full_version == \"3.11.11\""
-dependencies = [
-    "grpcio",
-    "grpcio!=1.56.0; sys_platform == \"darwin\"",
-    "ray==2.43.0",
 ]
 files = [
     {file = "ray-2.43.0-cp311-cp311-manylinux2014_x86_64.whl", hash = "sha256:78c3bdbf182b4d019fa9a8aabd55c39bf705bb630aea064f768f305fc472d1eb"},
@@ -1763,7 +1762,7 @@ name = "referencing"
 version = "0.36.2"
 requires_python = ">=3.9"
 summary = "JSON Referencing + Python"
-groups = ["default", "cluster"]
+groups = ["default"]
 marker = "python_full_version == \"3.11.11\""
 dependencies = [
     "attrs>=22.2.0",
@@ -1792,7 +1791,7 @@ name = "requests"
 version = "2.32.3"
 requires_python = ">=3.8"
 summary = "Python HTTP for Humans."
-groups = ["default", "cluster"]
+groups = ["default"]
 marker = "python_full_version == \"3.11.11\""
 dependencies = [
     "certifi>=2017.4.17",
@@ -1844,7 +1843,7 @@ name = "rpds-py"
 version = "0.24.0"
 requires_python = ">=3.9"
 summary = "Python bindings to Rust's persistent data structures (rpds)"
-groups = ["default", "cluster"]
+groups = ["default"]
 marker = "python_full_version == \"3.11.11\""
 files = [
     {file = "rpds_py-0.24.0-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:e838bf2bb0b91ee67bf2b889a1a841e5ecac06dd7a2b1ef4e6151e2ce155c7ae"},
@@ -1999,14 +1998,14 @@ files = [
 
 [[package]]
 name = "setuptools"
-version = "78.1.0"
+version = "79.0.0"
 requires_python = ">=3.9"
 summary = "Easily download, build, install, upgrade, and uninstall Python packages"
 groups = ["build"]
 marker = "python_full_version == \"3.11.11\""
 files = [
-    {file = "setuptools-78.1.0-py3-none-any.whl", hash = "sha256:3e386e96793c8702ae83d17b853fb93d3e09ef82ec62722e61da5cd22376dcd8"},
-    {file = "setuptools-78.1.0.tar.gz", hash = "sha256:18fd474d4a82a5f83dac888df697af65afa82dec7323d09c3e37d1f14288da54"},
+    {file = "setuptools-79.0.0-py3-none-any.whl", hash = "sha256:b9ab3a104bedb292323f53797b00864e10e434a3ab3906813a7169e4745b912a"},
+    {file = "setuptools-79.0.0.tar.gz", hash = "sha256:9828422e7541213b0aacb6e10bbf9dd8febeaa45a48570e09b6d100e063fc9f9"},
 ]
 
 [[package]]
@@ -2283,11 +2282,101 @@ files = [
 ]
 
 [[package]]
+name = "types-aioboto3"
+version = "14.1.0"
+requires_python = ">=3.8"
+summary = "Type annotations for aioboto3 14.1.0 generated with mypy-boto3-builder 8.10.0"
+groups = ["streamer"]
+marker = "python_full_version == \"3.11.11\""
+dependencies = [
+    "botocore-stubs",
+    "types-aiobotocore",
+    "types-s3transfer",
+    "typing-extensions>=4.1.0; python_version < \"3.12\"",
+]
+files = [
+    {file = "types_aioboto3-14.1.0-py3-none-any.whl", hash = "sha256:5f348a31ef9be4c294a214c8cb309df5ffd215351446323ace8212c8e4bc1547"},
+    {file = "types_aioboto3-14.1.0.tar.gz", hash = "sha256:e7f47ac7d44682e46dbee23b16729a57c9f080f49d21b6ad8cd5e767d47ede3f"},
+]
+
+[[package]]
+name = "types-aioboto3"
+version = "14.1.0"
+extras = ["sqs"]
+requires_python = ">=3.8"
+summary = "Type annotations for aioboto3 14.1.0 generated with mypy-boto3-builder 8.10.0"
+groups = ["streamer"]
+marker = "python_full_version == \"3.11.11\""
+dependencies = [
+    "types-aioboto3==14.1.0",
+    "types-aiobotocore-sqs<2.22.0,>=2.21.0",
+]
+files = [
+    {file = "types_aioboto3-14.1.0-py3-none-any.whl", hash = "sha256:5f348a31ef9be4c294a214c8cb309df5ffd215351446323ace8212c8e4bc1547"},
+    {file = "types_aioboto3-14.1.0.tar.gz", hash = "sha256:e7f47ac7d44682e46dbee23b16729a57c9f080f49d21b6ad8cd5e767d47ede3f"},
+]
+
+[[package]]
+name = "types-aiobotocore"
+version = "2.21.1"
+requires_python = ">=3.8"
+summary = "Type annotations for aiobotocore 2.21.1 generated with mypy-boto3-builder 8.10.0"
+groups = ["streamer"]
+marker = "python_full_version == \"3.11.11\""
+dependencies = [
+    "botocore-stubs",
+    "typing-extensions>=4.1.0; python_version < \"3.12\"",
+]
+files = [
+    {file = "types_aiobotocore-2.21.1-py3-none-any.whl", hash = "sha256:41034ca807698e666b53ecb45eaf42850161e6093c291a8f1f31536c970c1d0e"},
+    {file = "types_aiobotocore-2.21.1.tar.gz", hash = "sha256:ad099710635a16a06df99d9aeb957e0c488358201dfff5f76f73f5ec2987fc3b"},
+]
+
+[[package]]
+name = "types-aiobotocore-sqs"
+version = "2.21.1"
+requires_python = ">=3.8"
+summary = "Type annotations for aiobotocore SQS 2.21.1 service generated with mypy-boto3-builder 8.10.0"
+groups = ["streamer"]
+marker = "python_full_version == \"3.11.11\""
+dependencies = [
+    "typing-extensions; python_version < \"3.12\"",
+]
+files = [
+    {file = "types_aiobotocore_sqs-2.21.1-py3-none-any.whl", hash = "sha256:c593349a2b4d9f2e145993408a16df7871b857f46286e9816553c46a1896a937"},
+    {file = "types_aiobotocore_sqs-2.21.1.tar.gz", hash = "sha256:180364c4efd05c60498c3294297e8b359559598b2c51fb6a449178f5634f8e18"},
+]
+
+[[package]]
+name = "types-awscrt"
+version = "0.26.1"
+requires_python = ">=3.8"
+summary = "Type annotations and code completion for awscrt"
+groups = ["streamer"]
+marker = "python_full_version == \"3.11.11\""
+files = [
+    {file = "types_awscrt-0.26.1-py3-none-any.whl", hash = "sha256:176d320a26990efc057d4bf71396e05be027c142252ac48cc0d87aaea0704280"},
+    {file = "types_awscrt-0.26.1.tar.gz", hash = "sha256:aca96f889b3745c0e74f42f08f277fed3bf6e9baa2cf9b06a36f78d77720e504"},
+]
+
+[[package]]
+name = "types-s3transfer"
+version = "0.11.5"
+requires_python = ">=3.8"
+summary = "Type annotations and code completion for s3transfer"
+groups = ["streamer"]
+marker = "python_full_version == \"3.11.11\""
+files = [
+    {file = "types_s3transfer-0.11.5-py3-none-any.whl", hash = "sha256:db1a45e6068fa10d4c587ff2d82cc4d6636c254a4270e54f054912ad75e0938a"},
+    {file = "types_s3transfer-0.11.5.tar.gz", hash = "sha256:fa9195006eea3dfdd51af5f51b3dc3a4f575696f323bb0202d03dd3eaea01166"},
+]
+
+[[package]]
 name = "typing-extensions"
 version = "4.13.2"
 requires_python = ">=3.8"
 summary = "Backported and Experimental Type Hints for Python 3.8+"
-groups = ["default", "cluster"]
+groups = ["default", "streamer"]
 marker = "python_full_version == \"3.11.11\""
 files = [
     {file = "typing_extensions-4.13.2-py3-none-any.whl", hash = "sha256:a439e7c04b49fec3e5d3e2beaa21755cadbbdc391694e28ccdd36ca4a1408f8c"},
@@ -2326,7 +2415,7 @@ name = "urllib3"
 version = "2.4.0"
 requires_python = ">=3.9"
 summary = "HTTP library with thread-safe connection pooling, file post, and more."
-groups = ["default", "cluster", "streamer"]
+groups = ["default", "streamer"]
 marker = "python_full_version == \"3.11.11\""
 files = [
     {file = "urllib3-2.4.0-py3-none-any.whl", hash = "sha256:4e16665048960a0900c702d4a66415956a584919c03361cac9f1df5c5dd7e813"},
@@ -2482,7 +2571,7 @@ files = [
 
 [[package]]
 name = "yarl"
-version = "1.19.0"
+version = "1.20.0"
 requires_python = ">=3.9"
 summary = "Yet another URL library"
 groups = ["default", "streamer"]
@@ -2493,9 +2582,9 @@ dependencies = [
     "propcache>=0.2.1",
 ]
 files = [
-    {file = "yarl-1.19.0-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:f9b92431d8b4d4ca5ccbfdbac95b05a3a6cd70cd73aa62f32f9627acfde7549c"},
-    {file = "yarl-1.19.0-py3-none-any.whl", hash = "sha256:a727101eb27f66727576630d02985d8a065d09cd0b5fcbe38a5793f71b2a97ef"},
-    {file = "yarl-1.19.0.tar.gz", hash = "sha256:01e02bb80ae0dbed44273c304095295106e1d9470460e773268a27d11e594892"},
+    {file = "yarl-1.20.0-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:0acfaf1da020253f3533526e8b7dd212838fdc4109959a2c53cafc6db611bff2"},
+    {file = "yarl-1.20.0-py3-none-any.whl", hash = "sha256:5d0fe6af927a47a230f31e6004621fd0959eaa915fc62acfafa67ff7229a3124"},
+    {file = "yarl-1.20.0.tar.gz", hash = "sha256:686d51e51ee5dfe62dec86e4866ee0e9ed66df700d55c828a615640adc885307"},
 ]
 
 [[package]]

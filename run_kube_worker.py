@@ -2,11 +2,8 @@ import asyncio
 import ray
 from app.sqs_consumer import SQSConsumer
 
-
-consumer = SQSConsumer.options(max_concurrency=5)
-
 async def run_consumer():
-    konsumer = ray.get(consumer.remote())
-    await konsumer.run()
+    consumer = SQSConsumer.options(max_concurrency=10, lifetime="detached").remote()
+    ray.get([consumer.run.remote()])  # type: ignore
 
 asyncio.run(run_consumer())

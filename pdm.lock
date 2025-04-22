@@ -2,10 +2,10 @@
 # It is not intended for manual editing.
 
 [metadata]
-groups = ["default", "build", "cluster", "dev", "streamer"]
+groups = ["default", "build", "dev", "streamer"]
 strategy = ["inherit_metadata"]
 lock_version = "4.5.0"
-content_hash = "sha256:05138be9d4a107a7eb074abc2f7180e9d128b6f14c4bf863f01e4c6c1e270415"
+content_hash = "sha256:70ca0673c3bf5aa4c90c5b0f6ee511a0579884f2fbc14e21d5f272d99de83873"
 
 [[metadata.targets]]
 requires_python = ">=3.11,<3.13"
@@ -148,20 +148,6 @@ files = [
 ]
 
 [[package]]
-name = "aiohttp-cors"
-version = "0.8.1"
-requires_python = ">=3.9"
-summary = "CORS support for aiohttp"
-groups = ["default"]
-dependencies = [
-    "aiohttp>=3.9",
-]
-files = [
-    {file = "aiohttp_cors-0.8.1-py3-none-any.whl", hash = "sha256:3180cf304c5c712d626b9162b195b1db7ddf976a2a25172b35bb2448b890a80d"},
-    {file = "aiohttp_cors-0.8.1.tar.gz", hash = "sha256:ccacf9cb84b64939ea15f859a146af1f662a6b1d68175754a07315e305fb1403"},
-]
-
-[[package]]
 name = "aiohttp-retry"
 version = "2.9.1"
 requires_python = ">=3.7"
@@ -252,7 +238,7 @@ name = "aiosignal"
 version = "1.3.2"
 requires_python = ">=3.9"
 summary = "aiosignal: a list of registered asynchronous callbacks"
-groups = ["default", "cluster", "streamer"]
+groups = ["default", "streamer"]
 dependencies = [
     "frozenlist>=1.1.0",
 ]
@@ -330,7 +316,7 @@ name = "attrs"
 version = "25.3.0"
 requires_python = ">=3.8"
 summary = "Classes Without Boilerplate"
-groups = ["default", "cluster", "streamer"]
+groups = ["default", "streamer"]
 files = [
     {file = "attrs-25.3.0-py3-none-any.whl", hash = "sha256:427318ce031701fea540783410126f03899a97ffc6f61596ad581ac2e40e3bc3"},
     {file = "attrs-25.3.0.tar.gz", hash = "sha256:75d7cefc7fb576747b2c81b4442d4d4a1ce0900973527c011d1030fd3bf4af1b"},
@@ -424,7 +410,7 @@ files = [
 
 [[package]]
 name = "botocore-stubs"
-version = "1.37.37"
+version = "1.37.38"
 requires_python = ">=3.8"
 summary = "Type annotations and code completion for botocore"
 groups = ["streamer"]
@@ -432,8 +418,8 @@ dependencies = [
     "types-awscrt",
 ]
 files = [
-    {file = "botocore_stubs-1.37.37-py3-none-any.whl", hash = "sha256:4b029053521540637e1700c6a8b0778abd47b9c47f0f7547d12ad751b5d127ff"},
-    {file = "botocore_stubs-1.37.37.tar.gz", hash = "sha256:d1a58f529e954989279aa89b8391627428c958e063f02204aa0ceda4e3136015"},
+    {file = "botocore_stubs-1.37.38-py3-none-any.whl", hash = "sha256:86bd9bdb07d6c2b3eaf6f7b464ef1dfa128debb997fff2b89ed76279123c6de9"},
+    {file = "botocore_stubs-1.37.38.tar.gz", hash = "sha256:ba4755b50649649f3129b8f29a9cfc463d65d529605dd388f1da62f836d56067"},
 ]
 
 [[package]]
@@ -516,7 +502,7 @@ name = "certifi"
 version = "2025.1.31"
 requires_python = ">=3.6"
 summary = "Python package for providing Mozilla's CA Bundle."
-groups = ["default", "cluster"]
+groups = ["default"]
 files = [
     {file = "certifi-2025.1.31-py3-none-any.whl", hash = "sha256:ca78db4565a652026a4db2bcdf68f2fb589ea80d0be70e03929ed730746b84fe"},
     {file = "certifi-2025.1.31.tar.gz", hash = "sha256:3d5da6925056f6f18f119200434a4780a94263f10d1c21d032a6f6b2baa20651"},
@@ -563,7 +549,7 @@ name = "charset-normalizer"
 version = "3.4.1"
 requires_python = ">=3.7"
 summary = "The Real First Universal Charset Detector. Open, modern and actively maintained alternative to Chardet."
-groups = ["default", "cluster"]
+groups = ["default"]
 files = [
     {file = "charset_normalizer-3.4.1-cp311-cp311-macosx_10_9_universal2.whl", hash = "sha256:8bfa33f4f2672964266e940dd22a195989ba31669bd84629f05fab3ef4e2d125"},
     {file = "charset_normalizer-3.4.1-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:28bf57629c75e810b6ae989f03c0828d64d6b26a5e205535585f96093e405ed1"},
@@ -600,7 +586,7 @@ name = "click"
 version = "8.1.8"
 requires_python = ">=3.7"
 summary = "Composable command line interface toolkit"
-groups = ["default", "cluster"]
+groups = ["default"]
 dependencies = [
     "colorama; platform_system == \"Windows\"",
     "importlib-metadata; python_version < \"3.8\"",
@@ -615,23 +601,10 @@ name = "colorama"
 version = "0.4.6"
 requires_python = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,!=3.5.*,!=3.6.*,>=2.7"
 summary = "Cross-platform colored terminal text."
-groups = ["default", "cluster", "dev"]
+groups = ["default", "dev"]
 files = [
     {file = "colorama-0.4.6-py2.py3-none-any.whl", hash = "sha256:4f1d9991f5acc0ca119f9d443620b77f9d6b33703e51011c16baf57afb285fc6"},
     {file = "colorama-0.4.6.tar.gz", hash = "sha256:08695f5cb7ed6e0531a20572697297273c47b8cae5a63ffc6d6ed5c201be6e44"},
-]
-
-[[package]]
-name = "colorful"
-version = "0.5.6"
-summary = "Terminal string styling done right, in Python."
-groups = ["default"]
-dependencies = [
-    "colorama; platform_system == \"Windows\"",
-]
-files = [
-    {file = "colorful-0.5.6-py2.py3-none-any.whl", hash = "sha256:eab8c1c809f5025ad2b5238a50bd691e26850da8cac8f90d660ede6ea1af9f1e"},
-    {file = "colorful-0.5.6.tar.gz", hash = "sha256:b56d5c01db1dac4898308ea889edcb113fbee3e6ec5df4bacffd61d5241b5b8d"},
 ]
 
 [[package]]
@@ -781,16 +754,6 @@ files = [
 ]
 
 [[package]]
-name = "distlib"
-version = "0.3.9"
-summary = "Distribution utilities"
-groups = ["default"]
-files = [
-    {file = "distlib-0.3.9-py2.py3-none-any.whl", hash = "sha256:47f8c22fd27c27e25a65601af709b38e4f0a45ea4fc2e710f65755fa8caaaf87"},
-    {file = "distlib-0.3.9.tar.gz", hash = "sha256:a60f20dea646b8a33f3e7772f74dc0b2d0772d2837ee1342a00645c81edf9403"},
-]
-
-[[package]]
 name = "distro"
 version = "1.9.0"
 requires_python = ">=3.6"
@@ -907,7 +870,7 @@ name = "filelock"
 version = "3.18.0"
 requires_python = ">=3.9"
 summary = "A platform independent file lock."
-groups = ["default", "cluster"]
+groups = ["default"]
 files = [
     {file = "filelock-3.18.0-py3-none-any.whl", hash = "sha256:c401f4f8377c4464e6db25fff06205fd89bdd83b65eb0488ed1b160f780e21de"},
     {file = "filelock-3.18.0.tar.gz", hash = "sha256:adbc88eabb99d2fec8c9c1b229b171f18afa655400173ddc653d5d01501fb9f2"},
@@ -934,7 +897,7 @@ name = "frozenlist"
 version = "1.6.0"
 requires_python = ">=3.9"
 summary = "A list-like structure which implements collections.abc.MutableSequence"
-groups = ["default", "cluster", "streamer"]
+groups = ["default", "streamer"]
 files = [
     {file = "frozenlist-1.6.0-cp311-cp311-macosx_10_9_universal2.whl", hash = "sha256:ae8337990e7a45683548ffb2fee1af2f1ed08169284cd829cdd9a7fa7470530d"},
     {file = "frozenlist-1.6.0-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:8c952f69dd524558694818a461855f35d36cc7f5c0adddce37e962c85d06eac0"},
@@ -986,43 +949,6 @@ files = [
 ]
 
 [[package]]
-name = "google-api-core"
-version = "2.24.2"
-requires_python = ">=3.7"
-summary = "Google API client core library"
-groups = ["default"]
-marker = "python_version >= \"3.6\""
-dependencies = [
-    "google-auth<3.0.0,>=2.14.1",
-    "googleapis-common-protos<2.0.0,>=1.56.2",
-    "proto-plus<2.0.0,>=1.22.3",
-    "proto-plus<2.0.0,>=1.25.0; python_version >= \"3.13\"",
-    "protobuf!=3.20.0,!=3.20.1,!=4.21.0,!=4.21.1,!=4.21.2,!=4.21.3,!=4.21.4,!=4.21.5,<7.0.0,>=3.19.5",
-    "requests<3.0.0,>=2.18.0",
-]
-files = [
-    {file = "google_api_core-2.24.2-py3-none-any.whl", hash = "sha256:810a63ac95f3c441b7c0e43d344e372887f62ce9071ba972eacf32672e072de9"},
-    {file = "google_api_core-2.24.2.tar.gz", hash = "sha256:81718493daf06d96d6bc76a91c23874dbf2fac0adbbf542831b805ee6e974696"},
-]
-
-[[package]]
-name = "google-auth"
-version = "2.39.0"
-requires_python = ">=3.7"
-summary = "Google Authentication Library"
-groups = ["default"]
-marker = "python_version >= \"3.6\""
-dependencies = [
-    "cachetools<6.0,>=2.0.0",
-    "pyasn1-modules>=0.2.1",
-    "rsa<5,>=3.1.4",
-]
-files = [
-    {file = "google_auth-2.39.0-py2.py3-none-any.whl", hash = "sha256:0150b6711e97fb9f52fe599f55648950cc4540015565d8fbb31be2ad6e1548a2"},
-    {file = "google_auth-2.39.0.tar.gz", hash = "sha256:73222d43cdc35a3aeacbfdcaf73142a97839f10de930550d89ebfe1d0a00cde7"},
-]
-
-[[package]]
 name = "googleapis-common-protos"
 version = "1.70.0"
 requires_python = ">=3.7"
@@ -1041,7 +967,7 @@ name = "grpcio"
 version = "1.71.0"
 requires_python = ">=3.9"
 summary = "HTTP/2-based RPC framework"
-groups = ["default", "cluster"]
+groups = ["default"]
 files = [
     {file = "grpcio-1.71.0-cp311-cp311-linux_armv7l.whl", hash = "sha256:d6aa986318c36508dc1d5001a3ff169a15b99b9f96ef5e98e13522c506b37eef"},
     {file = "grpcio-1.71.0-cp311-cp311-macosx_10_14_universal2.whl", hash = "sha256:d2c170247315f2d7e5798a22358e982ad6eeb68fa20cf7a820bb74c11f0736e7"},
@@ -1162,7 +1088,7 @@ name = "idna"
 version = "3.10"
 requires_python = ">=3.6"
 summary = "Internationalized Domain Names in Applications (IDNA)"
-groups = ["default", "cluster", "streamer"]
+groups = ["default", "streamer"]
 files = [
     {file = "idna-3.10-py3-none-any.whl", hash = "sha256:946d195a0d259cbba61165e88e65941f16e9b36ea6ddb97f00452bae8b1287d3"},
     {file = "idna-3.10.tar.gz", hash = "sha256:12f65c9b470abda6dc35cf8e63cc574b1c52b11df2c86030af0ac09b01b13ea9"},
@@ -1306,7 +1232,7 @@ name = "jsonschema"
 version = "4.23.0"
 requires_python = ">=3.8"
 summary = "An implementation of JSON Schema validation for Python"
-groups = ["default", "cluster"]
+groups = ["default"]
 dependencies = [
     "attrs>=22.2.0",
     "importlib-resources>=1.4.0; python_version < \"3.9\"",
@@ -1325,7 +1251,7 @@ name = "jsonschema-specifications"
 version = "2024.10.1"
 requires_python = ">=3.9"
 summary = "The JSON Schema meta-schemas and vocabularies, exposed as a Registry"
-groups = ["default", "cluster"]
+groups = ["default"]
 dependencies = [
     "referencing>=0.31.0",
 ]
@@ -1452,7 +1378,7 @@ name = "msgpack"
 version = "1.1.0"
 requires_python = ">=3.8"
 summary = "MessagePack serializer"
-groups = ["default", "cluster"]
+groups = ["default"]
 files = [
     {file = "msgpack-1.1.0-cp311-cp311-macosx_10_9_universal2.whl", hash = "sha256:3d364a55082fb2a7416f6c63ae383fbd903adb5a6cf78c5b96cc6316dc1cedc7"},
     {file = "msgpack-1.1.0-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:79ec007767b9b56860e0372085f8504db5d06bd6a327a335449508bbee9648fa"},
@@ -1795,35 +1721,6 @@ files = [
 ]
 
 [[package]]
-name = "opencensus"
-version = "0.11.4"
-summary = "A stats collection and distributed tracing framework"
-groups = ["default"]
-dependencies = [
-    "google-api-core<2.0.0,>=1.0.0; python_version < \"3.6\"",
-    "google-api-core<3.0.0,>=1.0.0; python_version >= \"3.6\"",
-    "opencensus-context>=0.1.3",
-    "six~=1.16",
-]
-files = [
-    {file = "opencensus-0.11.4-py2.py3-none-any.whl", hash = "sha256:a18487ce68bc19900336e0ff4655c5a116daf10c1b3685ece8d971bddad6a864"},
-    {file = "opencensus-0.11.4.tar.gz", hash = "sha256:cbef87d8b8773064ab60e5c2a1ced58bbaa38a6d052c41aec224958ce544eff2"},
-]
-
-[[package]]
-name = "opencensus-context"
-version = "0.1.3"
-summary = "OpenCensus Runtime Context"
-groups = ["default"]
-dependencies = [
-    "contextvars; python_version >= \"3.6\" and python_version < \"3.7\"",
-]
-files = [
-    {file = "opencensus-context-0.1.3.tar.gz", hash = "sha256:a03108c3c10d8c80bb5ddf5c8a1f033161fa61972a9917f9b9b3a18517f0088c"},
-    {file = "opencensus_context-0.1.3-py2.py3-none-any.whl", hash = "sha256:073bb0590007af276853009fac7e4bab1d523c3f03baf4cb4511ca38967c6039"},
-]
-
-[[package]]
 name = "opentelemetry-api"
 version = "1.32.1"
 requires_python = ">=3.8"
@@ -2040,7 +1937,7 @@ name = "packaging"
 version = "25.0"
 requires_python = ">=3.8"
 summary = "Core utilities for Python packages"
-groups = ["default", "cluster", "dev"]
+groups = ["default", "dev"]
 files = [
     {file = "packaging-25.0-py3-none-any.whl", hash = "sha256:29572ef2b1f17581046b3a2227d5c611fb25ec70ca1ba8554b24b0e69331a484"},
     {file = "packaging-25.0.tar.gz", hash = "sha256:d443872c98d677bf60f6a1f2f8c1cb748e8fe762d2bf9d3148b5599295b0fc4f"},
@@ -2106,17 +2003,6 @@ files = [
 ]
 
 [[package]]
-name = "platformdirs"
-version = "4.3.7"
-requires_python = ">=3.9"
-summary = "A small Python package for determining appropriate platform-specific dirs, e.g. a `user data dir`."
-groups = ["default"]
-files = [
-    {file = "platformdirs-4.3.7-py3-none-any.whl", hash = "sha256:a03875334331946f13c549dbd8f4bac7a13a50a895a0eb1e8c6a8ace80d40a94"},
-    {file = "platformdirs-4.3.7.tar.gz", hash = "sha256:eb437d586b6a0986388f0d6f74aa0cde27b48d0e3d66843640bfb6bdcdb6e351"},
-]
-
-[[package]]
 name = "pluggy"
 version = "1.5.0"
 requires_python = ">=3.8"
@@ -2139,17 +2025,6 @@ dependencies = [
 files = [
     {file = "prettytable-3.16.0-py3-none-any.whl", hash = "sha256:b5eccfabb82222f5aa46b798ff02a8452cf530a352c31bddfa29be41242863aa"},
     {file = "prettytable-3.16.0.tar.gz", hash = "sha256:3c64b31719d961bf69c9a7e03d0c1e477320906a98da63952bc6698d6164ff57"},
-]
-
-[[package]]
-name = "prometheus-client"
-version = "0.21.1"
-requires_python = ">=3.8"
-summary = "Python client for the Prometheus monitoring system."
-groups = ["default"]
-files = [
-    {file = "prometheus_client-0.21.1-py3-none-any.whl", hash = "sha256:594b45c410d6f4f8888940fe80b5cc2521b305a1fafe1c58609ef715a001f301"},
-    {file = "prometheus_client-0.21.1.tar.gz", hash = "sha256:252505a722ac04b0456be05c05f75f45d760c2911ffc45f2a06bcaed9f3ae3fb"},
 ]
 
 [[package]]
@@ -2210,26 +2085,11 @@ files = [
 ]
 
 [[package]]
-name = "proto-plus"
-version = "1.26.1"
-requires_python = ">=3.7"
-summary = "Beautiful, Pythonic protocol buffers"
-groups = ["default"]
-marker = "python_version >= \"3.6\""
-dependencies = [
-    "protobuf<7.0.0,>=3.19.0",
-]
-files = [
-    {file = "proto_plus-1.26.1-py3-none-any.whl", hash = "sha256:13285478c2dcf2abb829db158e1047e2f1e8d63a077d94263c2b88b043c75a66"},
-    {file = "proto_plus-1.26.1.tar.gz", hash = "sha256:21a515a4c4c0088a773899e23c7bbade3d18f9c66c73edd4c7ee3816bc96a012"},
-]
-
-[[package]]
 name = "protobuf"
 version = "5.29.4"
 requires_python = ">=3.8"
 summary = ""
-groups = ["default", "cluster"]
+groups = ["default"]
 files = [
     {file = "protobuf-5.29.4-cp310-abi3-win32.whl", hash = "sha256:13eb236f8eb9ec34e63fc8b1d6efd2777d062fa6aaa68268fb67cf77f6839ad7"},
     {file = "protobuf-5.29.4-cp310-abi3-win_amd64.whl", hash = "sha256:bcefcdf3976233f8a502d265eb65ea740c989bacc6c30a58290ed0e519eb4b8d"},
@@ -2248,49 +2108,6 @@ groups = ["default"]
 files = [
     {file = "py-cpuinfo-9.0.0.tar.gz", hash = "sha256:3cdbbf3fac90dc6f118bfd64384f309edeadd902d7c8fb17f02ffa1fc3f49690"},
     {file = "py_cpuinfo-9.0.0-py3-none-any.whl", hash = "sha256:859625bc251f64e21f077d099d4162689c762b5d6a4c3c97553d56241c9674d5"},
-]
-
-[[package]]
-name = "py-spy"
-version = "0.4.0"
-summary = "Sampling profiler for Python programs "
-groups = ["default"]
-files = [
-    {file = "py_spy-0.4.0-py2.py3-none-macosx_10_12_x86_64.macosx_11_0_arm64.macosx_10_12_universal2.whl", hash = "sha256:f2cf3f7130e7d780471faa5957441d3b4e0ec39a79b2c00f4c33d494f7728428"},
-    {file = "py_spy-0.4.0-py2.py3-none-macosx_11_0_arm64.whl", hash = "sha256:47cdda4c34d9b6cb01f3aaeceb2e88faf57da880207fe72ff6ff97e9bb6cc8a9"},
-    {file = "py_spy-0.4.0-py2.py3-none-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:eee3d0bde85ca5cf4f01f012d461180ca76c24835a96f7b5c4ded64eb6a008ab"},
-    {file = "py_spy-0.4.0-py2.py3-none-manylinux_2_17_armv7l.manylinux2014_armv7l.whl", hash = "sha256:c5f06ffce4c9c98b7fc9f5e67e5e7db591173f1351837633f3f23d9378b1d18a"},
-    {file = "py_spy-0.4.0-py2.py3-none-manylinux_2_5_i686.manylinux1_i686.whl", hash = "sha256:87573e64dbfdfc89ba2e0f5e2f525aa84e0299c7eb6454b47ea335fde583a7a0"},
-    {file = "py_spy-0.4.0-py2.py3-none-manylinux_2_5_x86_64.manylinux1_x86_64.whl", hash = "sha256:8bf2f3702cef367a489faa45177b41a6c31b2a3e5bd78c978d44e29340152f5a"},
-    {file = "py_spy-0.4.0-py2.py3-none-win_amd64.whl", hash = "sha256:77d8f637ade38367d944874776f45b703b7ac5938b1f7be8891f3a5876ddbb96"},
-    {file = "py_spy-0.4.0.tar.gz", hash = "sha256:806602ce7972782cc9c1e383f339bfc27bfb822d42485e6a3e0530ae5040e1f0"},
-]
-
-[[package]]
-name = "pyasn1"
-version = "0.6.1"
-requires_python = ">=3.8"
-summary = "Pure-Python implementation of ASN.1 types and DER/BER/CER codecs (X.208)"
-groups = ["default"]
-marker = "python_version >= \"3.6\""
-files = [
-    {file = "pyasn1-0.6.1-py3-none-any.whl", hash = "sha256:0d632f46f2ba09143da3a8afe9e33fb6f92fa2320ab7e886e2d0f7672af84629"},
-    {file = "pyasn1-0.6.1.tar.gz", hash = "sha256:6f580d2bdd84365380830acf45550f2511469f673cb4a5ae3857a3170128b034"},
-]
-
-[[package]]
-name = "pyasn1-modules"
-version = "0.4.2"
-requires_python = ">=3.8"
-summary = "A collection of ASN.1-based protocols modules"
-groups = ["default"]
-marker = "python_version >= \"3.6\""
-dependencies = [
-    "pyasn1<0.7.0,>=0.6.1",
-]
-files = [
-    {file = "pyasn1_modules-0.4.2-py3-none-any.whl", hash = "sha256:29253a9207ce32b64c3ac6600edc75368f98473906e8fd1043bd6b5b1de2c14a"},
-    {file = "pyasn1_modules-0.4.2.tar.gz", hash = "sha256:677091de870a80aae844b1ca6134f54652fa2c8c5a52aa396440ac3106e941e6"},
 ]
 
 [[package]]
@@ -2612,7 +2429,7 @@ name = "pyyaml"
 version = "6.0.2"
 requires_python = ">=3.8"
 summary = "YAML parser and emitter for Python"
-groups = ["default", "cluster"]
+groups = ["default"]
 files = [
     {file = "PyYAML-6.0.2-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:cc1c1159b3d456576af7a3e4d1ba7e6924cb39de8f67111c735f6fc832082774"},
     {file = "PyYAML-6.0.2-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:1e2120ef853f59c7419231f3bf4e7021f1b936f6ebd222406c3b60212205d2ee"},
@@ -2640,7 +2457,7 @@ name = "ray"
 version = "2.43.0"
 requires_python = ">=3.9"
 summary = "Ray provides a simple, universal API for building distributed applications."
-groups = ["default", "cluster"]
+groups = ["default"]
 dependencies = [
     "aiosignal",
     "click>=7.0",
@@ -2652,67 +2469,6 @@ dependencies = [
     "protobuf!=3.19.5,>=3.15.3",
     "pyyaml",
     "requests",
-]
-files = [
-    {file = "ray-2.43.0-cp311-cp311-macosx_10_15_x86_64.whl", hash = "sha256:fde8a81280f07af983bc3769c9941db5db273ce10e92abb3348e41bed023d735"},
-    {file = "ray-2.43.0-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:e93c32ad0cb67f1f7da76fac409d87d5cd5ea3eb03b836830e9ef5cc810bc2c0"},
-    {file = "ray-2.43.0-cp311-cp311-manylinux2014_aarch64.whl", hash = "sha256:476ec3e1fa2464ddd5f049c0f2758ff9dfecc21fb8df4266f1df01b2780c6653"},
-    {file = "ray-2.43.0-cp311-cp311-manylinux2014_x86_64.whl", hash = "sha256:78c3bdbf182b4d019fa9a8aabd55c39bf705bb630aea064f768f305fc472d1eb"},
-    {file = "ray-2.43.0-cp311-cp311-win_amd64.whl", hash = "sha256:e2b0fa0272ade67bad2e83d7de996795bfb4f10f4b895476b95fbfda6d3c3ed6"},
-    {file = "ray-2.43.0-cp312-cp312-macosx_10_15_x86_64.whl", hash = "sha256:5121fdf4bcbcb0fda3b9b71164dd6c8fcc79a2e258022a2a3957e401018913fb"},
-    {file = "ray-2.43.0-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:7f26f7b72da04c3c4422269c31b067abd15cb38424b7012d812ddfb2c77462ea"},
-    {file = "ray-2.43.0-cp312-cp312-manylinux2014_aarch64.whl", hash = "sha256:73770d4c8a989730985ff2b4292129249e28c1e29e84589470c9ba1ae91ca832"},
-    {file = "ray-2.43.0-cp312-cp312-manylinux2014_x86_64.whl", hash = "sha256:b45f478d29ce5df3fc19861df64fef9ed5c25f1e83fa10028d33fadefdeca095"},
-    {file = "ray-2.43.0-cp312-cp312-win_amd64.whl", hash = "sha256:1c3a9880112a8d561280a34e8ef9471070f81ca467e08b669e5e77a85e173c9c"},
-]
-
-[[package]]
-name = "ray"
-version = "2.43.0"
-extras = ["client"]
-requires_python = ">=3.9"
-summary = "Ray provides a simple, universal API for building distributed applications."
-groups = ["cluster"]
-dependencies = [
-    "grpcio",
-    "grpcio!=1.56.0; sys_platform == \"darwin\"",
-    "ray==2.43.0",
-]
-files = [
-    {file = "ray-2.43.0-cp311-cp311-macosx_10_15_x86_64.whl", hash = "sha256:fde8a81280f07af983bc3769c9941db5db273ce10e92abb3348e41bed023d735"},
-    {file = "ray-2.43.0-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:e93c32ad0cb67f1f7da76fac409d87d5cd5ea3eb03b836830e9ef5cc810bc2c0"},
-    {file = "ray-2.43.0-cp311-cp311-manylinux2014_aarch64.whl", hash = "sha256:476ec3e1fa2464ddd5f049c0f2758ff9dfecc21fb8df4266f1df01b2780c6653"},
-    {file = "ray-2.43.0-cp311-cp311-manylinux2014_x86_64.whl", hash = "sha256:78c3bdbf182b4d019fa9a8aabd55c39bf705bb630aea064f768f305fc472d1eb"},
-    {file = "ray-2.43.0-cp311-cp311-win_amd64.whl", hash = "sha256:e2b0fa0272ade67bad2e83d7de996795bfb4f10f4b895476b95fbfda6d3c3ed6"},
-    {file = "ray-2.43.0-cp312-cp312-macosx_10_15_x86_64.whl", hash = "sha256:5121fdf4bcbcb0fda3b9b71164dd6c8fcc79a2e258022a2a3957e401018913fb"},
-    {file = "ray-2.43.0-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:7f26f7b72da04c3c4422269c31b067abd15cb38424b7012d812ddfb2c77462ea"},
-    {file = "ray-2.43.0-cp312-cp312-manylinux2014_aarch64.whl", hash = "sha256:73770d4c8a989730985ff2b4292129249e28c1e29e84589470c9ba1ae91ca832"},
-    {file = "ray-2.43.0-cp312-cp312-manylinux2014_x86_64.whl", hash = "sha256:b45f478d29ce5df3fc19861df64fef9ed5c25f1e83fa10028d33fadefdeca095"},
-    {file = "ray-2.43.0-cp312-cp312-win_amd64.whl", hash = "sha256:1c3a9880112a8d561280a34e8ef9471070f81ca467e08b669e5e77a85e173c9c"},
-]
-
-[[package]]
-name = "ray"
-version = "2.43.0"
-extras = ["default"]
-requires_python = ">=3.9"
-summary = "Ray provides a simple, universal API for building distributed applications."
-groups = ["default"]
-dependencies = [
-    "aiohttp-cors",
-    "aiohttp>=3.7",
-    "colorful",
-    "grpcio>=1.32.0; python_version < \"3.10\"",
-    "grpcio>=1.42.0; python_version >= \"3.10\"",
-    "opencensus",
-    "prometheus-client>=0.7.1",
-    "py-spy>=0.2.0; python_version < \"3.12\"",
-    "py-spy>=0.4.0; python_version >= \"3.12\"",
-    "pydantic!=2.0.*,!=2.1.*,!=2.2.*,!=2.3.*,!=2.4.*,<3",
-    "ray==2.43.0",
-    "requests",
-    "smart-open",
-    "virtualenv!=20.21.1,>=20.0.24",
 ]
 files = [
     {file = "ray-2.43.0-cp311-cp311-macosx_10_15_x86_64.whl", hash = "sha256:fde8a81280f07af983bc3769c9941db5db273ce10e92abb3348e41bed023d735"},
@@ -2746,7 +2502,7 @@ name = "referencing"
 version = "0.36.2"
 requires_python = ">=3.9"
 summary = "JSON Referencing + Python"
-groups = ["default", "cluster"]
+groups = ["default"]
 dependencies = [
     "attrs>=22.2.0",
     "rpds-py>=0.7.0",
@@ -2802,7 +2558,7 @@ name = "requests"
 version = "2.32.3"
 requires_python = ">=3.8"
 summary = "Python HTTP for Humans."
-groups = ["default", "cluster"]
+groups = ["default"]
 dependencies = [
     "certifi>=2017.4.17",
     "charset-normalizer<4,>=2",
@@ -2851,7 +2607,7 @@ name = "rpds-py"
 version = "0.24.0"
 requires_python = ">=3.9"
 summary = "Python bindings to Rust's persistent data structures (rpds)"
-groups = ["default", "cluster"]
+groups = ["default"]
 files = [
     {file = "rpds_py-0.24.0-cp311-cp311-macosx_10_12_x86_64.whl", hash = "sha256:2d3ee4615df36ab8eb16c2507b11e764dcc11fd350bbf4da16d09cda11fcedef"},
     {file = "rpds_py-0.24.0-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:e13ae74a8a3a0c2f22f450f773e35f893484fcfacb00bb4344a7e0f4f48e1f97"},
@@ -2906,21 +2662,6 @@ dependencies = [
 files = [
     {file = "rq-2.0.0-py3-none-any.whl", hash = "sha256:a3a767876675dcc42683bac1869494c5020ba7fcf5c026d1f6d36a8ab98573a6"},
     {file = "rq-2.0.0.tar.gz", hash = "sha256:76d2a4a27f8fd5c4cfa200cd442efe3c1fd73525c676af06f07fcc0b81bdb70d"},
-]
-
-[[package]]
-name = "rsa"
-version = "4.9.1"
-requires_python = "<4,>=3.6"
-summary = "Pure-Python RSA implementation"
-groups = ["default"]
-marker = "python_version >= \"3.6\""
-dependencies = [
-    "pyasn1>=0.1.3",
-]
-files = [
-    {file = "rsa-4.9.1-py3-none-any.whl", hash = "sha256:68635866661c6836b8d39430f97a996acbd61bfa49406748ea243539fe239762"},
-    {file = "rsa-4.9.1.tar.gz", hash = "sha256:e7bdbfdb5497da4c07dfd35530e1a902659db6ff241e39d9953cad06ebd0ae75"},
 ]
 
 [[package]]
@@ -3115,20 +2856,6 @@ groups = ["default", "streamer"]
 files = [
     {file = "six-1.17.0-py2.py3-none-any.whl", hash = "sha256:4721f391ed90541fddacab5acf947aa0d3dc7d27b2e1e8eda2be8970586c3274"},
     {file = "six-1.17.0.tar.gz", hash = "sha256:ff70335d468e7eb6ec65b95b99d3a2836546063f63acc5171de367e834932a81"},
-]
-
-[[package]]
-name = "smart-open"
-version = "7.1.0"
-requires_python = "<4.0,>=3.7"
-summary = "Utils for streaming large files (S3, HDFS, GCS, Azure Blob Storage, gzip, bz2...)"
-groups = ["default"]
-dependencies = [
-    "wrapt",
-]
-files = [
-    {file = "smart_open-7.1.0-py3-none-any.whl", hash = "sha256:4b8489bb6058196258bafe901730c7db0dcf4f083f316e97269c66f45502055b"},
-    {file = "smart_open-7.1.0.tar.gz", hash = "sha256:a4f09f84f0f6d3637c6543aca7b5487438877a21360e7368ccf1f704789752ba"},
 ]
 
 [[package]]
@@ -3513,7 +3240,7 @@ name = "typing-extensions"
 version = "4.13.2"
 requires_python = ">=3.8"
 summary = "Backported and Experimental Type Hints for Python 3.8+"
-groups = ["default", "cluster", "streamer"]
+groups = ["default", "streamer"]
 files = [
     {file = "typing_extensions-4.13.2-py3-none-any.whl", hash = "sha256:a439e7c04b49fec3e5d3e2beaa21755cadbbdc391694e28ccdd36ca4a1408f8c"},
     {file = "typing_extensions-4.13.2.tar.gz", hash = "sha256:e6c81219bd689f51865d9e372991c540bda33a0379d5573cddb9a3a23f7caaef"},
@@ -3568,7 +3295,7 @@ name = "urllib3"
 version = "2.4.0"
 requires_python = ">=3.9"
 summary = "HTTP library with thread-safe connection pooling, file post, and more."
-groups = ["default", "cluster", "streamer"]
+groups = ["default", "streamer"]
 files = [
     {file = "urllib3-2.4.0-py3-none-any.whl", hash = "sha256:4e16665048960a0900c702d4a66415956a584919c03361cac9f1df5c5dd7e813"},
     {file = "urllib3-2.4.0.tar.gz", hash = "sha256:414bc6535b787febd7567804cc015fee39daab8ad86268f1310a9250697de466"},
@@ -3633,23 +3360,6 @@ files = [
     {file = "uvloop-0.21.0-cp312-cp312-musllinux_1_2_aarch64.whl", hash = "sha256:461d9ae6660fbbafedd07559c6a2e57cd553b34b0065b6550685f6653a98c1cb"},
     {file = "uvloop-0.21.0-cp312-cp312-musllinux_1_2_x86_64.whl", hash = "sha256:183aef7c8730e54c9a3ee3227464daed66e37ba13040bb3f350bc2ddc040f22f"},
     {file = "uvloop-0.21.0.tar.gz", hash = "sha256:3bf12b0fda68447806a7ad847bfa591613177275d35b6724b1ee573faa3704e3"},
-]
-
-[[package]]
-name = "virtualenv"
-version = "20.30.0"
-requires_python = ">=3.8"
-summary = "Virtual Python Environment builder"
-groups = ["default"]
-dependencies = [
-    "distlib<1,>=0.3.7",
-    "filelock<4,>=3.12.2",
-    "importlib-metadata>=6.6; python_version < \"3.8\"",
-    "platformdirs<5,>=3.9.1",
-]
-files = [
-    {file = "virtualenv-20.30.0-py3-none-any.whl", hash = "sha256:e34302959180fca3af42d1800df014b35019490b119eba981af27f2fa486e5d6"},
-    {file = "virtualenv-20.30.0.tar.gz", hash = "sha256:800863162bcaa5450a6e4d721049730e7f2dae07720e0902b0e4040bd6f9ada8"},
 ]
 
 [[package]]
