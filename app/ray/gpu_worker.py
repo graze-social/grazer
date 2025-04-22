@@ -1,5 +1,6 @@
 import random
 import ray
+import time
 from cachetools import LRUCache
 from typing import Any
 from app.ray.timing_base import TimingBase, measure_time
@@ -8,6 +9,8 @@ from app.models.image_nsfw_classifier import ImageNSFWClassifier
 from app.models.image_arbitrary_classifier import ImageArbitraryClassifier
 from app.models.text_embedder import TextEmbedder
 from app.models.text_arbitrary_classifier import TextArbitraryClassifier
+
+from app.logger import logger
 
 
 @ray.remote(num_gpus=1)
@@ -105,3 +108,10 @@ class GPUWorker(TimingBase):
         )
         await self.cache.bulk_cache_prediction.remote(cache_keys, predictions)
         return predictions
+    async def run(self):
+        # Keep the script running to maintain the actor
+        try:
+            while True:
+                time.sleep(10)
+        except KeyboardInterrupt:
+            logger.info(f"CPU Worker worker stopped.")

@@ -1,3 +1,4 @@
+import time
 import numpy as np
 import ray
 from PIL import Image
@@ -10,6 +11,7 @@ from app.algorithm_asset_cacher import AlgorithmAssetCacher
 from app.helpers import dict_to_sorted_string, is_truthy
 from app.settings import HOSTNAME
 from app.ray.timing_base import TimingBase, measure_time
+from app.logger import logger
 from app.sentry import sentry_sdk
 
 @ray.remote(max_concurrency=100)
@@ -159,3 +161,11 @@ class NetworkWorker(TimingBase):
             return did
         else:
             return existing
+
+    async def run(self):
+        # Keep the script running to maintain the actor
+        try:
+            while True:
+                time.sleep(10)
+        except KeyboardInterrupt:
+            logger.info(f"NetworkWorker worker stopped.")
