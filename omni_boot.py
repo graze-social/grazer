@@ -15,7 +15,6 @@ boot_settings = OmniBootSettings()
 
 DEFAULT_NAMESPACE = "main"
 
-
 async def boot_cache(num_cpus: float, num_gpus: float):
     from app.ray.semaphore import SemaphoreActor
     from app.ray.cache import Cache
@@ -36,9 +35,6 @@ async def boot_cache(num_cpus: float, num_gpus: float):
         num_gpus=num_gpus,
         namespace=DEFAULT_NAMESPACE,
     ).remote()
-
-    # can't validate remote object ref on actors
-    # ray.get([bsky_actor, graze_actor, cache_actor], timeout=300)
 
 
 async def boot_network(num_workers: int, num_cpus: float, num_gpus: int):
