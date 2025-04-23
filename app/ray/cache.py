@@ -7,7 +7,7 @@ from app.ray.timing_base import TimingBase, measure_time
 from app.telemetry import Telemetry
 from app.sentry import sentry_sdk
 
-@ray.remote(max_concurrency=1000)
+@ray.remote(max_concurrency=1000) # type: ignore
 class Cache(TimingBase):
     def __init__(self, key_prefix="ray_workers", batch_size=100):
         """

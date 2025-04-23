@@ -37,13 +37,14 @@ dependencies = [
     "opentelemetry-exporter-otlp>=1.31.1",
     "opentelemetry-instrumentation>=0.52b1",
     "opentelemetry-instrumentation-requests>=0.52b1",
+    "pydantic-settings",
+    "pydantic-core>=2.33.1",
 
 ]
 
 [project.optional-dependencies]
 build = ["cython>=3.0.12", "ninja>=1.11.1.3", "setuptools>=75.8.2"]
-cluster = ["ray[client]==2.43.0"]
-streamer = ["aioboto3>=14.1.0", "websockets==13.1"]
+streamer = ["aioboto3>=14.1.0", "websockets==13.1", "types-aioboto3[sqs]"]
 
 
 [dependency-groups]
@@ -92,6 +93,9 @@ start_cpu_worker = { shell = "nohup python run_ray_cpu_worker.py --name cpu:main
 
 # Runpod Worker
 start_runpod_worker = { cmd = ["python3", "run_runpod_worker.py"] }
+
+# Kube Worker
+start_kube_worker = { cmd = ["python3", "run_kube_worker.py"] }
 
 # Jetstreamer
 start_streamer = { cmd = ["python3", "run_streamer.py"] }

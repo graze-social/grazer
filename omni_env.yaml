@@ -1,0 +1,9 @@
+# example env
+working_dir: .
+pip:
+  - "aioboto3>=14.1.0"
+  - "websockets==13.1"
+  - "types-aioboto3[sqs]"
+  - "pydantic-settings"
+  - "pandas>=2.1.2"
+env_vars: {}
