@@ -172,3 +172,4 @@ cython_debug/
 .pdm-python
 nohup.out
 notes.md
+.secrets

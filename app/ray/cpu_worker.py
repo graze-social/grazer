@@ -1,3 +1,4 @@
+import time
 import traceback
 import asyncio
 from asyncio import Semaphore
@@ -119,3 +120,11 @@ class CPUWorker(TimingBase):
             processes.append(self.process_manifest(algorithm_id, manifest, records, report_output))
         results = await asyncio.gather(*processes)
         return results
+
+    async def run(self):
+        # Keep the script running to maintain the actor
+        try:
+            while True:
+                time.sleep(10)
+        except KeyboardInterrupt:
+            logger.info(f"CPU Worker worker stopped.")
