@@ -7,7 +7,7 @@ from app.logger import logger
 from app.sentry import sentry_sdk
 from app.kube.router import KubeRouter
 from app.settings import StreamerSettings
-
+from app.ray.dispatcher import Dispatcher
 settings = StreamerSettings()
 
 @ray.remote(num_cpus=0.5)
@@ -20,6 +20,7 @@ class SQSConsumer:
         self.polling_interval = settings.sqs_polling_interval
         self.session = aioboto3.Session()
         self.shutdown_event = asyncio.Event()
+        self.dispatcher = Dispatcher()
 
     async def receive_messages(self):
         """Continuously poll SQS for messages."""
@@ -57,7 +58,7 @@ class SQSConsumer:
             await self.delete_message(sqs, receipt_handle)
             return
         try:
-            await KubeRouter.process_request(data, {}, settings.noop)
+            await KubeRouter.process_request(self.dispatcher, data, settings.noop)
             await self.delete_message(sqs, receipt_handle)
         except Exception as e:
             logger.error("Failed to process message: %s", e)
