@@ -136,14 +136,19 @@ async def boot_consumer():
 
 async def omni_boot():
     if boot_settings.boot_cache:
+        logger.info("Booting Cache")
         await boot_cache(num_cpus=0.5, num_gpus=0)
     if boot_settings.boot_network:
+        logger.info("Booting Network")
         await boot_network(num_workers=3, num_cpus=0.1, num_gpus=0)
     if boot_settings.boot_cpu:
+        logger.info("Booting CPU Worker")
         await boot_cpu(num_cpus=0.5, num_gpus=0, num_workers=3)
     if boot_settings.boot_gpu:
+        logger.info("Booting GPU Worker")
         await boot_gpu(num_cpus=0, num_gpus=0.5, num_workers=1)
     if boot_settings.boot_consumer:
+        logger.info("Booting Consumer")
         await boot_consumer()
 
 
