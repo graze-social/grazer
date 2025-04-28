@@ -54,9 +54,9 @@ RUN pdm sync \
 FROM python:${PYTHON_VERSION}-${DISTRO} AS grazer
 WORKDIR /grazer
 
-# Install runtime dependencies - add libre2-9 package here!
+# Install runtime dependencies - add libre2-dev package here!
 RUN apt-get update && apt-get install -y \
-    libre2-9 \
+    libre2-dev \
     && apt-get clean
 
 # Reinstall PDM

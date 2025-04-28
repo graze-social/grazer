@@ -28,9 +28,9 @@ RUN pip install -r py311-linux-requirements.txt
 
 FROM rayproject/ray:${RAY_VERSION}-py311 AS cluster
 
-# Install runtime dependencies - add libre2-9 package here!
+# Install runtime dependencies - add libre2-dev package here!
 RUN sudo apt-get update && sudo apt-get install -y \
-    libre2-9 \
+    libre2-dev \
     && sudo apt-get clean
 
 WORKDIR  /grazer
