@@ -44,7 +44,8 @@ COPY pyproject.toml ${LOCKFILE} ./
 RUN pip install pybind11[global]
 RUN pip install cython>=3.0.12 ninja>=1.11.1.3 setuptools>=75.8.2
 RUN pdm sync \
-    -G cluster \
+    --prod \
+    -G streamer \
     -L ${LOCKFILE} \
     --no-isolation \
     --no-editable \
