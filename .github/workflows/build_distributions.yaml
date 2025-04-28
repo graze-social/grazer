@@ -152,7 +152,9 @@ jobs:
   notify:
     runs-on: [ubuntu-latest]
     if: ${{ contains(join(needs.*.result, ','), 'success') }}
-    needs: [build_client, build_cluster, create_release]
+    needs: [build_client, build_cluster, create_release, setup]
+    env:
+      VERSION_TAG: ${{needs.setup.outputs.version_tag}}
     steps:
       - name: discord_notify_hook
         uses: stegzilla/discord-notify@v2
