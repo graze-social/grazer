@@ -1,5 +1,5 @@
 # grazer
 Graze Core Algorithm Engine
 
-### Development
+## Development
 Please see [DEVELOPMENT](./docs/DEVELOPMENT.md)
