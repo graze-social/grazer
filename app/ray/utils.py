@@ -1,7 +1,30 @@
 import ray
+from ray.actor import ActorHandle
 import time
 import argparse
 import random
+from app.logger import logger
+
+def get_or_create_actor(actor_cls, *constructor_args, **kwargs) -> ActorHandle:
+    """ Use prexisting actors with handle/namespace"""
+    kill = kwargs.get("kill", False)
+    kwargs.pop("kill", None)
+
+    try:
+      actor = ray.get_actor(kwargs["name"], kwargs.get("namespace", None))
+      if not actor:
+          return actor_cls.options(**kwargs).remote(*constructor_args)
+      else:
+          if kill:
+              ray.kill(actor)
+              return actor_cls.options(**kwargs).remote(*constructor_args)
+          else:
+              return actor
+    except ValueError as e:
+        logger.warn(e)
+        logger.warn("maybe first boot")
+
+        return actor_cls.options(**kwargs).remote(*constructor_args)
 
 
 def discover_named_actor(prefix, timeout):
@@ -39,7 +62,6 @@ def discover_named_actors(prefix, timeout=10):
         time.sleep(1)  # Poll every second to allow actors to register
 
     return matching_actors
-
 
 def parse_cache_worker_args():
     """

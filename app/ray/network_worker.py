@@ -14,7 +14,7 @@ from app.ray.timing_base import TimingBase, measure_time
 from app.logger import logger
 from app.sentry import sentry_sdk
 
-@ray.remote(max_concurrency=100)
+@ray.remote(max_concurrency=100) #type: ignore
 class NetworkWorker(TimingBase):
     def __init__(self, cache, bluesky_semaphore, graze_semaphore):
         """
@@ -163,9 +163,11 @@ class NetworkWorker(TimingBase):
             return existing
 
     async def run(self):
-        # Keep the script running to maintain the actor
+        logger.info(
+            "NetworkWorker worker booting..."
+        )
         try:
             while True:
                 time.sleep(10)
         except KeyboardInterrupt:
-            logger.info(f"NetworkWorker worker stopped.")
+            logger.info("NetworkWorker worker stopped.")

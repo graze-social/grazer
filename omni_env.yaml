@@ -6,4 +6,7 @@ pip:
   - "types-aioboto3[sqs]"
   - "pydantic-settings"
   - "pandas>=2.1.2"
-env_vars: {}
+env_vars:
+  BOOT_CPU: "true"
+  BOOT_CONSUMER: "true"
+  RAY_DEDUP_LOGS: "0"

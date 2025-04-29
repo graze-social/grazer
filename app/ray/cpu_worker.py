@@ -12,7 +12,7 @@ from app.ray.timing_base import TimingBase, measure_time
 from app.sentry import sentry_sdk
 from app.telemetry import Telemetry
 
-@ray.remote(max_concurrency=5)
+@ray.remote(max_concurrency=5) #type: ignore
 class CPUWorker(TimingBase):
     def __init__(
         self,
@@ -123,8 +123,11 @@ class CPUWorker(TimingBase):
 
     async def run(self):
         # Keep the script running to maintain the actor
+        logger.info(
+            "CPUWorker worker booting.."
+        )
         try:
             while True:
                 time.sleep(10)
         except KeyboardInterrupt:
-            logger.info(f"CPU Worker worker stopped.")
+            logger.info("CPU Worker worker stopped.")

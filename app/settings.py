@@ -11,6 +11,8 @@ REDIS_DELETE_POST_QUEUE = "grazer_delete_posts"
 CURRENT_ALGORITHMS_KEY = "current_algorithms"
 SENTRY_DSN = os.getenv("SENTRY_DSN")
 
+class EgressSettings(BaseSettings):
+    egress_enabled: bool = False
 
 class StreamerSettings(BaseSettings):
     # TODO: making this optional is a stupid LSP thing
@@ -18,7 +20,6 @@ class StreamerSettings(BaseSettings):
     aws_region: str = "us-east-1"
     sqs_polling_interval: int = 10
     noop: bool = True
-
 
 class OmniBootSettings(BaseSettings):
     """Some switches to control the behavior of the booting script"""
