@@ -1,5 +1,7 @@
 from app.kube.processor import KubeProcessor
 from app.logger import logger
+
+
 class KubeRouter:
     @classmethod
     async def process_request(cls, dispatcher, params, noop: bool):
@@ -10,4 +12,6 @@ class KubeRouter:
             logger.info("noop")
         else:
             if params.get("task") == "process_algos":
-                await KubeProcessor.process_algos(dispatcher, params.get("transactions"))
+                await KubeProcessor.process_algos(
+                    dispatcher, params.get("transactions")
+                )

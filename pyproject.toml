@@ -39,6 +39,8 @@ dependencies = [
     "opentelemetry-instrumentation-requests>=0.52b1",
     "pydantic-settings",
     "pydantic-core>=2.33.1",
+    "pydantic>=2.11.4",
+    "certifi>=2025.4.26",
 
 ]
 
@@ -98,7 +100,13 @@ start_runpod_worker = { cmd = ["python3", "run_runpod_worker.py"] }
 start_kube_worker = { cmd = ["python3", "run_kube_worker.py"] }
 
 # Jetstreamer
-start_streamer = { cmd = ["python3", "run_streamer.py"] }
+start_streamer = { cmd = [
+    "python3",
+    "run_streamer.py",
+], env_file = ".env.streamer" }
+
+# Jetstreamer
+algo_sync = { cmd = ["python3", "algo_sync.py"], env_file = ".env.algosync" }
 
 tail_output = { shell = "tail -f -n 300 nohup.out" }
 
@@ -113,8 +121,3 @@ start_all_workers.composite = [
 ]
 
 start_all_workers.env = { RAY_DEDUP_LOGS = "0", REDIS_URL = "redis://localhost:6379", SENTRY_DSN = "https://foo:bar@example.com/12345" }
-
-register_actors = { env = { RAY_ADDRESS = "ray://localhost:10001", REDIS_URL = "redis://localhost:6379", SENTRY_DSN = "https://foo:bar@example.com/12345" }, cmd = [
-    "python3",
-    "register_actors.py",
-] }

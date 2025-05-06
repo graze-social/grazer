@@ -7,7 +7,8 @@ from app.ray.timing_base import TimingBase, measure_time
 from app.telemetry import Telemetry
 from app.sentry import sentry_sdk
 
-@ray.remote(max_concurrency=1000) # type: ignore
+
+@ray.remote(max_concurrency=1000)  # type: ignore
 class Cache(TimingBase):
     def __init__(self, key_prefix="ray_workers", batch_size=100):
         """
@@ -54,9 +55,12 @@ class Cache(TimingBase):
         if self.outputs:
             try:
                 if not self.telemetry:
-                   self.telemetry = Telemetry("grazer")
+                    self.telemetry = Telemetry("grazer")
                 self.telemetry.record_gauge("output_queue_dump_size", len(self.outputs))
-                self.telemetry.record_gauge("output_queue_content_size", sum([len(e.get("matches", []) or []) for e in self.outputs]))
+                self.telemetry.record_gauge(
+                    "output_queue_content_size",
+                    sum([len(e.get("matches", []) or []) for e in self.outputs]),
+                )
             except Exception as e:
                 sentry_sdk.capture_exception(e)
             await Egress.send_results(self.outputs, f"{self.key_prefix}:output")

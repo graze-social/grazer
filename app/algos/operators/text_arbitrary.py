@@ -5,6 +5,7 @@ from app.models.text_arbitrary_classifier import TextArbitraryClassifier
 from app.algos.operators.huggingface_classifier import HuggingfaceClassifierParser
 from app.helpers import extract_all_text_fields
 
+
 def get_cache_key(model_name, text, labels, multi_label):
     joined_labels = "|".join(labels)
     return sha256(
@@ -44,11 +45,13 @@ class TextArbitraryParser(HuggingfaceClassifierParser):
             texts = [texts]
 
         # Set to none since '' and None are non-interpretable by this model
-        texts = [e or 'none' for e in texts]
+        texts = [e or "none" for e in texts]
         # Cache setup
-        cached_probs, uncached_keys, uncached_texts = (
-            await self.precache_text_predictions(texts, labels, multi_label)
-        )
+        (
+            cached_probs,
+            uncached_keys,
+            uncached_texts,
+        ) = await self.precache_text_predictions(texts, labels, multi_label)
         all_predictions = cached_probs.copy()
 
         # Fetch new predictions for uncached texts

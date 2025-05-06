@@ -4,6 +4,7 @@ from app.ray.semaphore import SemaphoreActor
 from app.ray.utils import parse_cache_worker_args
 from app.sentry import sentry_sdk
 
+
 def main(name, num_cpus, num_gpus, namespace):
     # Initialize Ray
     ray.init(ignore_reinit_error=True, namespace=namespace)
@@ -27,6 +28,7 @@ def main(name, num_cpus, num_gpus, namespace):
     # Keep the script running to maintain the actor
     try:
         import time
+
         while True:
             time.sleep(10)
     except KeyboardInterrupt:

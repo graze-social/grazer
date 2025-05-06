@@ -6,19 +6,23 @@ from app.algos.base import BaseParser
 from app.algos.operators.attribute import resolve_path_batch
 from app.helpers import is_likely_domain_or_url
 
+
 class RegexParser(BaseParser):
     def get_record_texts(self, records, field_selector):
-        return np.array([
-            (
-                " ".join(map(str, e))
-                if isinstance(e, list)
-                else (
-                    "" if isinstance(e, np.ndarray) and np.all(e == None)
-                    else (str(e) if str(e) else "")
+        return np.array(
+            [
+                (
+                    " ".join(map(str, e))
+                    if isinstance(e, list)
+                    else (
+                        ""
+                        if isinstance(e, np.ndarray) and np.all(e == None)
+                        else (str(e) if str(e) else "")
+                    )
                 )
-            )
-            for e in resolve_path_batch(records, field_selector)
-        ])
+                for e in resolve_path_batch(records, field_selector)
+            ]
+        )
 
     async def matches_operator(
         self, records, field_selector, pattern, insensitive=True
@@ -38,7 +42,6 @@ class RegexParser(BaseParser):
         else:
             return np.vectorize(lambda x: bool(re.search(pattern, x)))(field_values)
 
-
     async def negation_matches_operator(
         self, records, field_selector, pattern, insensitive=True
     ):
@@ -52,7 +55,12 @@ class RegexParser(BaseParser):
         return ~response
 
     async def allow_operator(
-        self, records, field_selector, terms_list, insensitive=True, treat_as_regex=False
+        self,
+        records,
+        field_selector,
+        terms_list,
+        insensitive=True,
+        treat_as_regex=False,
     ):
         """
         Returns a NumPy array of booleans indicating whether the field in each
@@ -61,13 +69,15 @@ class RegexParser(BaseParser):
         # Adjust boundary pattern to avoid matches around invalid delimiters like '.'
         if treat_as_regex:
             combined_pattern = "|".join(
-                rf"{term}(?![\w-])" if is_likely_domain_or_url(term)
+                rf"{term}(?![\w-])"
+                if is_likely_domain_or_url(term)
                 else rf"(?<![\w\-/])(?<!\.){term}(?![\w-])"
                 for term in terms_list
             )
         else:
             combined_pattern = "|".join(
-                rf"{re2.escape(term)}(?![\w-])" if is_likely_domain_or_url(term)
+                rf"{re2.escape(term)}(?![\w-])"
+                if is_likely_domain_or_url(term)
                 else rf"(?<![\w\-/])(?<!\.){re2.escape(term)}(?![\w-])"
                 for term in terms_list
             )
@@ -78,7 +88,12 @@ class RegexParser(BaseParser):
         )
 
     async def deny_operator(
-        self, records, field_selector, terms_list, insensitive=True, treat_as_regex=False
+        self,
+        records,
+        field_selector,
+        terms_list,
+        insensitive=True,
+        treat_as_regex=False,
     ):
         """
         Returns a NumPy array of booleans indicating whether the field in each

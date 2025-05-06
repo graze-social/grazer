@@ -8,5 +8,17 @@ pip:
   - "pandas>=2.1.2"
 env_vars:
   BOOT_CPU: "true"
+  BOOT_GPU: "true"
   BOOT_CONSUMER: "true"
   RAY_DEDUP_LOGS: "0"
+  RAY_ENABLE_RECORD_ACTOR_TASK_LOGGING: "1"
+  EGRESS_ENABLED: "true"
+  NOOP: "false"
+excludes:
+  - "current_algos.json"
+  - "*.sh"
+  - "README.md"
+  - Dockerfile*
+  - .env*
+  - streamer_env.yaml
+  - sqs.py

@@ -4,7 +4,16 @@ from app.ray.utils import discover_named_actors, discover_named_actor
 
 
 class Dispatcher:
-    def __init__(self, cache=None, bluesky_semaphore=None, graze_semaphore=None, network_workers=[], gpu_embedding_workers=[], gpu_classifier_workers=[], cpu_workers=[]):
+    def __init__(
+        self,
+        cache=None,
+        bluesky_semaphore=None,
+        graze_semaphore=None,
+        network_workers=[],
+        gpu_embedding_workers=[],
+        gpu_classifier_workers=[],
+        cpu_workers=[],
+    ):
         """
         Initialize the dispatcher with workers.
         Args:
@@ -16,13 +25,21 @@ class Dispatcher:
         print("Looking for cache...")
         self.cache = cache or discover_named_actor("cache:", timeout=10)
         print("Looking for Bluesky Semaphore...")
-        self.bluesky_semaphore = bluesky_semaphore or discover_named_actor("semaphore:bluesky", timeout=10)
+        self.bluesky_semaphore = bluesky_semaphore or discover_named_actor(
+            "semaphore:bluesky", timeout=10
+        )
         print("Looking for Graze Semaphore...")
-        self.graze_semaphore = graze_semaphore or discover_named_actor("semaphore:graze", timeout=10)
+        self.graze_semaphore = graze_semaphore or discover_named_actor(
+            "semaphore:graze", timeout=10
+        )
         print("Looking for Network Workers...")
-        self.network_workers = network_workers or discover_named_actors("network:", timeout=10)
+        self.network_workers = network_workers or discover_named_actors(
+            "network:", timeout=10
+        )
         print("Looking for GPU Worker...")
-        self.gpu_embedding_workers = gpu_embedding_workers or discover_named_actors("gpu:embedders", timeout=10)
+        self.gpu_embedding_workers = gpu_embedding_workers or discover_named_actors(
+            "gpu:embedders", timeout=10
+        )
         self.gpu_classifier_workers = gpu_classifier_workers or discover_named_actors(
             "gpu:classifiers", timeout=10
         )

@@ -14,7 +14,8 @@ from app.ray.timing_base import TimingBase, measure_time
 from app.logger import logger
 from app.sentry import sentry_sdk
 
-@ray.remote(max_concurrency=100) #type: ignore
+
+@ray.remote(max_concurrency=100)  # type: ignore
 class NetworkWorker(TimingBase):
     def __init__(self, cache, bluesky_semaphore, graze_semaphore):
         """
@@ -46,7 +47,7 @@ class NetworkWorker(TimingBase):
                     try:
                         resp = await client.post(url, json=payload)
                         resp.raise_for_status()
-                        data =  resp.json()
+                        data = resp.json()
                         if data and isinstance(data, dict) and data.get("asset_value"):
                             # Currently everything we return is a list so return as np array
                             return np.array(data.get("asset_value"))
@@ -163,9 +164,7 @@ class NetworkWorker(TimingBase):
             return existing
 
     async def run(self):
-        logger.info(
-            "NetworkWorker worker booting..."
-        )
+        logger.info("NetworkWorker worker booting...")
         try:
             while True:
                 time.sleep(10)

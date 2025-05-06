@@ -108,6 +108,7 @@ class GPUWorker(TimingBase):
         )
         await self.cache.bulk_cache_prediction.remote(cache_keys, predictions)
         return predictions
+
     async def run(self):
         # Keep the script running to maintain the actor
         try:

@@ -5,9 +5,12 @@ from app.jetstream import Jetstream
 from app.algos.manager import AlgoManager
 from app.logger import logger
 
+
 class RunpodBackfiller(RunpodBase):
     @classmethod
-    async def run(cls, dispatcher, algorithm_id, manifest, batch_size=2000, max_match_count=500):
+    async def run(
+        cls, dispatcher, algorithm_id, manifest, batch_size=2000, max_match_count=500
+    ):
         logger.info(f"{algorithm_id}, {manifest}")
         manager = await AlgoManager.initialize(
             manifest,
@@ -24,12 +27,16 @@ class RunpodBackfiller(RunpodBase):
         async for record in Jetstream.yield_jetstream_reversed():
             batch.append(record)
             now = datetime.utcnow()
-            
+
             # Check if we should write out the batch (batch size or time elapsed)
-            if len(batch) >= batch_size or (batch and (now - last_write_time) >= timedelta(seconds=60)):
+            if len(batch) >= batch_size or (
+                batch and (now - last_write_time) >= timedelta(seconds=60)
+            ):
                 record_count += len(batch)
                 logger.info("Processing batch...")
-                matched_records, _, timing = await manager.matching_records(list(reversed(batch)))
+                matched_records, _, timing = await manager.matching_records(
+                    list(reversed(batch))
+                )
                 if matched_records:
                     match_count += len(matched_records)
                     response = {
@@ -38,7 +45,7 @@ class RunpodBackfiller(RunpodBase):
                         "uuid": str(uuid.uuid4()),
                         "matches": matched_records,
                         "compute_environment": await manager.is_gpu_accelerated(),
-                        "compute_amount": timing
+                        "compute_amount": timing,
                     }
                     logger.info(response)
                     manager.cache.report_output.remote(response, True)

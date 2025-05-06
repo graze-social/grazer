@@ -8,6 +8,7 @@ from app.ray.utils import (
 )
 from app.sentry import sentry_sdk
 
+
 def main(name, num_workers, num_cpus, num_gpus, namespace):
     # Initialize Ray
     ray.init(ignore_reinit_error=True, namespace=namespace)

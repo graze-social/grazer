@@ -12,6 +12,7 @@ from app.settings import CURRENT_ALGORITHMS_KEY, EgressSettings
 
 has_egress = EgressSettings().egress_enabled
 
+
 class KubeProcessor(KubeBase):
     @classmethod
     async def ingest_feed(cls, transactions):
