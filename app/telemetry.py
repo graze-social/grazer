@@ -17,12 +17,18 @@ from opentelemetry.instrumentation.requests import RequestsInstrumentor
 class Telemetry:
     """A simplified interface for OpenTelemetry instrumentation"""
 
-    def __init__(self, service_name: str, service_version: str = "0.1.0", environment: str = "production"):
+    def __init__(
+        self,
+        service_name: str,
+        service_version: str = "0.1.0",
+        environment: str = "production",
+    ):
         self.service_name = service_name
         self.service_version = service_version
         self.environment = environment
         self.enabled = all(
-            os.getenv(k) for k in ("OTEL_EXPORTER_OTLP_ENDPOINT", "OTEL_EXPORTER_OTLP_HEADERS")
+            os.getenv(k)
+            for k in ("OTEL_EXPORTER_OTLP_ENDPOINT", "OTEL_EXPORTER_OTLP_HEADERS")
         )
 
         self.tracer = None
@@ -33,11 +39,13 @@ class Telemetry:
         self._last_values = {}
 
         if self.enabled:
-            self.resource = Resource.create({
-                "service.name": service_name,
-                "service.version": service_version,
-                "deployment.environment": environment
-            })
+            self.resource = Resource.create(
+                {
+                    "service.name": service_name,
+                    "service.version": service_version,
+                    "deployment.environment": environment,
+                }
+            )
             self._setup_opentelemetry()
 
     def _setup_opentelemetry(self):
@@ -56,8 +64,12 @@ class Telemetry:
         self.tracer = trace.get_tracer(self.service_name)
 
     def _setup_metrics(self, metric_exporter):
-        reader = PeriodicExportingMetricReader(metric_exporter, export_interval_millis=10000)
-        metrics_provider = MeterProvider(resource=self.resource, metric_readers=[reader])
+        reader = PeriodicExportingMetricReader(
+            metric_exporter, export_interval_millis=10000
+        )
+        metrics_provider = MeterProvider(
+            resource=self.resource, metric_readers=[reader]
+        )
         metrics.set_meter_provider(metrics_provider)
         self.meter = metrics.get_meter(self.service_name)
 
@@ -72,29 +84,40 @@ class Telemetry:
                     span.set_attribute(k, v)
             yield span
 
-    def record_counter(self, name: str, value: int = 1, attributes: Optional[Dict[str, str]] = None):
+    def record_counter(
+        self, name: str, value: int = 1, attributes: Optional[Dict[str, str]] = None
+    ):
         if not self.enabled or not self.meter:
             return
         if name not in self._counters:
-            self._counters[name] = self.meter.create_counter(name, description=f"Counter for {name}", unit="1")
+            self._counters[name] = self.meter.create_counter(
+                name, description=f"Counter for {name}", unit="1"
+            )
         self._counters[name].add(value, attributes or {})
 
-    def record_gauge(self, name: str, value: float, attributes: Optional[Dict[str, str]] = None):
+    def record_gauge(
+        self, name: str, value: float, attributes: Optional[Dict[str, str]] = None
+    ):
         if not self.enabled or not self.meter:
             return
         key = (name, str(attributes))
         if name not in self._gauges:
-            self._gauges[name] = self.meter.create_up_down_counter(name, description=f"Gauge for {name}", unit="1")
+            self._gauges[name] = self.meter.create_up_down_counter(
+                name, description=f"Gauge for {name}", unit="1"
+            )
         last = self._last_values.get(key, 0)
         if last:
             self._gauges[name].add(-last, attributes or {})
         self._gauges[name].add(value, attributes or {})
         self._last_values[key] = value
 
-    def record_histogram(self, name: str, value: float, attributes: Optional[Dict[str, str]] = None):
+    def record_histogram(
+        self, name: str, value: float, attributes: Optional[Dict[str, str]] = None
+    ):
         if not self.enabled or not self.meter:
             return
         if name not in self._histograms:
-            self._histograms[name] = self.meter.create_histogram(name, description=f"Histogram for {name}", unit="ms")
+            self._histograms[name] = self.meter.create_histogram(
+                name, description=f"Histogram for {name}", unit="ms"
+            )
         self._histograms[name].record(value, attributes or {})
-

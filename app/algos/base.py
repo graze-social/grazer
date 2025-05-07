@@ -100,9 +100,13 @@ class ImageParser(BaseParser):
                     url_indices.append(url)
                     cache_keys.append(get_cache_key(self.MODEL_NAME, url, category))
             if valid_images:
-                probs = await self.probability_function(cache_keys, valid_images, category)
+                probs = await self.probability_function(
+                    cache_keys, valid_images, category
+                )
                 for single_url, single_probs in zip(url_indices, probs):
-                    all_out_probs[single_url] = self.process_probs(single_probs, category)
+                    all_out_probs[single_url] = self.process_probs(
+                        single_probs, category
+                    )
         return {
             url: (all_out_probs.get(url, {}) or {}).get(category) for url in image_urls
         }

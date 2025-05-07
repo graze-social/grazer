@@ -12,7 +12,8 @@ from app.ray.timing_base import TimingBase, measure_time
 from app.sentry import sentry_sdk
 from app.telemetry import Telemetry
 
-@ray.remote(max_concurrency=5)
+
+@ray.remote(max_concurrency=5)  # type: ignore
 class CPUWorker(TimingBase):
     def __init__(
         self,
@@ -47,7 +48,9 @@ class CPUWorker(TimingBase):
         return self.active_tasks
 
     @measure_time
-    async def process_manifest(self, algorithm_id, manifest, records, report_output=True):
+    async def process_manifest(
+        self, algorithm_id, manifest, records, report_output=True
+    ):
         async with self.semaphore:
             count = 0
             self.active_tasks += 1
@@ -75,14 +78,20 @@ class CPUWorker(TimingBase):
                         records
                     )
                 else:
-                    sentry_sdk.capture_exception(Exception("Could not process for #{algorithm_id}, was not operable!"))
+                    sentry_sdk.capture_exception(
+                        Exception(
+                            "Could not process for #{algorithm_id}, was not operable!"
+                        )
+                    )
                 response["compute_environment"] = "gpu" if gpu_accelerated else "cpu"
                 response["compute_amount"] = timing
                 response["matches"] = matched_records
                 count = len(response["matches"])
             except Exception as e:
                 sentry_sdk.capture_exception(e)
-                sentry_sdk.capture_exception(Exception("Could not process for #{algorithm_id}, error was {e}"))
+                sentry_sdk.capture_exception(
+                    Exception("Could not process for #{algorithm_id}, error was {e}")
+                )
                 print(
                     f"Error while processing records with algorithm {algorithm_id}. "
                     f"Error: {e}"
@@ -114,17 +123,20 @@ class CPUWorker(TimingBase):
         """
         processes = []
         if not self.telemetry:
-           self.telemetry = Telemetry("grazer")
+            self.telemetry = Telemetry("grazer")
         self.telemetry.record_gauge("input_queue_dump_size", len(records))
         for algorithm_id, manifest in manifests:
-            processes.append(self.process_manifest(algorithm_id, manifest, records, report_output))
+            processes.append(
+                self.process_manifest(algorithm_id, manifest, records, report_output)
+            )
         results = await asyncio.gather(*processes)
         return results
 
     async def run(self):
         # Keep the script running to maintain the actor
+        logger.info("CPUWorker worker booting..")
         try:
             while True:
                 time.sleep(10)
         except KeyboardInterrupt:
-            logger.info(f"CPU Worker worker stopped.")
+            logger.info("CPU Worker worker stopped.")

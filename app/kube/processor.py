@@ -1,12 +1,16 @@
 import random
 import asyncio
 
+from app.ray.dispatcher import Dispatcher
 from app.logic_evaluator import LogicEvaluator
 from app.logger import logger
 from app.kube.base import KubeBase
 from app.helpers import chunk
 from app.redis import RedisClient
-from app.settings import CURRENT_ALGORITHMS_KEY
+from app.settings import CURRENT_ALGORITHMS_KEY, EgressSettings
+
+
+has_egress = EgressSettings().egress_enabled
 
 
 class KubeProcessor(KubeBase):
@@ -36,7 +40,7 @@ class KubeProcessor(KubeBase):
         )
 
     @classmethod
-    async def run_algos(cls, dispatcher, records, manifests, all_operators):
+    async def run_algos(cls, dispatcher: Dispatcher, records, manifests, all_operators):
         manifests = list(manifests.items())
         random.shuffle(manifests)
         # await run_precache(dispatcher, records, [{}], all_operators)
@@ -52,7 +56,7 @@ class KubeProcessor(KubeBase):
                     )
                     algorithm_ids.append(algorithm_id)
             manifest_data = list(zip(algorithm_ids, hydrated_manifests))
-            await dispatcher.distribute_tasks(records, manifest_data, False)
+            await dispatcher.distribute_tasks(records, manifest_data, has_egress)
             while len(asyncio.all_tasks()) > 100:
                 logger.info(f"Current Task Depth is {len(asyncio.all_tasks())}")
                 asyncio.sleep(1)

@@ -1,10 +1,10 @@
 import asyncio
 import ray
 import uuid
-
 from app.settings import OmniBootSettings
 
 from app.ray.utils import (
+    get_or_create_actor,
     discover_named_actors,
     discover_named_actor,
 )
@@ -15,26 +15,48 @@ boot_settings = OmniBootSettings()
 
 DEFAULT_NAMESPACE = "main"
 
+actor_lifetime = "detached" if boot_settings.extended_lifetime else None
+
 async def boot_cache(num_cpus: float, num_gpus: float):
     from app.ray.semaphore import SemaphoreActor
     from app.ray.cache import Cache
 
-    SemaphoreActor.options(
-        name="semaphore:bluesky", lifetime="detached", namespace=DEFAULT_NAMESPACE
-    ).remote()
+    get_or_create_actor(
+        SemaphoreActor,
+        namespace=DEFAULT_NAMESPACE,
+        name="semaphore:bluesky",
+        lifetime=actor_lifetime,
+        kill=True,
+    )
 
-    SemaphoreActor.options(
-        name="semaphore:graze", lifetime="detached", namespace=DEFAULT_NAMESPACE
-    ).remote(10)  # type: ignore
+    logger.info(
+        f"Semaphore Actor 'sempaphore:bluesky' started with {num_cpus} CPUs and {num_gpus} GPUs and running..."
+    )
 
-    # Start the Cache actor with the specified resources and name
-    Cache.options(  # type: ignore
+    get_or_create_actor(
+        SemaphoreActor,
+        10,
+        name="semaphore:graze",
+        lifetime=actor_lifetime,
+        namespace=DEFAULT_NAMESPACE,
+    )
+
+    logger.info(
+        f"Semaphore Actor 'sempaphore:graze' started with {num_cpus} CPUs and {num_gpus} GPUs and running..."
+    )
+
+    get_or_create_actor(
+        Cache,
         name="cache:main",
-        lifetime="detached",
+        lifetime=actor_lifetime,
         num_cpus=num_cpus,
         num_gpus=num_gpus,
         namespace=DEFAULT_NAMESPACE,
-    ).remote()
+    )
+
+    logger.info(
+        f"Cache worker 'cahe:main' started with {num_cpus} CPUs and {num_gpus} GPUs and running..."
+    )
 
 
 async def boot_network(num_workers: int, num_cpus: float, num_gpus: int):
@@ -50,18 +72,17 @@ async def boot_network(num_workers: int, num_cpus: float, num_gpus: int):
         network_workers.append(
             NetworkWorker.options(  # type: ignore
                 name=f"{name}-{i}-{uuid_str}",
-                lifetime="detached",
+                lifetime=actor_lifetime,
                 num_cpus=num_cpus,
                 num_gpus=num_gpus,
             ).remote(cache, bluesky_semaphore, graze_semaphore)
         )
 
+    # [network_worker.run.remote() for network_worker in network_workers]
+
     logger.info(
         f"NetworkWorker worker '{name}' started with {num_cpus} CPUs and {num_gpus} GPUs and running..."
     )
-
-    # run the loop for each worker
-    ray.get([network_worker.run.remote() for network_worker in network_workers])  # type: ignore
 
 
 async def boot_cpu(num_cpus: float, num_gpus: float, num_workers: int):
@@ -79,7 +100,7 @@ async def boot_cpu(num_cpus: float, num_gpus: float, num_workers: int):
         cpu_workers.append(
             CPUWorker.options(  # type: ignore
                 name=f"{name}-{i}-{uuid_str}",
-                lifetime="detached",
+                lifetime=actor_lifetime,
                 num_cpus=num_cpus,
                 num_gpus=num_gpus,
                 namespace=DEFAULT_NAMESPACE,
@@ -87,8 +108,7 @@ async def boot_cpu(num_cpus: float, num_gpus: float, num_workers: int):
                 gpu_embedding_workers, gpu_classifier_workers, network_workers, cache
             )
         )
-
-    ray.get([cpu_worker.run.remote() for cpu_worker in cpu_workers])  # type: ignore
+    # [cpu_worker.run.remote() for cpu_worker in cpu_workers]
 
 
 async def boot_gpu(num_cpus: float, num_gpus: float, num_workers: int):
@@ -104,7 +124,7 @@ async def boot_gpu(num_cpus: float, num_gpus: float, num_workers: int):
         gpu_workers.append(
             GPUWorker.options(
                 name=f"{name}:embedders-{i}-{uuid_str}",
-                lifetime="detached",
+                lifetime=actor_lifetime,
                 num_cpus=num_cpus,
                 num_gpus=num_gpus,
             ).remote(network_workers, cache)
@@ -113,13 +133,13 @@ async def boot_gpu(num_cpus: float, num_gpus: float, num_workers: int):
     gpu_workers.append(
         GPUWorker.options(
             name=f"{name}:classifiers",
-            lifetime="detached",
+            lifetime=actor_lifetime,
             num_cpus=num_cpus,
             num_gpus=num_gpus,
         ).remote(network_workers, cache)
     )
 
-    ray.get([gpu_worker.run.remote() for gpu_worker in gpu_workers])  # type: ignore
+    # [gpu_worker.run.remote() for gpu_worker in gpu_workers]
 
 
 async def boot_consumer():
@@ -127,11 +147,13 @@ async def boot_consumer():
 
     consumer = SQSConsumer.options(
         max_concurrency=10,
-        lifetime="detached",
         namespace=DEFAULT_NAMESPACE,
         num_cpus=0.5,
     ).remote()
-    ray.get([consumer.run.remote()])  # type: ignore
+
+    # consumer.receive_messages.remote()  # type: ignore
+    # await asyncio.sleep(20)
+    return consumer
 
 
 async def omni_boot():
@@ -143,13 +165,27 @@ async def omni_boot():
         await boot_network(num_workers=3, num_cpus=0.1, num_gpus=0)
     if boot_settings.boot_cpu:
         logger.info("Booting CPU Worker")
-        await boot_cpu(num_cpus=0.5, num_gpus=0, num_workers=3)
+        await boot_cpu(num_cpus=0.5, num_gpus=0, num_workers=1)
     if boot_settings.boot_gpu:
         logger.info("Booting GPU Worker")
-        await boot_gpu(num_cpus=0, num_gpus=0.5, num_workers=1)
+        await boot_gpu(num_cpus=0, num_gpus=0.2, num_workers=1)
     if boot_settings.boot_consumer:
         logger.info("Booting Consumer")
-        await boot_consumer()
+        consumer = await boot_consumer()
+
+    try:
+        await asyncio.sleep(20)
+        consumer.receive_messages.remote() #type: ignore
+        logger.info("Starting Consumer")
+        ray.get(consumer.num_gathered_tasks.remote()) #type: ignore
+        while True:
+            await asyncio.sleep(10)
+            logger.info("[Omni] heartbeat")
+    except KeyboardInterrupt:
+        print("User stopped omniboot job")
+    except SystemExit:
+        # ray job stop <job> sends SIGTERM by default
+        print("Termination signal received for omniboot job")
 
 
 if __name__ == "__main__":

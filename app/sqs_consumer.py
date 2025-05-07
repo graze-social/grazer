@@ -8,7 +8,9 @@ from app.sentry import sentry_sdk
 from app.kube.router import KubeRouter
 from app.settings import StreamerSettings
 from app.ray.dispatcher import Dispatcher
+
 settings = StreamerSettings()
+
 
 @ray.remote(num_cpus=0.5)
 class SQSConsumer:
@@ -21,6 +23,8 @@ class SQSConsumer:
         self.session = aioboto3.Session()
         self.shutdown_event = asyncio.Event()
         self.dispatcher = Dispatcher()
+        # debug
+        self.gathered_tasks: int = 0
 
     async def receive_messages(self):
         """Continuously poll SQS for messages."""
@@ -38,6 +42,7 @@ class SQSConsumer:
                         continue
 
                     tasks = [self.process_message(sqs, msg) for msg in messages]
+                    self.gathered_tasks += len(tasks)
                     await asyncio.gather(*tasks)
 
                 except Exception as e:
@@ -67,20 +72,18 @@ class SQSConsumer:
     async def delete_message(self, sqs: Any, receipt_handle: str):
         """Delete message from the queue after successful processing."""
         try:
-            await sqs.delete_message(QueueUrl=self.queue_url, ReceiptHandle=receipt_handle)
+            await sqs.delete_message(
+                QueueUrl=self.queue_url, ReceiptHandle=receipt_handle
+            )
             logger.debug("Message deleted from SQS")
         except Exception as e:
             logger.error("Failed to delete message: %s", e)
             sentry_sdk.capture_exception(e)
 
-    async def run(self):
-        """Run the SQS consumer indefinitely."""
-        logger.info("Starting SQS consumer for queue: %s", self.queue_url)
-        try:
-            await self.receive_messages()
-        finally:
-            self.shutdown_event.set()
-
     def stop(self):
         """Signal the consumer to shut down."""
         self.shutdown_event.set()
+
+    def num_gathered_tasks(self):
+        logger.info(f"current tasks {self.gathered_tasks}")
+        return self.gathered_tasks

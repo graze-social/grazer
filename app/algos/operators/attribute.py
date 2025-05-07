@@ -137,12 +137,16 @@ class AttributeParser(BaseParser):
         # Convert boolean arrays into lists of type labels
         labeled_types = []
         for i in range(len(records)):
-            types = [key if matches_by_type.get(key, np.zeros(len(records), dtype=bool))[i] else "not"
-                     for key in matches_by_type]
+            types = [
+                key
+                if matches_by_type.get(key, np.zeros(len(records), dtype=bool))[i]
+                else "not"
+                for key in matches_by_type
+            ]
             filtered_types = [t for t in types if t != "not"]
             labeled_types.append(filtered_types if filtered_types else ["not"])
 
-        values = np.array([bool(len(set(l)&set_post_names)) for l in labeled_types])
+        values = np.array([bool(len(set(l) & set_post_names)) for l in labeled_types])
         if operator in ["in", "=="]:
             return values
         elif operator in ["not_in", "!="]:
@@ -163,11 +167,12 @@ class AttributeParser(BaseParser):
         """
         if embed_name == "gif" or embed_name == "link":
             values = resolve_path_batch(records, "embed.$type")
-            is_link_type = LogicEvaluator.compare(
-                values, "==", EMBED_TYPES["link"]
-            )
+            is_link_type = LogicEvaluator.compare(values, "==", EMBED_TYPES["link"])
             gif_domains = np.array(
-                [True in [get_url_domain(ee) == "media.tenor.com" for ee in e] for e in get_all_links(records)]
+                [
+                    True in [get_url_domain(ee) == "media.tenor.com" for ee in e]
+                    for e in get_all_links(records)
+                ]
             )
             if embed_name == "gif":
                 if operator == "==":

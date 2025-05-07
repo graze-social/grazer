@@ -3,6 +3,7 @@ from app.jetstream import Jetstream
 from app.redis import RedisClient
 from app.sentry import sentry_sdk
 
+
 class RunpodBacktester(RunpodBase):
     @classmethod
     async def check_for_killswitch(cls, task_id):

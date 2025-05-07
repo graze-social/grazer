@@ -64,9 +64,9 @@ class AlgoManager:
         instance.parsers["emotion_sentiment"] = await EmotionSentimentParser.initialize(
             instance
         )
-        instance.parsers["financial_sentiment"] = (
-            await FinancialSentimentParser.initialize(instance)
-        )
+        instance.parsers[
+            "financial_sentiment"
+        ] = await FinancialSentimentParser.initialize(instance)
         instance.parsers["language"] = await LanguageParser.initialize(instance)
         instance.parsers["sentiment"] = await SentimentParser.initialize(instance)
         instance.parsers["toxicity"] = await ToxicityParser.initialize(instance)
@@ -93,7 +93,13 @@ class AlgoManager:
 
     async def is_operable(self):
         condition_keys = await self.condition_keys()
-        return len(condition_keys - (set(self.logic_evaluator.operations.keys()) | set('metadata'))) == 0
+        return (
+            len(
+                condition_keys
+                - (set(self.logic_evaluator.operations.keys()) | set("metadata"))
+            )
+            == 0
+        )
 
     async def is_gpu_accelerated(self):
         condition_keys = await self.condition_keys()

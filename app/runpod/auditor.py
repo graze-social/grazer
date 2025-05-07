@@ -1,6 +1,7 @@
 from app.runpod.base import RunpodBase
 from app.sentry import sentry_sdk
 
+
 class RunpodAuditor(RunpodBase):
     @classmethod
     async def run_audit(cls, records, manager, task_id):

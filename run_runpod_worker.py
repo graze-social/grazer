@@ -24,7 +24,6 @@ def adjust_concurrency(current_concurrency):
     return NUM_WORKERS
 
 
-
 runpod.serverless.start(
     {"handler": process_request, "concurrency_modifier": adjust_concurrency}
 )

@@ -4,6 +4,7 @@ from app.logic_evaluator import LogicEvaluator
 from app.algos.base import BaseParser
 from app.helpers import extract_all_text_fields
 
+
 class HuggingfaceClassifierParser(BaseParser):
     async def precache_text_predictions(self, texts, model_name):
         # Generate cache keys for all texts
@@ -27,9 +28,11 @@ class HuggingfaceClassifierParser(BaseParser):
     async def get_probabilities(self, texts, model_name, batch_size=200):
         if isinstance(texts, str):
             texts = [texts]
-        cached_probs, uncached_keys, uncached_texts = (
-            await self.precache_text_predictions(texts, model_name)
-        )
+        (
+            cached_probs,
+            uncached_keys,
+            uncached_texts,
+        ) = await self.precache_text_predictions(texts, model_name)
         all_out_probs = cached_probs.copy()
 
         if uncached_texts:
