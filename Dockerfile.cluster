@@ -46,5 +46,3 @@ COPY run_ray_cpu_worker.py .
 COPY run_ray_gpu_worker.py .
 COPY run_ray_network_worker.py .
 COPY run_runpod_worker.py .
-# Test file
-COPY register_actors.py .
