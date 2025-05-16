@@ -4,6 +4,9 @@ import time
 import argparse
 import random
 from app.logger import logger
+from app.settings import OmniBootSettings
+
+settings = OmniBootSettings()
 
 
 def get_or_create_actor(actor_cls, *constructor_args, **kwargs) -> ActorHandle:
@@ -33,8 +36,7 @@ def discover_named_actor(prefix, timeout):
     if actors:
         return random.choice(actors)
 
-
-def discover_named_actors(prefix, timeout=10):
+def discover_named_actors(prefix, timeout=10, fail_hard=True):
     """
     Discover actors with names that start with a given prefix within a timeout.
 
@@ -50,15 +52,23 @@ def discover_named_actors(prefix, timeout=10):
 
     while time.time() - start_time < timeout:
         # List all named actors
-        named_actors = ray.util.list_named_actors()
-
+        named_actors = ray.util.list_named_actors(all_namespaces=True)
         # Filter by prefix
+        # Listing with `all_namespaces=True` returns actors in the format {"name": name, "namespace": namespace}
+        # Since we are querying specific namespaces, we change the list comprehension here to be able to specify the namespace where the actor has matched the prefix
+        # This is functionally the same result when running actors in default namespaces vs heterogenous namespaces,
+        # ie there should be no actors with identical names in different namespaces in any one ray cluster which would not be useable across namespaces.
+        # However, there is a performance penalty as for looking up across namespaces
         matching_actors = [
-            ray.get_actor(name) for name in named_actors if name.startswith(prefix)
+            ray.get_actor(name, namespace)
+            for (name, namespace) in (lambda d: [o.values() for o in d])(named_actors)
+            if name.startswith(prefix)
         ]
 
         if matching_actors:
             return matching_actors
+        elif fail_hard:
+            raise Exception(f"No matching actors matching prefix {prefix} found in any namespace")
 
         time.sleep(1)  # Poll every second to allow actors to register
 
