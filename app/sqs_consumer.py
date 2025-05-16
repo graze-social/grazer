@@ -12,7 +12,7 @@ import traceback
 
 
 # datawrapper
-from app.data_types import EnrichedData
+from app.stream_data import StreamData
 
 settings = StreamerSettings()
 
@@ -68,9 +68,9 @@ class SQSConsumer:
             await self.delete_message(sqs, receipt_handle)
             return
         try:
-            enriched_data = EnrichedData(data)
+            stream_data = StreamData(data)
             await KubeRouter.process_request(
-                self.dispatcher, enriched_data, settings.noop
+                self.dispatcher, stream_data, settings.noop
             )
             await self.delete_message(sqs, receipt_handle)
         except Exception as e:

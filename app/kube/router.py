@@ -1,11 +1,11 @@
-from app.data_types import EnrichedData
+from app.stream_data import StreamData
 from app.kube.processor import KubeProcessor
 from app.logger import logger
 
 
 class KubeRouter:
     @classmethod
-    async def process_request(cls, dispatcher, params: EnrichedData, noop: bool):
+    async def process_request(cls, dispatcher, params: StreamData, noop: bool):
         logger.info(params.wrap)
         logger.info(params)
         if noop:

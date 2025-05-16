@@ -3,8 +3,8 @@ from typing import Any, Dict, List, Optional
 from dataclasses import dataclass
 
 
-@dataclass()
-class EnrichedData:
+@dataclass
+class StreamData:
     data: Dict[str, Any]
     input: Optional[Dict[str, Any]] = None
     task: str = "process_algos"
