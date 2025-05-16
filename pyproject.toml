@@ -78,7 +78,7 @@ build-backend = "setuptools.build_meta"
 lint = "flake8"
 
 # Test all
-test = "pytest"
+test = "pytest tests"
 
 # Example:
 # pdm img_build ghcr.io/grazer:$(git rev-parse --short HEAD)

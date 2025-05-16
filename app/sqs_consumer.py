@@ -2,15 +2,19 @@ import ray
 import asyncio
 import aioboto3
 import json
-from typing import Any
 from app.logger import logger
 from app.sentry import sentry_sdk
 from app.kube.router import KubeRouter
 from app.settings import StreamerSettings
 from app.ray.dispatcher import Dispatcher
+from typing import Any
+import traceback
+
+
+# datawrapper
+from app.data_types import EnrichedData
 
 settings = StreamerSettings()
-
 
 @ray.remote(num_cpus=0.5)
 class SQSConsumer:
@@ -57,17 +61,24 @@ class SQSConsumer:
 
         try:
             data = json.loads(body)
+            logger.warn(f"debug data: {data}")
         except json.JSONDecodeError as e:
             logger.error("JSON decoding error: %s", e)
             sentry_sdk.capture_exception(e)
             await self.delete_message(sqs, receipt_handle)
             return
         try:
-            await KubeRouter.process_request(self.dispatcher, data, settings.noop)
+            enriched_data = EnrichedData(data)
+            await KubeRouter.process_request(
+                self.dispatcher, enriched_data, settings.noop
+            )
             await self.delete_message(sqs, receipt_handle)
         except Exception as e:
             logger.error("Failed to process message: %s", e)
             sentry_sdk.capture_exception(e)
+            if settings.stream_debug:
+                logger.error(traceback.print_exc())
+
 
     async def delete_message(self, sqs: Any, receipt_handle: str):
         """Delete message from the queue after successful processing."""
@@ -84,6 +95,7 @@ class SQSConsumer:
         """Signal the consumer to shut down."""
         self.shutdown_event.set()
 
+    # this is a debug method for checking the heartbeat of the ray actor
     def num_gathered_tasks(self):
         logger.info(f"current tasks {self.gathered_tasks}")
         return self.gathered_tasks

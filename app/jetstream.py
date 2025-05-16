@@ -11,6 +11,7 @@ from app.logger import logger
 from app.settings import JETSTREAM_URL as SETTINGS_JETSTREAM_URL
 from app.sentry import sentry_sdk
 
+
 class Jetstream:
     """Consume Bluesky Jetstream and (optionally) forward *app.bsky.feed.post*
     messages to an AWS SQS queue.
@@ -30,18 +31,23 @@ class Jetstream:
     JETSTREAM_URL: str = os.getenv(
         "JETSTREAM_URL",
         f"{SETTINGS_JETSTREAM_URL}&wantedCollections=app.bsky.feed.post"
-        if "wantedCollections" not in SETTINGS_JETSTREAM_URL else SETTINGS_JETSTREAM_URL,
+        if "wantedCollections" not in SETTINGS_JETSTREAM_URL
+        else SETTINGS_JETSTREAM_URL,
     )
 
     # Determine the AWS region from the SQS queue URL
     SQS_QUEUE_URL: str | None = os.getenv("SQS_QUEUE_URL")
-    AWS_REGION: str = os.getenv("AWS_REGION", "us-east-1")  # Default to us-east-1 based on the queue URL
+    AWS_REGION: str = os.getenv(
+        "AWS_REGION", "us-east-1"
+    )  # Default to us-east-1 based on the queue URL
     REDIS_URL: str | None = os.getenv("REDIS_URL")
 
     BATCH_SIZE: int = int(os.getenv("BATCH_SIZE", 2_000))
     FLUSH_INTERVAL: int = int(os.getenv("FLUSH_INTERVAL", 30))  # seconds
     MAX_SQS_BATCH: int = 10  # AWS hard‑limit per SendMessageBatch
-    QUEUE_MAX_SIZE: int = int(os.getenv("QUEUE_MAX_SIZE", 10_000))  # Maximum size for the message queue
+    QUEUE_MAX_SIZE: int = int(
+        os.getenv("QUEUE_MAX_SIZE", 10_000)
+    )  # Maximum size for the message queue
 
     # ------------------------------------------------------------------
     # Helpers
@@ -61,12 +67,16 @@ class Jetstream:
             if created_at:
                 for fmt in ("%Y-%m-%dT%H:%M:%S.%fZ", "%Y-%m-%dT%H:%M:%SZ"):
                     try:
-                        ts = datetime.strptime(created_at, fmt).replace(tzinfo=timezone.utc)
+                        ts = datetime.strptime(created_at, fmt).replace(
+                            tzinfo=timezone.utc
+                        )
                         break
                     except ValueError:
                         ts = None
                 if not ts or ts > datetime.utcnow().replace(tzinfo=timezone.utc):
-                    data["commit"]["record"]["createdAt"] = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+                    data["commit"]["record"]["createdAt"] = datetime.utcnow().strftime(
+                        "%Y-%m-%dT%H:%M:%S.%fZ"
+                    )
                     return json.dumps(data)
         except Exception as exc:  # noqa: BLE001
             logger.debug("validation error: %s", exc)
@@ -85,20 +95,23 @@ class Jetstream:
             try:
                 logger.info("Initializing SQS client in region %s", cls.AWS_REGION)
                 session = aioboto3.Session()
-                cls.SQS_CLIENT = await session.client("sqs", region_name=cls.AWS_REGION).__aenter__()
+                cls.SQS_CLIENT = await session.client(
+                    "sqs", region_name=cls.AWS_REGION
+                ).__aenter__()
 
                 # Verify the queue exists
                 logger.info("Verifying SQS queue exists: %s", cls.SQS_QUEUE_URL)
                 try:
                     # Get queue attributes as a simple way to check if queue exists
                     await cls.SQS_CLIENT.get_queue_attributes(
-                        QueueUrl=cls.SQS_QUEUE_URL,
-                        AttributeNames=['QueueArn']
+                        QueueUrl=cls.SQS_QUEUE_URL, AttributeNames=["QueueArn"]
                     )
                     logger.info("SQS queue verified successfully")
                 except Exception as e:
                     logger.error("SQS queue verification failed: %s", e)
-                    logger.error("Please check if the queue URL is correct and the queue exists")
+                    logger.error(
+                        "Please check if the queue URL is correct and the queue exists"
+                    )
                     # Reset client so we don't keep using a bad configuration
                     await cls.SQS_CLIENT.close()
                     cls.SQS_CLIENT = None
@@ -129,21 +142,29 @@ class Jetstream:
                 return
 
             for chunk in cls._chunk(batch, cls.MAX_SQS_BATCH):
-                entries = [{"Id": str(i), "MessageBody": body} for i, body in enumerate(chunk)]
+                entries = [
+                    {"Id": str(i), "MessageBody": body} for i, body in enumerate(chunk)
+                ]
                 try:
                     logger.debug("Sending batch of %d messages to SQS", len(entries))
-                    resp = await cls.SQS_CLIENT.send_message_batch(QueueUrl=cls.SQS_QUEUE_URL, Entries=entries)
+                    resp = await cls.SQS_CLIENT.send_message_batch(
+                        QueueUrl=cls.SQS_QUEUE_URL, Entries=entries
+                    )
                     if failed := resp.get("Failed"):
                         logger.error("%d SQS failures: %s", len(failed), failed)
                     else:
-                        logger.debug("Successfully sent %d messages to SQS", len(entries))
+                        logger.debug(
+                            "Successfully sent %d messages to SQS", len(entries)
+                        )
                 except Exception as e:
                     logger.error("SQS send_message_batch error: %s", e)
                     sentry_sdk.capture_exception(e)
 
                     # If we get a NonExistentQueue error, try to reinitialize the client
                     if "NonExistentQueue" in str(e):
-                        logger.info("Attempting to reinitialize SQS client due to NonExistentQueue error")
+                        logger.info(
+                            "Attempting to reinitialize SQS client due to NonExistentQueue error"
+                        )
                         if cls.SQS_CLIENT:
                             await cls.SQS_CLIENT.close()
                             cls.SQS_CLIENT = None
@@ -157,7 +178,9 @@ class Jetstream:
     # Producer / flusher tasks
     # ------------------------------------------------------------------
     @classmethod
-    async def _producer(cls, queue: asyncio.Queue, redis, shutdown_event: asyncio.Event):
+    async def _producer(
+        cls, queue: asyncio.Queue, redis, shutdown_event: asyncio.Event
+    ):
         """Continuously read websocket and enqueue validated messages.
 
         This task runs independently and is never blocked by SQS operations.
@@ -169,13 +192,17 @@ class Jetstream:
         2. Current time if no Redis cursor is found (start from now)
         """
         # For SQS streaming, use current time as default or stored cursor from Redis
-        cursor = int(datetime.utcnow().timestamp() * 1_000_000)  # Current time in microseconds
+        cursor = int(
+            datetime.utcnow().timestamp() * 1_000_000
+        )  # Current time in microseconds
         if redis and (stored := await redis.get("jetstream:last_cursor")):
             try:
                 cursor = int(stored)
-                logger.info("Retrieved cursor from Redis: %s (timestamp: %s)",
-                           cursor,
-                           datetime.fromtimestamp(cursor / 1_000_000, tz=timezone.utc))
+                logger.info(
+                    "Retrieved cursor from Redis: %s (timestamp: %s)",
+                    cursor,
+                    datetime.fromtimestamp(cursor / 1_000_000, tz=timezone.utc),
+                )
             except (ValueError, TypeError) as e:
                 logger.warning("Failed to parse Redis cursor %r: %s", stored, e)
 
@@ -183,7 +210,9 @@ class Jetstream:
         logger.info("Producer connecting with cursor for current time: %s", ws_url)
 
         try:
-            async with websockets.connect(ws_url, ping_interval=20, ping_timeout=10) as ws:
+            async with websockets.connect(
+                ws_url, ping_interval=20, ping_timeout=10
+            ) as ws:
                 while not shutdown_event.is_set():
                     try:
                         raw = await asyncio.wait_for(ws.recv(), timeout=1.0)
@@ -193,13 +222,15 @@ class Jetstream:
                                 await asyncio.wait_for(queue.put(msg), timeout=0.1)
                             except asyncio.TimeoutError:
                                 # Queue is full, log warning but keep websocket reading
-                                if not getattr(cls, '_queue_full_warned', False):
-                                    logger.warning("Message queue full! Some messages may be dropped.")
+                                if not getattr(cls, "_queue_full_warned", False):
+                                    logger.warning(
+                                        "Message queue full! Some messages may be dropped."
+                                    )
                                     cls._queue_full_warned = True
                                 continue
 
                             # Reset warning flag if we successfully put a message
-                            if getattr(cls, '_queue_full_warned', False):
+                            if getattr(cls, "_queue_full_warned", False):
                                 cls._queue_full_warned = False
                     except asyncio.TimeoutError:
                         # Just a timeout on websocket read, continue
@@ -229,8 +260,13 @@ class Jetstream:
         while not shutdown_event.is_set():
             try:
                 # Calculate remaining time until next scheduled flush
-                timeout = cls.FLUSH_INTERVAL - (datetime.utcnow() - last_flush).total_seconds()
-                timeout = max(timeout, 0.1)  # Small minimum timeout to check shutdown_event
+                timeout = (
+                    cls.FLUSH_INTERVAL
+                    - (datetime.utcnow() - last_flush).total_seconds()
+                )
+                timeout = max(
+                    timeout, 0.1
+                )  # Small minimum timeout to check shutdown_event
 
                 try:
                     # Get message with timeout to allow periodic flushing
@@ -243,8 +279,9 @@ class Jetstream:
 
                 # Check if we should flush based on batch size or time elapsed
                 should_flush = (
-                    len(batch) >= cls.BATCH_SIZE or
-                    (datetime.utcnow() - last_flush).total_seconds() >= cls.FLUSH_INTERVAL
+                    len(batch) >= cls.BATCH_SIZE
+                    or (datetime.utcnow() - last_flush).total_seconds()
+                    >= cls.FLUSH_INTERVAL
                 )
 
                 if should_flush and batch:
@@ -292,7 +329,9 @@ class Jetstream:
             if cls.SQS_CLIENT is not None:
                 logger.info("SQS client initialized successfully")
             else:
-                logger.warning("Initial SQS client initialization failed, will retry later")
+                logger.warning(
+                    "Initial SQS client initialization failed, will retry later"
+                )
         except Exception as e:
             logger.warning("Failed to initialize SQS client on startup: %s", e)
             logger.info("Will continue and retry SQS initialization later")
@@ -315,18 +354,23 @@ class Jetstream:
                 try:
                     logger.info("Starting producer and flusher tasks")
                     # Create both tasks and run them concurrently, but independently
-                    producer = asyncio.create_task(cls._producer(queue, redis, shutdown_event))
-                    flusher = asyncio.create_task(cls._flusher(queue, redis, shutdown_event))
+                    producer = asyncio.create_task(
+                        cls._producer(queue, redis, shutdown_event)
+                    )
+                    flusher = asyncio.create_task(
+                        cls._flusher(queue, redis, shutdown_event)
+                    )
 
                     # Wait for either task to complete
                     done, pending = await asyncio.wait(
-                        [producer, flusher],
-                        return_when=asyncio.FIRST_COMPLETED
+                        [producer, flusher], return_when=asyncio.FIRST_COMPLETED
                     )
 
                     # Signal shutdown and cancel remaining tasks
                     shutdown_event.set()
-                    logger.info("One task completed, signaling shutdown to remaining tasks")
+                    logger.info(
+                        "One task completed, signaling shutdown to remaining tasks"
+                    )
                     for task in pending:
                         task.cancel()
 
@@ -380,7 +424,9 @@ class Jetstream:
     @classmethod
     async def graceful_close(cls, ws):
         try:
-            await asyncio.wait_for(ws.close(code=1000, reason="End of slice"), timeout=1)
+            await asyncio.wait_for(
+                ws.close(code=1000, reason="End of slice"), timeout=1
+            )
         except asyncio.TimeoutError:
             logger.warning("Graceful websocket close timed out; ignoring.")
 
@@ -394,7 +440,9 @@ class Jetstream:
                 try:
                     raw_msg = await asyncio.wait_for(ws.recv(), timeout=2)
                 except asyncio.TimeoutError:
-                    logger.info("No more data for slice %s->%s (2s silence).", start_us, end_us)
+                    logger.info(
+                        "No more data for slice %s->%s (2s silence).", start_us, end_us
+                    )
                     break
                 except websockets.ConnectionClosed:
                     logger.info("Connection closed for slice %s->%s", start_us, end_us)
@@ -415,9 +463,11 @@ class Jetstream:
                 asyncio.create_task(cls.graceful_close(ws))
 
     @classmethod
-    async def yield_jetstream_reversed(cls, end_cursor: int | None = None, start_cursor: int | None = None):
+    async def yield_jetstream_reversed(
+        cls, end_cursor: int | None = None, start_cursor: int | None = None
+    ):
         now_us = int(datetime.utcnow().timestamp() * 1_000_000)
-        end_cursor   = end_cursor   or now_us - 60_000_000
+        end_cursor = end_cursor or now_us - 60_000_000
         start_cursor = start_cursor or now_us - 24 * 3_600 * 1_000_000
         if start_cursor >= end_cursor:
             logger.warning("start_cursor >= end_cursor; no data to pull.")
@@ -426,7 +476,9 @@ class Jetstream:
         while current_end > start_cursor:
             one_min_ago = current_end - 60_000_000
             time_range_start = max(one_min_ago, start_cursor)
-            utc_time = datetime.fromtimestamp(time_range_start / 1_000_000, tz=timezone.utc)
+            utc_time = datetime.fromtimestamp(
+                time_range_start / 1_000_000, tz=timezone.utc
+            )
             logger.info("Reading slice from %s", utc_time)
             async for record in cls.fetch_minute_data(time_range_start, current_end):
                 yield record
