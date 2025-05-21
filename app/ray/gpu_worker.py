@@ -12,8 +12,7 @@ from app.models.text_arbitrary_classifier import TextArbitraryClassifier
 
 from app.logger import logger
 
-
-@ray.remote(num_gpus=1)
+@ray.remote(num_gpus=1, max_task_retries=-1, max_restarts=-1)
 class GPUWorker(TimingBase):
     @property
     def network_worker(self):

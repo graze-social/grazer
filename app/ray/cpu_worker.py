@@ -13,7 +13,7 @@ from app.sentry import sentry_sdk
 from app.telemetry import Telemetry
 
 
-@ray.remote(max_concurrency=5)  # type: ignore
+@ray.remote(max_concurrency=5, max_task_retries=-1, max_restarts=-1)  # type: ignore
 class CPUWorker(TimingBase):
     def __init__(
         self,

@@ -18,6 +18,7 @@ class KubeProcessor(KubeBase):
     async def ingest_feed(cls, transactions):
         records = []
         deletes = []
+
         for transaction in transactions:
             if transaction.get("commit", {}).get("operation") == "create":
                 records.append(transaction)

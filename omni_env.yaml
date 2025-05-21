@@ -14,6 +14,7 @@ env_vars:
   RAY_ENABLE_RECORD_ACTOR_TASK_LOGGING: "1"
   EGRESS_ENABLED: "true"
   NOOP: "false"
+  STREAM_DEBUG: "true"
 excludes:
   - "current_algos.json"
   - "*.sh"
