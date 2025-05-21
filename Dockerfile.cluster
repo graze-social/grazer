@@ -46,3 +46,4 @@ COPY run_ray_cpu_worker.py .
 COPY run_ray_gpu_worker.py .
 COPY run_ray_network_worker.py .
 COPY run_runpod_worker.py .
+COPY omni_boot.py .
