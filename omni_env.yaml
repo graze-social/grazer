@@ -15,6 +15,7 @@ env_vars:
   EGRESS_ENABLED: "true"
   NOOP: "false"
   STREAM_DEBUG: "true"
+  BOOT_CONFIG_YAML: "./boot_config.yaml"
 excludes:
   - "current_algos.json"
   - "*.sh"

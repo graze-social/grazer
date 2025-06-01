@@ -1,7 +1,8 @@
 import random
 import asyncio
 from app.ray.utils import discover_named_actors, discover_named_actor
-from app.settings import OmniBootSettings
+from app.omni.boot_settings import BootSettings
+
 
 class Dispatcher:
     def __init__(
@@ -13,6 +14,7 @@ class Dispatcher:
         gpu_embedding_workers=[],
         gpu_classifier_workers=[],
         cpu_workers=[],
+        actor_namespace=None,
     ):
         """
         Initialize the dispatcher with workers.
@@ -22,8 +24,7 @@ class Dispatcher:
             gpu_worker: A reference to the GPUWorker actor.
             cache: A reference to the shared Cache actor.
         """
-        self.boot_settings = OmniBootSettings()
-        namespace = self.boot_settings.namespace
+        namespace = actor_namespace if actor_namespace else BootSettings().namespace
 
         print("Looking for cache...")
         self.cache = cache or discover_named_actor("cache:", timeout=10)

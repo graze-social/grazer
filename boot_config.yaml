@@ -1,0 +1,28 @@
+# example boot config
+actors:
+  cache_worker:
+    num_cpus: 2
+    num_gpus: 0
+  network_worker:
+    num_cpus: 0.1
+    num_gpus: 0
+    num_workers: 5
+  cpu_worker:
+    num_cpus: 0.5
+    num_gpus: 0
+    num_workers: 6
+  gpu_worker:
+    num_cpus: 0.5
+    num_gpus: 0.2
+    num_workers: 3
+  consumer_worker:
+    num_cpus: 0.5
+boot_settings:
+  namespace: main
+  boot_gpu: True
+  boot_cpu: True
+  boot_cache: True
+  boot_network: True
+  boot_consumer: True
+  max_actor_restarts: -1
+  max_task_retries: -1

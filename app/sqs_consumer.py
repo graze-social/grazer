@@ -16,6 +16,7 @@ from app.stream_data import StreamData
 
 settings = StreamerSettings()
 
+
 @ray.remote(num_cpus=0.5)
 class SQSConsumer:
     """Consume messages from an AWS SQS queue, parse JSON, and forward them to KubeRouter."""
@@ -78,7 +79,6 @@ class SQSConsumer:
             sentry_sdk.capture_exception(e)
             if settings.stream_debug:
                 logger.error(traceback.print_exc())
-
 
     async def delete_message(self, sqs: Any, receipt_handle: str):
         """Delete message from the queue after successful processing."""

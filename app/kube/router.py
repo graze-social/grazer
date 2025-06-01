@@ -12,7 +12,4 @@ class KubeRouter:
             logger.info("noop")
         else:
             if params.task == "process_algos":
-
-                await KubeProcessor.process_algos(
-                    dispatcher, params.transactions()
-                )
+                await KubeProcessor.process_algos(dispatcher, params.transactions())

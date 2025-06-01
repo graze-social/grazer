@@ -4,9 +4,9 @@ import time
 import argparse
 import random
 from app.logger import logger
-from app.settings import OmniBootSettings
+from app.omni.boot_settings import BootSettings
 
-settings = OmniBootSettings()
+settings = BootSettings()
 
 
 def get_or_create_actor(actor_cls, *constructor_args, **kwargs) -> ActorHandle:
@@ -35,6 +35,7 @@ def discover_named_actor(prefix, timeout):
     actors = discover_named_actors(prefix, timeout)
     if actors:
         return random.choice(actors)
+
 
 def discover_named_actors(prefix, timeout=10, fail_hard=True):
     """
@@ -68,7 +69,9 @@ def discover_named_actors(prefix, timeout=10, fail_hard=True):
         if matching_actors:
             return matching_actors
         elif fail_hard:
-            raise Exception(f"No matching actors matching prefix {prefix} found in any namespace")
+            raise Exception(
+                f"No matching actors matching prefix {prefix} found in any namespace"
+            )
 
         time.sleep(1)  # Poll every second to allow actors to register
 
