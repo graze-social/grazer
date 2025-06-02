@@ -28,7 +28,9 @@ def normalize_element_for_logic_eval(x, is_numeric=False):
     if isinstance(x, str) and x == "":
         return 0 if is_numeric else ""
     if isinstance(x, np.ndarray) and x.size == 0:
-        return 0 if is_numeric else ""
+        return 0 if is_numeric else ''
+    if x == [None]:
+        return 0 if is_numeric else ''
     return x
 
 
