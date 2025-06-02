@@ -44,6 +44,7 @@ class BootSettings(BaseSettings):
     extended_lifetime: bool = True
 
     def lifetimes(self) -> Tuple[int, int, Optional[str]]:
+        # TODO: idk what purpose this serves
         return (
             self.max_actor_restarts,
             self.max_task_retries,

@@ -11,10 +11,13 @@ from app.ray.utils import (
 )
 from app.omni.boot_settings import BootConfig, BootSettings
 
+
 class OmniBoot:
     def __init__(self, config: BootConfig) -> None:
         self.actors = config.actors
-        self.boot_settings = config.boot_settings if config.boot_settings else BootSettings()
+        self.boot_settings = (
+            config.boot_settings if config.boot_settings else BootSettings()
+        )
         # get boot-specific settings
         self.actor_lifetime = self.boot_settings.lifetimes()[2]
         self.namespace = self.boot_settings.namespace
@@ -60,7 +63,6 @@ class OmniBoot:
             f"Cache worker 'cache:main' started with {num_cpus} CPUs and {num_gpus} GPUs and running..."
         )
 
-
     async def boot_network(self, num_workers: int, num_cpus: float, num_gpus: int):
         from app.ray.network_worker import NetworkWorker
 
@@ -84,7 +86,6 @@ class OmniBoot:
         logger.info(
             f"NetworkWorker worker '{name}' started with {num_cpus} CPUs and {num_gpus} GPUs and running..."
         )
-
 
     async def boot_cpu(self, num_cpus: float, num_gpus: float, num_workers: int):
         from app.ray.cpu_worker import CPUWorker
@@ -110,10 +111,12 @@ class OmniBoot:
                     num_gpus=num_gpus,
                     namespace=self.namespace,
                 ).remote(
-                    gpu_embedding_workers, gpu_classifier_workers, network_workers, cache
+                    gpu_embedding_workers,
+                    gpu_classifier_workers,
+                    network_workers,
+                    cache,
                 )
             )
-
 
     async def boot_gpu(self, num_cpus: float, num_gpus: float, num_workers: int):
         from app.ray.gpu_worker import GPUWorker
@@ -144,8 +147,7 @@ class OmniBoot:
             ).remote(network_workers, cache)
         )
 
-
-    async def boot_consumer(self,num_cpus: float):
+    async def boot_consumer(self, num_cpus: float):
         from app.sqs_consumer import SQSConsumer
 
         consumer = SQSConsumer.options(
@@ -153,7 +155,6 @@ class OmniBoot:
         ).remote()
 
         return consumer
-
 
     async def boot(self):
         if self.boot_settings.boot_cache:

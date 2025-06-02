@@ -17,7 +17,7 @@ from app.stream_data import StreamData
 settings = StreamerSettings()
 
 
-@ray.remote(num_cpus=0.5)
+@ray.remote(num_cpus=0.5, max_task_retries=-1, max_restarts=-1)
 class SQSConsumer:
     """Consume messages from an AWS SQS queue, parse JSON, and forward them to KubeRouter."""
 
