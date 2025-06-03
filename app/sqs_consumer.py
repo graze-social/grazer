@@ -7,17 +7,16 @@ from app.sentry import sentry_sdk
 from app.kube.router import KubeRouter
 from app.settings import StreamerSettings
 from app.ray.dispatcher import Dispatcher
-from typing import Any
+from typing import Any, List, Sequence
 import traceback
 
 
 # datawrapper
-from app.stream_data import StreamData
+from app.stream_data import StreamData, StreamTransaction
 
 settings = StreamerSettings()
 
-
-@ray.remote(num_cpus=0.5, max_task_retries=-1, max_restarts=-1)
+@ray.remote(num_cpus=0.5)
 class SQSConsumer:
     """Consume messages from an AWS SQS queue, parse JSON, and forward them to KubeRouter."""
 
@@ -35,18 +34,24 @@ class SQSConsumer:
         """Continuously poll SQS for messages."""
         async with self.session.client("sqs", region_name=self.aws_region) as sqs:
             while not self.shutdown_event.is_set():
+                batch_size: int = 10
+                stream_data: Sequence[StreamData] = []
                 try:
-                    response = await sqs.receive_message(
-                        QueueUrl=self.queue_url,
-                        MaxNumberOfMessages=10,
-                        WaitTimeSeconds=10,
-                    )
+                    for batch in range(batch_size):
+                        response = await sqs.receive_message(
+                            QueueUrl=self.queue_url,
+                            MaxNumberOfMessages=10,
+                            WaitTimeSeconds=10,
+                        )
 
-                    messages = response.get("Messages", [])
-                    if not messages:
-                        continue
+                        messages = response.get("Messages", [])
+                        if not messages:
+                            continue
+                        logger.warn(f"[warn debug] messages {len(messages)}")
 
-                    tasks = [self.process_message(sqs, msg) for msg in messages]
+                        stream_data.append(await self.conform_message_data(sqs, messages)) # type: ignore
+
+                    tasks = [self.process_message(sqs, sd) for sd in stream_data]
                     self.gathered_tasks += len(tasks)
                     await asyncio.gather(*tasks)
 
@@ -55,25 +60,47 @@ class SQSConsumer:
                     sentry_sdk.capture_exception(e)
                     await asyncio.sleep(self.polling_interval)
 
-    async def process_message(self, sqs: Any, message: dict[str, Any]):
-        """Parse JSON message and send it to KubeRouter."""
-        receipt_handle = message["ReceiptHandle"]
-        body = message.get("Body", "")
 
+    async def conform_message_data(self, sqs: Any, messages: Sequence[dict[str, Any]]) -> StreamData:
+        transactions: List[StreamTransaction] = []
+        for message in messages:
+            receipt_handle = message["ReceiptHandle"]
+            body = message.get("Body", "")
+            try:
+                body_data = json.loads(body)
+                transactions.append(StreamTransaction(receipt_handle=receipt_handle, body=body_data))
+            except json.JSONDecodeError as e:
+                logger.error("JSON decoding error: %s", e)
+                sentry_sdk.capture_exception(e)
+                await self.delete_message(sqs, receipt_handle)
+                continue
+        return StreamData(transactions)
+
+
+
+
+
+    async def process_message(self, sqs: Any, stream_data: StreamData):
+        """Parse JSON message and send it to KubeRouter."""
+        # receipt_handle = message["ReceiptHandle"]
+        # body = message.get("Body", "")
+
+        # try:
+        #     data = json.loads(body)
+        #     logger.warn(f"debug data: {data}")
+        # except json.JSONDecodeError as e:
+        #     logger.error("JSON decoding error: %s", e)
+        #     sentry_sdk.capture_exception(e)
+        #     await self.delete_message(sqs, receipt_handle)
+        #     return
         try:
-            data = json.loads(body)
-            logger.warn(f"debug data: {data}")
-        except json.JSONDecodeError as e:
-            logger.error("JSON decoding error: %s", e)
-            sentry_sdk.capture_exception(e)
-            await self.delete_message(sqs, receipt_handle)
-            return
-        try:
-            stream_data = StreamData(data)
+            # stream_data = StreamData(data)
             await KubeRouter.process_request(
                 self.dispatcher, stream_data, settings.noop
             )
-            await self.delete_message(sqs, receipt_handle)
+            logger.warn("messages processed, deleting messages")
+            for receipt_handle in stream_data.receipt_handles():
+                await self.delete_message(sqs, receipt_handle)
         except Exception as e:
             logger.error("Failed to process message: %s", e)
             sentry_sdk.capture_exception(e)
@@ -86,7 +113,7 @@ class SQSConsumer:
             await sqs.delete_message(
                 QueueUrl=self.queue_url, ReceiptHandle=receipt_handle
             )
-            logger.debug("Message deleted from SQS")
+            logger.info(f"Message deleted from SQS {receipt_handle}")
         except Exception as e:
             logger.error("Failed to delete message: %s", e)
             sentry_sdk.capture_exception(e)

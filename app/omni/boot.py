@@ -151,7 +151,7 @@ class OmniBoot:
         from app.sqs_consumer import SQSConsumer
 
         consumer = SQSConsumer.options(
-            max_concurrency=10, namespace=self.namespace, num_cpus=num_cpus
+            max_concurrency=15, namespace=self.namespace, num_cpus=num_cpus
         ).remote()
 
         return consumer
@@ -178,7 +178,6 @@ class OmniBoot:
             consumer = await self.boot_consumer(**self.actors.consumer_worker.cfg)
 
         try:
-            await asyncio.sleep(20)
             consumer.receive_messages.remote()  # type: ignore
             logger.info("Starting Consumer")
             ray.get(consumer.num_gathered_tasks.remote())  # type: ignore

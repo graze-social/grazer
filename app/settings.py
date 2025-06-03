@@ -16,7 +16,6 @@ SENTRY_DSN = os.getenv("SENTRY_DSN")
 class EgressSettings(BaseSettings):
     egress_enabled: bool = True
 
-
 class StreamerSettings(BaseSettings):
     # TODO: making this optional is a stupid LSP thing
     sqs_queue_url: str = os.getenv("SQS_QUEUE_URL", "[placeholder]")
