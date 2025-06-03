@@ -15,7 +15,7 @@ from app.logger import logger
 from app.sentry import sentry_sdk
 
 
-@ray.remote(max_concurrency=100)  # type: ignore
+@ray.remote(max_concurrency=100, max_task_retries=-1, max_restarts=-1)  # type: ignore
 class NetworkWorker(TimingBase):
     def __init__(self, cache, bluesky_semaphore, graze_semaphore):
         """

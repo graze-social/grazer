@@ -18,6 +18,7 @@ class KubeProcessor(KubeBase):
     async def ingest_feed(cls, transactions):
         records = []
         deletes = []
+
         for transaction in transactions:
             if transaction.get("commit", {}).get("operation") == "create":
                 records.append(transaction)
@@ -41,6 +42,7 @@ class KubeProcessor(KubeBase):
 
     @classmethod
     async def run_algos(cls, dispatcher: Dispatcher, records, manifests, all_operators):
+        logger.warn(f"[warn debug] running records: {len(records)} manifests: {len(manifests.items())}")
         manifests = list(manifests.items())
         random.shuffle(manifests)
         # await run_precache(dispatcher, records, [{}], all_operators)

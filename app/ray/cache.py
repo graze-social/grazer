@@ -8,7 +8,7 @@ from app.telemetry import Telemetry
 from app.sentry import sentry_sdk
 
 
-@ray.remote(max_concurrency=1000)  # type: ignore
+@ray.remote(max_concurrency=1000, max_task_retries=-1, max_restarts=-1)  # type: ignore
 class Cache(TimingBase):
     def __init__(self, key_prefix="ray_workers", batch_size=100):
         """
