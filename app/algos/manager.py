@@ -17,6 +17,7 @@ from app.algos.operators.image_nsfw import ImageNSFWParser
 from app.algos.operators.image_arbitrary import ImageArbitraryParser
 from app.algos.operators.text_arbitrary import TextArbitraryParser
 from app.algos.operators.combo import ComboParser
+from app.timings import record_timing
 
 
 class AlgoManager:
@@ -105,6 +106,7 @@ class AlgoManager:
         condition_keys = await self.condition_keys()
         return len(condition_keys & self.logic_evaluator.gpu_accelerable_operations) > 0
 
+    @record_timing(fn_prefix="AlgoManager")
     async def matching_records(self, records):
         """Evaluate the manifest against a given record."""
         start_time = time.time()  # Record the start time

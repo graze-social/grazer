@@ -8,6 +8,7 @@ from app.kube.base import KubeBase
 from app.helpers import chunk
 from app.redis import RedisClient
 from app.settings import CURRENT_ALGORITHMS_KEY, EgressSettings
+from app.timings import record_timing
 
 
 has_egress = EgressSettings().egress_enabled
@@ -15,6 +16,7 @@ has_egress = EgressSettings().egress_enabled
 
 class KubeProcessor(KubeBase):
     @classmethod
+    @record_timing(fn_prefix="KubeProcessor")
     async def ingest_feed(cls, transactions):
         records = []
         deletes = []
@@ -30,6 +32,7 @@ class KubeProcessor(KubeBase):
         return records
 
     @classmethod
+    @record_timing(fn_prefix="KubeProcessor")
     async def process_algos(cls, dispatcher, transactions):
         records = await cls.ingest_feed(transactions)
         algo_data = await KubeProcessor.get_algorithm_operators()
@@ -41,8 +44,11 @@ class KubeProcessor(KubeBase):
         )
 
     @classmethod
+    @record_timing(fn_prefix="KubeProcessor")
     async def run_algos(cls, dispatcher: Dispatcher, records, manifests, all_operators):
-        logger.warn(f"[warn debug] running records: {len(records)} manifests: {len(manifests.items())}")
+        logger.warn(
+            f"[warn debug] running records: {len(records)} manifests: {len(manifests.items())}"
+        )
         manifests = list(manifests.items())
         random.shuffle(manifests)
         # await run_precache(dispatcher, records, [{}], all_operators)
@@ -59,9 +65,15 @@ class KubeProcessor(KubeBase):
                     algorithm_ids.append(algorithm_id)
             manifest_data = list(zip(algorithm_ids, hydrated_manifests))
             await dispatcher.distribute_tasks(records, manifest_data, has_egress)
+            logger.warn("[warn debug] All tasks distributed ")
+            logger.warn(f"[warn debug] Task count: {len(asyncio.all_tasks())}")
+
+            # [THEORY] 2. why this number, 100?
             while len(asyncio.all_tasks()) > 100:
                 logger.info(f"Current Task Depth is {len(asyncio.all_tasks())}")
                 asyncio.sleep(1)
+
+        logger.warn("[warn debug] run algos function exiting")
 
     @classmethod
     async def get_algorithm_operators(cls):

@@ -117,6 +117,8 @@ start_streamer = { cmd = [
 # Jetstreamer
 algo_sync = { cmd = ["python3", "algo_sync.py"], env_file = ".env.algosync" }
 
+sqs_push_batch = { cmd = ["python3", "scratch/sqs.py"] }
+
 tail_output = { shell = "tail -f -n 300 nohup.out" }
 
 # Starts all ray workers and tails the log output
@@ -130,3 +132,7 @@ start_all_workers.composite = [
 ]
 
 start_all_workers.env = { RAY_DEDUP_LOGS = "0", REDIS_URL = "redis://localhost:6379", SENTRY_DSN = "https://foo:bar@example.com/12345" }
+
+[tool.pyright]
+venvPath = "."
+venv = ".venv"

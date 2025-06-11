@@ -1,4 +1,3 @@
-import time
 import traceback
 import asyncio
 from asyncio import Semaphore
@@ -11,6 +10,8 @@ from app.logger import logger
 from app.ray.timing_base import TimingBase, measure_time
 from app.sentry import sentry_sdk
 from app.telemetry import Telemetry
+
+from app.timings import record_timing
 
 
 @ray.remote(max_concurrency=5, max_task_retries=-1, max_restarts=-1)  # type: ignore
@@ -48,6 +49,7 @@ class CPUWorker(TimingBase):
         return self.active_tasks
 
     @measure_time
+    @record_timing(fn_prefix="CPUWorker")
     async def process_manifest(
         self, algorithm_id, manifest, records, report_output=True
     ):
@@ -75,7 +77,8 @@ class CPUWorker(TimingBase):
                 matched_records = []
                 if operable:
                     matched_records, _, timing = await algo_manager.matching_records(
-                        records
+                        # records
+                        records[:1]
                     )
                 else:
                     sentry_sdk.capture_exception(
@@ -108,6 +111,7 @@ class CPUWorker(TimingBase):
                 if report_output:
                     self.cache.report_output.remote(response)
                 self.active_tasks -= 1
+                logger.warn("[warn debug] completed ")
 
     @measure_time
     async def process_batch(self, records, manifests, report_output=True):
@@ -130,13 +134,5 @@ class CPUWorker(TimingBase):
                 self.process_manifest(algorithm_id, manifest, records, report_output)
             )
         results = await asyncio.gather(*processes)
+        logger.warn(f"[warn debug] finished processing batch {results}")
         return results
-
-    async def run(self):
-        # Keep the script running to maintain the actor
-        logger.info("CPUWorker worker booting..")
-        try:
-            while True:
-                time.sleep(10)
-        except KeyboardInterrupt:
-            logger.info("CPU Worker worker stopped.")

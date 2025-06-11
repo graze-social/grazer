@@ -1,7 +1,9 @@
 import random
 import asyncio
+from app.logger import logger
 from app.ray.utils import discover_named_actors, discover_named_actor
 from app.omni.boot_settings import BootSettings
+from app.timings import record_timing
 
 
 class Dispatcher:
@@ -92,14 +94,19 @@ class Dispatcher:
         )
         return sorted_timing_report
 
+    @record_timing(fn_prefix="Dispatcher")
     async def distribute_tasks(self, records, manifest_data, report_output=True):
+        # [THEORY] 1.how long is this list and why does it take so long
+        logger.warn(f"[warn debug] length of manifest data: {len(manifest_data)}")
+        logger.warn(f"[warn debug] number of CPU Workers: {self.cpu_workers}")
         for manifest in manifest_data:
-            while True:
-                worker = random.choice(self.cpu_workers)
-                max_concurrency = await worker.max_concurrency.remote()
-                active_tasks = await worker.get_active_task_count.remote()
-                if active_tasks < max_concurrency:
-                    worker.process_batch.remote(records, [manifest], report_output)
-                    break
-                else:
-                    await asyncio.sleep(0.1)
+            worker = random.choice(self.cpu_workers)
+            # max_concurrency = await worker.max_concurrency.remote()
+            # logger.warn(f"[warn debug] max concurrency {max_concurrency}")
+            # active_tasks = await worker.get_active_task_count.remote()
+            # logger.warn(f"[warn debug] active tasks {active_tasks}")
+
+            logger.warn(f"[warn debug] processing batch for {manifest[0]}")
+            worker.process_batch.remote(records, [manifest], report_output)
+
+            await asyncio.sleep(0.1)

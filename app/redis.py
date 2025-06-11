@@ -34,3 +34,7 @@ class RedisClient:
         value = await cls.REDIS_CLIENT.get(keyname)
         if value:
             return json.loads(value)
+
+    @classmethod
+    async def set_process_timing(cls, field: str, timing: float):
+        await cls.REDIS_CLIENT.hset("function_timings", mapping={field: timing})

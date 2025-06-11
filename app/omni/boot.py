@@ -151,7 +151,10 @@ class OmniBoot:
         from app.sqs_consumer import SQSConsumer
 
         consumer = SQSConsumer.options(
-            max_concurrency=15, namespace=self.namespace, num_cpus=num_cpus
+            name="MessagePoller",
+            max_concurrency=15,
+            namespace=self.namespace,
+            num_cpus=num_cpus,
         ).remote()
 
         return consumer
