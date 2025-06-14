@@ -13,10 +13,10 @@ from app.settings import HOSTNAME
 from app.ray.timing_base import TimingBase, measure_time
 from app.logger import logger
 from app.sentry import sentry_sdk
-from app.timings import record_timing
+from app.utils.profilers.timing_functions import record_timing
 
 
-@ray.remote(max_concurrency=100, max_task_retries=-1, max_restarts=-1)  # type: ignore
+@ray.remote(max_concurrency=100, max_restarts=-1)  # type: ignore
 class NetworkWorker(TimingBase):
     def __init__(self, cache, bluesky_semaphore, graze_semaphore):
         """
@@ -31,7 +31,7 @@ class NetworkWorker(TimingBase):
         super().__init__()
 
     @measure_time
-    @record_timing(fn_prefix="NetworkWorker")
+    @record_timing(prefix="NetworkWorker")
     async def fetch_asset(
         self, asset_type: str, asset_name: str, asset_parameters: dict
     ) -> dict:
@@ -65,7 +65,7 @@ class NetworkWorker(TimingBase):
             await self.graze_semaphore.release.remote()
 
     @measure_time
-    @record_timing(fn_prefix="NetworkWorker")
+    @record_timing(prefix="NetworkWorker")
     async def get_asset(
         self, asset_type: str, asset_parameters: dict, keyname_template: str
     ):
@@ -84,7 +84,7 @@ class NetworkWorker(TimingBase):
         return asset
 
     @measure_time
-    @record_timing(fn_prefix="NetworkWorker")
+    @record_timing(prefix="NetworkWorker")
     async def fetch_image(self, url):
         try:
             retries = 3
@@ -155,7 +155,7 @@ class NetworkWorker(TimingBase):
         return await self.get_asset(**params)
 
     @measure_time
-    @record_timing(fn_prefix="NetworkWorker")
+    @record_timing(prefix="NetworkWorker")
     async def get_or_set_handle_did(self, handle):
         existing = await self.cache.get_did.remote(handle)
         if not existing:

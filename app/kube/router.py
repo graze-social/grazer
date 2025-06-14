@@ -1,12 +1,12 @@
 from app.stream_data import StreamData
 from app.kube.processor import KubeProcessor
 from app.logger import logger
-from app.timings import record_timing
+from app.utils.profilers.timing_functions import record_timing
 
 
 class KubeRouter:
     @classmethod
-    @record_timing(fn_prefix="KubeRouter")
+    @record_timing(prefix="KubeRouter")
     async def process_request(cls, dispatcher, params: StreamData, noop: bool):
         logger.info(params.wrap())
         if noop:

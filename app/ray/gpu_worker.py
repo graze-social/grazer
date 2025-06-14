@@ -13,7 +13,7 @@ from app.models.text_arbitrary_classifier import TextArbitraryClassifier
 from app.logger import logger
 
 
-@ray.remote(num_gpus=1, max_task_retries=-1, max_restarts=-1)
+@ray.remote(num_gpus=1, max_restarts=-1)
 class GPUWorker(TimingBase):
     @property
     def network_worker(self):
@@ -26,7 +26,11 @@ class GPUWorker(TimingBase):
             raise ValueError("No network workers are available")
         return random.choice(self.network_workers)
 
-    def __init__(self, network_workers, cache):
+    def __init__(
+        self,
+        network_workers,
+        cache,
+    ):
         self.network_workers = network_workers
         self.cache = cache
         self._models = LRUCache(maxsize=50)

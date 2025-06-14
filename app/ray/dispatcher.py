@@ -1,9 +1,10 @@
 import random
 import asyncio
+import json
 from app.logger import logger
 from app.ray.utils import discover_named_actors, discover_named_actor
 from app.omni.boot_settings import BootSettings
-from app.timings import record_timing
+from app.utils.profilers.timing_functions import record_timing
 
 
 class Dispatcher:
@@ -51,6 +52,7 @@ class Dispatcher:
         )
         print("Looking for CPU Workers...")
         self.cpu_workers = cpu_workers or discover_named_actors("cpu:", timeout=10)
+
         super().__init__()
 
     async def generate_timing_report(self):
@@ -94,19 +96,53 @@ class Dispatcher:
         )
         return sorted_timing_report
 
-    @record_timing(fn_prefix="Dispatcher")
-    async def distribute_tasks(self, records, manifest_data, report_output=True):
-        # [THEORY] 1.how long is this list and why does it take so long
+    @record_timing(prefix="Dispatcher", annotate=True)
+    async def distribute_tasks(self, records, manifest_data, report_output=True, even_distribution=True):
+        # https://docs.ray.io/en/latest/ray-core/patterns/ray-get-loop.html
+
         logger.warn(f"[warn debug] length of manifest data: {len(manifest_data)}")
         logger.warn(f"[warn debug] number of CPU Workers: {self.cpu_workers}")
+        batches = []
+
         for manifest in manifest_data:
-            worker = random.choice(self.cpu_workers)
-            # max_concurrency = await worker.max_concurrency.remote()
-            # logger.warn(f"[warn debug] max concurrency {max_concurrency}")
-            # active_tasks = await worker.get_active_task_count.remote()
-            # logger.warn(f"[warn debug] active tasks {active_tasks}")
+            if even_distribution:
+                workers = await self.snapshot_active_workers()
+                logger.info(f"low-task workers {json.dumps(workers)}")
+                worker = random.choice([worker["ref"] for worker in workers])
+
+            else:
+                worker = random.choice(self.cpu_workers)
 
             logger.warn(f"[warn debug] processing batch for {manifest[0]}")
-            worker.process_batch.remote(records, [manifest], report_output)
-
+            batches.append(
+                worker.process_batch.remote(records, [manifest], report_output)
+            )
             await asyncio.sleep(0.1)
+
+    async def snapshot_active_workers(self, max_return=3, task_concurrency_ratio=10):
+        """group workers by lowest number of tasks with"""
+        max_return = 3
+        task_concurrency_ratio = 10
+
+        worker_group = [
+            {
+                "ref": worker,
+                "tasks": await worker.get_active_task_count.remote(),
+                "concurrency": await worker.max_concurrency.remote(),
+            }
+            for worker in self.cpu_workers
+        ]
+
+        min_val = float("inf")
+        snapshot = []
+        # Get the lowest number of tasks with at least a 10 coroutine headroom
+        for wg in worker_group:
+            if wg["tasks"] < min_val:
+                min_val = wg["tasks"]
+                if (wg["concurrency"] - min_val) > task_concurrency_ratio:
+                    snapshot = [wg]
+            elif wg["tasks"] == min_val:
+                if (wg["concurrency"] - min_val) > task_concurrency_ratio:
+                    snapshot.append(wg)
+
+        return snapshot[:max_return]

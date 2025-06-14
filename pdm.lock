@@ -5,7 +5,7 @@
 groups = ["default", "build", "dev", "streamer"]
 strategy = ["inherit_metadata"]
 lock_version = "4.5.0"
-content_hash = "sha256:4ae032d4aa7c3173753aad1ee69990bea725c3e4e6bee41f47ad3926a99ee176"
+content_hash = "sha256:9129ec0aca7c01d30a8e84f71b237f11e0cc655df3024b00884bb1b6ced528c2"
 
 [[metadata.targets]]
 requires_python = ">=3.11,<3.13"
@@ -2325,6 +2325,21 @@ summary = "Python wrapper for Google\\'s RE2 using Cython"
 groups = ["default"]
 files = [
     {file = "pyre2-0.3.6.tar.gz", hash = "sha256:6fe972c0cadec49a5a055690e5aa29f8aebaed0fa9b7d8d3530e33719b61f91c"},
+]
+
+[[package]]
+name = "pyroscope-io"
+version = "0.8.11"
+summary = "Pyroscope Python integration"
+groups = ["default"]
+dependencies = [
+    "cffi>=1.6.0",
+]
+files = [
+    {file = "pyroscope_io-0.8.11-py2.py3-none-macosx_11_0_arm64.whl", hash = "sha256:644dbd81b162b6d678ef9989649bf936c62373fd7bba16fb6490272f453ff159"},
+    {file = "pyroscope_io-0.8.11-py2.py3-none-macosx_11_0_x86_64.whl", hash = "sha256:2df4cd4cbfb451c27cad20f905bf612ffc306a96820e316f7575c84433eadb24"},
+    {file = "pyroscope_io-0.8.11-py2.py3-none-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:50164c96cf5533ce795a114c6181c5d2aa162c9dae59277b6ac557820c411b7a"},
+    {file = "pyroscope_io-0.8.11-py2.py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:a415072dd7e8964d66001fff2446d7426a505cfca1a89f3c912314537622a4cd"},
 ]
 
 [[package]]

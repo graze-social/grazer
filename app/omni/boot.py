@@ -2,7 +2,6 @@ import asyncio
 import ray
 import uuid
 
-
 from app.logger import logger
 from app.ray.utils import (
     discover_named_actor,
@@ -10,6 +9,7 @@ from app.ray.utils import (
     get_or_create_actor,
 )
 from app.omni.boot_settings import BootConfig, BootSettings
+from app.utils.profilers.cpu_profiler import CpuProfiler
 
 
 class OmniBoot:
@@ -18,6 +18,8 @@ class OmniBoot:
         self.boot_settings = (
             config.boot_settings if config.boot_settings else BootSettings()
         )
+        if self.boot_settings.init_profiler:
+            CpuProfiler(tags={"app": "grazer.omni.boot"}).load()
         # get boot-specific settings
         self.actor_lifetime = self.boot_settings.lifetimes()[2]
         self.namespace = self.boot_settings.namespace
@@ -115,6 +117,7 @@ class OmniBoot:
                     gpu_classifier_workers,
                     network_workers,
                     cache,
+                    self.boot_settings.init_profiler,
                 )
             )
 
@@ -151,7 +154,7 @@ class OmniBoot:
         from app.sqs_consumer import SQSConsumer
 
         consumer = SQSConsumer.options(
-            name="MessagePoller",
+            name=f"consumer:sqs:{self.namespace}",
             max_concurrency=15,
             namespace=self.namespace,
             num_cpus=num_cpus,

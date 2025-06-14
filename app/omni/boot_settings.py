@@ -39,6 +39,7 @@ class BootSettings(BaseSettings):
     boot_consumer: bool = False
     max_actor_restarts: int = -1
     max_task_retries: int = -1
+    init_profiler: bool = False
 
     """Option to extend the lifetime of all actors for beyond the job termination"""
     extended_lifetime: bool = True

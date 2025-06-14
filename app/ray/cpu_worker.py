@@ -3,6 +3,7 @@ import asyncio
 from asyncio import Semaphore
 import uuid
 from datetime import datetime
+from typing import Optional
 import ray
 from app.algos.manager import AlgoManager
 from app.helpers import create_exception_json
@@ -11,10 +12,11 @@ from app.ray.timing_base import TimingBase, measure_time
 from app.sentry import sentry_sdk
 from app.telemetry import Telemetry
 
-from app.timings import record_timing
+# Profiling
+from app.utils.profilers.timing_functions import record_timing
 
 
-@ray.remote(max_concurrency=5, max_task_retries=-1, max_restarts=-1)  # type: ignore
+@ray.remote(max_concurrency=50, max_task_retries=0, max_restarts=-1)  # type: ignore
 class CPUWorker(TimingBase):
     def __init__(
         self,
@@ -23,6 +25,7 @@ class CPUWorker(TimingBase):
         network_workers,
         cache,
         compute_environment=None,
+        init_profiler: Optional[bool] = None,
     ):
         """
         Initialize the CPUWorker with references to a GPUWorker and NetworkWorkers.
@@ -38,7 +41,7 @@ class CPUWorker(TimingBase):
         self.compute_environment = compute_environment
         self.semaphore = Semaphore(30)
         self.active_tasks = 0
-        self._max_concurrency = 5
+        self._max_concurrency = 50
         self.telemetry = None
         super().__init__()
 
@@ -49,11 +52,12 @@ class CPUWorker(TimingBase):
         return self.active_tasks
 
     @measure_time
-    @record_timing(fn_prefix="CPUWorker")
+    @record_timing(prefix="CPUWorker", annotate=True)
     async def process_manifest(
         self, algorithm_id, manifest, records, report_output=True
     ):
         async with self.semaphore:
+            # Set counter
             count = 0
             self.active_tasks += 1
             print(f"Processing {algorithm_id}")
@@ -77,8 +81,8 @@ class CPUWorker(TimingBase):
                 matched_records = []
                 if operable:
                     matched_records, _, timing = await algo_manager.matching_records(
-                        # records
-                        records[:1]
+                        records
+                        # records[:1]
                     )
                 else:
                     sentry_sdk.capture_exception(
@@ -114,6 +118,7 @@ class CPUWorker(TimingBase):
                 logger.warn("[warn debug] completed ")
 
     @measure_time
+    @record_timing(prefix="CPUWorker", annotate=True)
     async def process_batch(self, records, manifests, report_output=True):
         """
         Process a batch of records using the manifest.
@@ -125,14 +130,18 @@ class CPUWorker(TimingBase):
         Returns:
             List of processed record results.
         """
+
         processes = []
         if not self.telemetry:
             self.telemetry = Telemetry("grazer")
         self.telemetry.record_gauge("input_queue_dump_size", len(records))
+
         for algorithm_id, manifest in manifests:
             processes.append(
                 self.process_manifest(algorithm_id, manifest, records, report_output)
             )
+
+        # THEORY: maybe ray.get(processes)
         results = await asyncio.gather(*processes)
         logger.warn(f"[warn debug] finished processing batch {results}")
         return results

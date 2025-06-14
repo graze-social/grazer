@@ -10,6 +10,8 @@ from app.ray.dispatcher import Dispatcher
 from typing import Any
 import traceback
 
+from app.utils.profilers.timing_functions import record_timing
+
 # wrapper for strutured bsky data
 # TODO: use bsky
 from app.stream_data import StreamData
@@ -17,7 +19,7 @@ from app.stream_data import StreamData
 settings = StreamerSettings()
 
 
-@ray.remote(num_cpus=0.5, max_task_retries=-1, max_restarts=-1)
+@ray.remote(num_cpus=0.5, max_concurrency=10, max_restarts=-1)
 class SQSConsumer:
     """Consume messages from an AWS SQS queue, parse JSON, and forward them to KubeRouter."""
 
@@ -71,6 +73,7 @@ class SQSConsumer:
             await self.delete_message(sqs, receipt_handle)
             return StreamData({})
 
+    @record_timing(prefix="SQSConsumer", annotate=True)
     async def process_message(self, sqs: Any, message: dict[str, Any]):
         """Parse JSON message and send it to KubeRouter."""
         receipt_handle = message["ReceiptHandle"]

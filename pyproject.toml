@@ -41,6 +41,7 @@ dependencies = [
     "pydantic-core>=2.33.1",
     "pydantic>=2.11.4",
     "certifi>=2025.4.26",
+    "pyroscope-io>=0.8.11",
 
 ]
 
