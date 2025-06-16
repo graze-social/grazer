@@ -28,7 +28,7 @@ def cpu_worker_instance(mocker):
         gpu_embedding_workers=mock_gpu_embedding_workers,
         gpu_classifier_workers=mock_gpu_classifier_workers,
         network_workers=mock_network_workers,
-        cache=mock_cache
+        cache=mock_cache,
     )
     return instance
 
@@ -60,7 +60,9 @@ async def test_process_manifest_success(cpu_worker_instance, mocker):
     mock_algo_manager.is_gpu_accelerated.return_value = False
     mock_algo_manager.matching_records.return_value = (["matched-record"], None, 0.123)
 
-    mocker.patch("app.algos.manager.AlgoManager.initialize", return_value=mock_algo_manager)
+    mocker.patch(
+        "app.algos.manager.AlgoManager.initialize", return_value=mock_algo_manager
+    )
 
     await cpu_worker_instance.process_manifest(algorithm_id, manifest, records)
 
@@ -82,7 +84,9 @@ async def test_process_manifest_failure(cpu_worker_instance, mocker):
     records = [{"data": "mock-record"}]
 
     # Simulate exception in AlgoManager
-    mocker.patch("app.algos.manager.AlgoManager.initialize", side_effect=Exception("Test error"))
+    mocker.patch(
+        "app.algos.manager.AlgoManager.initialize", side_effect=Exception("Test error")
+    )
 
     await cpu_worker_instance.process_manifest(algorithm_id, manifest, records)
 
@@ -103,7 +107,9 @@ async def test_process_batch(cpu_worker_instance, mocker):
     manifests = [("algo1", {"config": "config1"}), ("algo2", {"config": "config2"})]
 
     mock_process_manifest = AsyncMock()
-    mocker.patch.object(cpu_worker_instance, "process_manifest", new=mock_process_manifest)
+    mocker.patch.object(
+        cpu_worker_instance, "process_manifest", new=mock_process_manifest
+    )
 
     await cpu_worker_instance.process_batch(records, manifests)
 

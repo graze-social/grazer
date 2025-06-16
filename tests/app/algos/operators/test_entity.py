@@ -31,7 +31,10 @@ def entity_parser():
                             "facets": [
                                 {
                                     "features": [
-                                        {"$type": "app.bsky.richtext.facet#link", "uri": "https://test.com"}
+                                        {
+                                            "$type": "app.bsky.richtext.facet#link",
+                                            "uri": "https://test.com",
+                                        }
                                     ]
                                 }
                             ],
@@ -41,7 +44,10 @@ def entity_parser():
             ],
             [{"https://example.com", "https://test.com"}],
         ),
-        ([{"commit": {"record": {}}}], [set()]),  # Ensures None values don't cause errors
+        (
+            [{"commit": {"record": {}}}],
+            [set()],
+        ),  # Ensures None values don't cause errors
     ],
 )
 def test_get_all_urls(records, expected):
@@ -56,11 +62,15 @@ def test_get_all_urls(records, expected):
 @pytest.mark.asyncio
 async def test_get_resolved_values_mentions(entity_parser):
     """Test resolution of mentions using network worker."""
-    entity_parser.network_worker.get_or_set_handle_did.remote.return_value = "resolved_did"
+    entity_parser.network_worker.get_or_set_handle_did.remote.return_value = (
+        "resolved_did"
+    )
     values = {"@user1", "@user2"}
     resolved_values = await entity_parser.get_resolved_values("mentions", values)
 
-    assert resolved_values == {"resolved_did"}, "Resolved values did not match expected."
+    assert resolved_values == {"resolved_did"}, (
+        "Resolved values did not match expected."
+    )
 
 
 @pytest.mark.asyncio
@@ -76,22 +86,32 @@ async def test_get_resolved_values_hashtags(entity_parser):
 async def test_matches_entities(entity_parser):
     """Test entity matching for hashtags."""
     entity_parser.get_all_hashtags = AsyncMock(return_value=[{"tag1"}, {"tag2"}])
-    records = [{"commit": {"record": {"tags": ["tag1"]}}}, {"commit": {"record": {"tags": ["tag3"]}}}]
+    records = [
+        {"commit": {"record": {"tags": ["tag1"]}}},
+        {"commit": {"record": {"tags": ["tag3"]}}},
+    ]
     values = {"tag1"}
     result = await entity_parser.matches_entities(records, "hashtags", values)
 
-    assert np.array_equal(result, np.array([True, False])), "Entity match results incorrect."
+    assert np.array_equal(result, np.array([True, False])), (
+        "Entity match results incorrect."
+    )
 
 
 @pytest.mark.asyncio
 async def test_excludes_entities(entity_parser):
     """Test entity exclusion for hashtags."""
     entity_parser.get_all_hashtags = AsyncMock(return_value=[{"tag1"}, {"tag2"}])
-    records = [{"commit": {"record": {"tags": ["tag1"]}}}, {"commit": {"record": {"tags": ["tag3"]}}}]
+    records = [
+        {"commit": {"record": {"tags": ["tag1"]}}},
+        {"commit": {"record": {"tags": ["tag3"]}}},
+    ]
     values = {"tag1"}
     result = await entity_parser.excludes_entities(records, "hashtags", values)
 
-    assert np.array_equal(result, np.array([False, True])), "Entity exclusion results incorrect."
+    assert np.array_equal(result, np.array([False, True])), (
+        "Entity exclusion results incorrect."
+    )
 
 
 @pytest.mark.asyncio
@@ -100,5 +120,9 @@ async def test_register_operations(entity_parser):
     logic_evaluator = AsyncMock()
     await entity_parser.register_operations(logic_evaluator)
 
-    logic_evaluator.add_operation.assert_any_call("entity_matches", entity_parser.matches_entities)
-    logic_evaluator.add_operation.assert_any_call("entity_excludes", entity_parser.excludes_entities)
+    logic_evaluator.add_operation.assert_any_call(
+        "entity_matches", entity_parser.matches_entities
+    )
+    logic_evaluator.add_operation.assert_any_call(
+        "entity_excludes", entity_parser.excludes_entities
+    )

@@ -58,12 +58,18 @@ async def test_get_asset_fetch_and_cache(network_worker_instance, mocker):
     print("Running test_get_asset_fetch_and_cache...")
 
     network_worker_instance.cache.get_asset.remote.return_value = None
-    mocker.patch.object(network_worker_instance, "fetch_asset", new=AsyncMock(return_value={"fetched": True}))
+    mocker.patch.object(
+        network_worker_instance,
+        "fetch_asset",
+        new=AsyncMock(return_value={"fetched": True}),
+    )
 
     await network_worker_instance.get_asset("test_type", {}, "template")
 
     expected_key = "test_type__test_type__"
-    network_worker_instance.cache.cache_asset.remote.assert_called_once_with(expected_key, {"fetched": True})
+    network_worker_instance.cache.cache_asset.remote.assert_called_once_with(
+        expected_key, {"fetched": True}
+    )
 
 
 @pytest.mark.asyncio
@@ -78,7 +84,6 @@ async def test_get_or_set_handle_did_cached(network_worker_instance):
     result = await network_worker_instance.get_or_set_handle_did("test-handle")
 
     assert result == "did:plc:mock"
-
 
 
 @pytest.mark.asyncio
@@ -97,4 +102,6 @@ async def test_get_or_set_handle_did_fetch(network_worker_instance, mocker):
     result = await network_worker_instance.get_or_set_handle_did("test-handle")
 
     assert result == "did:plc:resolved"
-    network_worker_instance.cache.cache_did.remote.assert_called_once_with("test-handle", "did:plc:resolved")
+    network_worker_instance.cache.cache_did.remote.assert_called_once_with(
+        "test-handle", "did:plc:resolved"
+    )

@@ -8,6 +8,7 @@ from app.ray.dispatcher import Dispatcher
 with patch("ray.remote", lambda *args, **kwargs: lambda cls: cls):
     from app.ray.cpu_worker import CPUWorker  # Import CPUWorker after patching
 
+
 @pytest.fixture(scope="function")
 def dispatcher_instance(mocker):
     """
@@ -28,7 +29,7 @@ def dispatcher_instance(mocker):
     mock_gpu_embedding_workers = [AsyncMock()]
     mock_gpu_classifier_workers = [AsyncMock()]
     mock_cpu_workers = [AsyncMock()]
-    
+
     instance = Dispatcher(
         cache=mock_cache,
         bluesky_semaphore=mock_bluesky_semaphore,
@@ -54,7 +55,9 @@ async def test_generate_timing_report(dispatcher_instance):
         "method_2": 0.8,
         "method_3": 4.1,
     }
-    dispatcher_instance.bluesky_semaphore.get_summary.remote.return_value = sample_timings
+    dispatcher_instance.bluesky_semaphore.get_summary.remote.return_value = (
+        sample_timings
+    )
     dispatcher_instance.graze_semaphore.get_summary.remote.return_value = sample_timings
 
     # Mock network workers
@@ -75,7 +78,26 @@ async def test_generate_timing_report(dispatcher_instance):
     report = await dispatcher_instance.generate_timing_report()
 
     # Ensure sorting is correct (highest timing first)
-    expected_order = ['bluesky_semaphore.method_3', 'graze_semaphore.method_3', 'network_worker_0.method_3', 'gpu_embedding_worker_0.method_3', 'gpu_classifier_worker_0.method_3', 'cpu_worker_0.method_3', 'bluesky_semaphore.method_1', 'graze_semaphore.method_1', 'network_worker_0.method_1', 'gpu_embedding_worker_0.method_1', 'gpu_classifier_worker_0.method_1', 'cpu_worker_0.method_1', 'bluesky_semaphore.method_2', 'graze_semaphore.method_2', 'network_worker_0.method_2', 'gpu_embedding_worker_0.method_2', 'gpu_classifier_worker_0.method_2', 'cpu_worker_0.method_2']
+    expected_order = [
+        "bluesky_semaphore.method_3",
+        "graze_semaphore.method_3",
+        "network_worker_0.method_3",
+        "gpu_embedding_worker_0.method_3",
+        "gpu_classifier_worker_0.method_3",
+        "cpu_worker_0.method_3",
+        "bluesky_semaphore.method_1",
+        "graze_semaphore.method_1",
+        "network_worker_0.method_1",
+        "gpu_embedding_worker_0.method_1",
+        "gpu_classifier_worker_0.method_1",
+        "cpu_worker_0.method_1",
+        "bluesky_semaphore.method_2",
+        "graze_semaphore.method_2",
+        "network_worker_0.method_2",
+        "gpu_embedding_worker_0.method_2",
+        "gpu_classifier_worker_0.method_2",
+        "cpu_worker_0.method_2",
+    ]
     assert list(report.keys()) == expected_order
 
 
@@ -103,9 +125,7 @@ async def test_distribute_tasks(dispatcher_instance, mocker):
     await dispatcher_instance.distribute_tasks(records, manifest_data)
 
     # Ensure at least one worker was assigned the task
-    assigned_worker = any(
-        worker.process_batch.remote.called for worker in cpu_workers
-    )
+    assigned_worker = any(worker.process_batch.remote.called for worker in cpu_workers)
     assert assigned_worker
 
 
@@ -145,5 +165,3 @@ async def test_distribute_tasks_with_busy_workers(dispatcher_instance, mocker):
 
     # Ensure the task was finally assigned
     cpu_workers[0].process_batch.remote.assert_called_once_with(records, manifest_data)
-
-

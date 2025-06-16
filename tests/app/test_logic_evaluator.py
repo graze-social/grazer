@@ -11,6 +11,7 @@ import numpy as np
 from unittest.mock import AsyncMock, MagicMock
 from app.logic_evaluator import LogicEvaluator
 
+
 @pytest_asyncio.fixture
 async def evaluator():
     """
@@ -35,10 +36,17 @@ async def evaluator():
     mock_model_instance = MockModel()
 
     async def mock_scores_op(records, *args):
-        return np.array([0.0] * len(records))  # Ensures boolean evaluation returns False
+        return np.array(
+            [0.0] * len(records)
+        )  # Ensures boolean evaluation returns False
 
     mock_scores_op.__self__ = mock_model_instance
-    await ev.add_operation("mock_scores_op", mock_scores_op, gpu_accelerable=True, gpu_accelerable_custom=True)
+    await ev.add_operation(
+        "mock_scores_op",
+        mock_scores_op,
+        gpu_accelerable=True,
+        gpu_accelerable_custom=True,
+    )
 
     return ev
 
@@ -206,123 +214,179 @@ def is_equal(a, b):
         return np.array_equal(a, b)
     return a == b
 
-@pytest.mark.parametrize("value,threshold,expected_value,expected_threshold", [
-    # Numeric threshold, flat value
-    ([1, 2, None], 5, np.array([1, 2, 0]), 5),
-    ([None, '', 3], 0, np.array([0, 0, 3]), 0),
 
-    # Numeric-like string threshold
-    ([None, ''], '0.7', np.array([0, 0]), 0.7),
-    ([1.2, None], '3.14', np.array([1.2, 0]), 3.14),
-
-    # String threshold (not numeric-like)
-    ([None, '', 'x'], 'foo', np.array(['', '', 'x']), 'foo'),
-
-    # Nested arrays, numeric threshold
-    ([[None, 1], [2, '']], 0, np.array([[0, 1], [2, 0]]), 0),
-
-    # Nested arrays, string threshold (non-numeric)
-    ([['a', None], ['', 'b']], 'bar', np.array([['a', ''], ['', 'b']]), 'bar'),
-
-    # Threshold is None
-    ([None, 1], None, np.array(['', 1]), ''),
-
-    # Threshold is empty string, non-numeric
-    ([None, ''], '', np.array(['', '']), ''),
-
-    # Threshold is empty string but castable
-    ([None, 1.5], '0.0', np.array([0, 1.5]), 0.0),
-
-    # Threshold is a float, input includes string numbers
-    (['1.1', ''], 2.2, np.array(['1.1', 0]), 2.2),  # NOTE: values are not coerced to float
-
-    # Threshold is string int, value is numeric
-    ([1, 2, 3], '4', np.array([1, 2, 3]), 4.0),
-
-    # Threshold is numeric but value is stringy
-    (['', ''], 1.0, np.array([0, 0]), 1.0),
-])
-def test_normalize_comparison_inputs(value, threshold, expected_value, expected_threshold):
-    result_value, result_threshold = LogicEvaluator._normalize_comparison_inputs(value, threshold)
+@pytest.mark.parametrize(
+    "value,threshold,expected_value,expected_threshold",
+    [
+        # Numeric threshold, flat value
+        ([1, 2, None], 5, np.array([1, 2, 0]), 5),
+        ([None, "", 3], 0, np.array([0, 0, 3]), 0),
+        # Numeric-like string threshold
+        ([None, ""], "0.7", np.array([0, 0]), 0.7),
+        ([1.2, None], "3.14", np.array([1.2, 0]), 3.14),
+        # String threshold (not numeric-like)
+        ([None, "", "x"], "foo", np.array(["", "", "x"]), "foo"),
+        # Nested arrays, numeric threshold
+        ([[None, 1], [2, ""]], 0, np.array([[0, 1], [2, 0]]), 0),
+        # Nested arrays, string threshold (non-numeric)
+        ([["a", None], ["", "b"]], "bar", np.array([["a", ""], ["", "b"]]), "bar"),
+        # Threshold is None
+        ([None, 1], None, np.array(["", 1]), ""),
+        # Threshold is empty string, non-numeric
+        ([None, ""], "", np.array(["", ""]), ""),
+        # Threshold is empty string but castable
+        ([None, 1.5], "0.0", np.array([0, 1.5]), 0.0),
+        # Threshold is a float, input includes string numbers
+        (
+            ["1.1", ""],
+            2.2,
+            np.array(["1.1", 0]),
+            2.2,
+        ),  # NOTE: values are not coerced to float
+        # Threshold is string int, value is numeric
+        ([1, 2, 3], "4", np.array([1, 2, 3]), 4.0),
+        # Threshold is numeric but value is stringy
+        (["", ""], 1.0, np.array([0, 0]), 1.0),
+    ],
+)
+def test_normalize_comparison_inputs(
+    value, threshold, expected_value, expected_threshold
+):
+    result_value, result_threshold = LogicEvaluator._normalize_comparison_inputs(
+        value, threshold
+    )
     assert is_equal(result_value, expected_value)
     assert result_threshold == expected_threshold
+
 
 @pytest.mark.asyncio
 async def test_compare():
     """Test the static compare method with all supported operators and edge cases."""
     # operator ==
-    assert np.array_equal(LogicEvaluator.compare(np.array([5]), "==", 5), np.array([True]))
-    assert np.array_equal(LogicEvaluator.compare(np.array([5]), "==", 4), np.array([False]))
-    assert np.array_equal(LogicEvaluator.compare(np.array([None]), "==", ''), np.array([True]))
-    assert np.array_equal(LogicEvaluator.compare(np.array(['']), "==", None), np.array([True]))
-    assert np.array_equal(LogicEvaluator.compare(np.array(['foo']), "==", None), np.array([False]))
-    assert np.array_equal(LogicEvaluator.compare(np.array([None, '']), "==", ''), np.array([True, True]))
+    assert np.array_equal(
+        LogicEvaluator.compare(np.array([5]), "==", 5), np.array([True])
+    )
+    assert np.array_equal(
+        LogicEvaluator.compare(np.array([5]), "==", 4), np.array([False])
+    )
+    assert np.array_equal(
+        LogicEvaluator.compare(np.array([None]), "==", ""), np.array([True])
+    )
+    assert np.array_equal(
+        LogicEvaluator.compare(np.array([""]), "==", None), np.array([True])
+    )
+    assert np.array_equal(
+        LogicEvaluator.compare(np.array(["foo"]), "==", None), np.array([False])
+    )
+    assert np.array_equal(
+        LogicEvaluator.compare(np.array([None, ""]), "==", ""), np.array([True, True])
+    )
 
     # operator !=
-    assert np.array_equal(LogicEvaluator.compare(np.array([5]), "!=", 4), np.array([True]))
-    assert np.array_equal(LogicEvaluator.compare(np.array([5]), "!=", 5), np.array([False]))
-    assert np.array_equal(LogicEvaluator.compare(np.array([None]), "!=", ''), np.array([False]))
-    assert np.array_equal(LogicEvaluator.compare(np.array(['x']), "!=", None), np.array([True]))
+    assert np.array_equal(
+        LogicEvaluator.compare(np.array([5]), "!=", 4), np.array([True])
+    )
+    assert np.array_equal(
+        LogicEvaluator.compare(np.array([5]), "!=", 5), np.array([False])
+    )
+    assert np.array_equal(
+        LogicEvaluator.compare(np.array([None]), "!=", ""), np.array([False])
+    )
+    assert np.array_equal(
+        LogicEvaluator.compare(np.array(["x"]), "!=", None), np.array([True])
+    )
 
     # operator >=
-    assert np.array_equal(LogicEvaluator.compare(np.array([5]), ">=", 5), np.array([True]))
-    assert np.array_equal(LogicEvaluator.compare(np.array([4]), ">=", None), np.array([False]))
-    assert np.array_equal(LogicEvaluator.compare(np.array([None]), ">=", 4), np.array([False]))
-    assert np.array_equal(LogicEvaluator.compare(np.array(['']), ">=", ''), np.array([True]))  # not numeric
+    assert np.array_equal(
+        LogicEvaluator.compare(np.array([5]), ">=", 5), np.array([True])
+    )
+    assert np.array_equal(
+        LogicEvaluator.compare(np.array([4]), ">=", None), np.array([False])
+    )
+    assert np.array_equal(
+        LogicEvaluator.compare(np.array([None]), ">=", 4), np.array([False])
+    )
+    assert np.array_equal(
+        LogicEvaluator.compare(np.array([""]), ">=", ""), np.array([True])
+    )  # not numeric
 
     # operator <=
-    assert np.array_equal(LogicEvaluator.compare(np.array([5]), "<=", 5), np.array([True]))
-    assert np.array_equal(LogicEvaluator.compare(np.array([5]), "<=", None), np.array([False]))
-    assert np.array_equal(LogicEvaluator.compare(np.array([None]), "<=", 5), np.array([True]))
-    assert np.array_equal(LogicEvaluator.compare(np.array([0.2]), "<=", "0.7"), np.array([True]))
+    assert np.array_equal(
+        LogicEvaluator.compare(np.array([5]), "<=", 5), np.array([True])
+    )
+    assert np.array_equal(
+        LogicEvaluator.compare(np.array([5]), "<=", None), np.array([False])
+    )
+    assert np.array_equal(
+        LogicEvaluator.compare(np.array([None]), "<=", 5), np.array([True])
+    )
+    assert np.array_equal(
+        LogicEvaluator.compare(np.array([0.2]), "<=", "0.7"), np.array([True])
+    )
 
     # operator >
-    assert np.array_equal(LogicEvaluator.compare(np.array([6]), ">", 5), np.array([True]))
-    assert np.array_equal(LogicEvaluator.compare(np.array([5]), ">", 5), np.array([False]))
-    assert np.array_equal(LogicEvaluator.compare(np.array([5]), ">", None), np.array([False]))
+    assert np.array_equal(
+        LogicEvaluator.compare(np.array([6]), ">", 5), np.array([True])
+    )
+    assert np.array_equal(
+        LogicEvaluator.compare(np.array([5]), ">", 5), np.array([False])
+    )
+    assert np.array_equal(
+        LogicEvaluator.compare(np.array([5]), ">", None), np.array([False])
+    )
 
     # operator <
-    assert np.array_equal(LogicEvaluator.compare(np.array([4]), "<", 5), np.array([True]))
-    assert np.array_equal(LogicEvaluator.compare(np.array([5]), "<", None), np.array([False]))
+    assert np.array_equal(
+        LogicEvaluator.compare(np.array([4]), "<", 5), np.array([True])
+    )
+    assert np.array_equal(
+        LogicEvaluator.compare(np.array([5]), "<", None), np.array([False])
+    )
 
     # operator in
     assert all(LogicEvaluator.compare(np.array([1, 2]), "in", [1, 2, 3]))
-    assert all(LogicEvaluator.compare(np.array([None, '']), "in", ['', 'x']))
-    assert not any(LogicEvaluator.compare(np.array(['a', 'b']), "in", ['x', 'y']))
+    assert all(LogicEvaluator.compare(np.array([None, ""]), "in", ["", "x"]))
+    assert not any(LogicEvaluator.compare(np.array(["a", "b"]), "in", ["x", "y"]))
 
     # operator not_in
     assert not any(LogicEvaluator.compare(np.array([1, 2]), "not_in", [1, 2, 3]))
-    assert all(LogicEvaluator.compare(np.array(['a', 'b']), "not_in", ['x', 'y']))
-    assert not any(LogicEvaluator.compare(np.array([None, '']), "not_in", ['', 'a']))
+    assert all(LogicEvaluator.compare(np.array(["a", "b"]), "not_in", ["x", "y"]))
+    assert not any(LogicEvaluator.compare(np.array([None, ""]), "not_in", ["", "a"]))
 
     # mixed numeric with None
-    assert all(LogicEvaluator.compare(np.array([None, '', 3]), "in", [3, '', 'x']))
-    assert np.array_equal(LogicEvaluator.compare(np.array([None]), "==", None), np.array([True]))
-    assert np.array_equal(LogicEvaluator.compare(np.array(['']), "==", ''), np.array([True]))
-    assert np.array_equal(LogicEvaluator.compare(np.array(['abc']), "!=", ''), np.array([True]))
-    assert LogicEvaluator.compare(np.array([1, 2, None]), "!=", '')[2] == False
+    assert all(LogicEvaluator.compare(np.array([None, "", 3]), "in", [3, "", "x"]))
+    assert np.array_equal(
+        LogicEvaluator.compare(np.array([None]), "==", None), np.array([True])
+    )
+    assert np.array_equal(
+        LogicEvaluator.compare(np.array([""]), "==", ""), np.array([True])
+    )
+    assert np.array_equal(
+        LogicEvaluator.compare(np.array(["abc"]), "!=", ""), np.array([True])
+    )
+    assert LogicEvaluator.compare(np.array([1, 2, None]), "!=", "")[2] == False
 
     # nested list (list of lists) - string values
-    nested_str = np.array([['a', None], ['b', '']], dtype=object)
-    result_eq_str = LogicEvaluator.compare(nested_str, '==', '')
+    nested_str = np.array([["a", None], ["b", ""]], dtype=object)
+    result_eq_str = LogicEvaluator.compare(nested_str, "==", "")
     assert result_eq_str.shape == (2,)
     assert result_eq_str[0] is np.True_  # None becomes ''
     assert result_eq_str[1] is np.True_  # '' == ''
 
-    result_neq_str = LogicEvaluator.compare(nested_str, '!=', '')
+    result_neq_str = LogicEvaluator.compare(nested_str, "!=", "")
     assert result_neq_str[0] is np.False_  # 'a' != ''
     assert result_neq_str[1] is np.False_
 
     # nested list (list of lists) - int values
-    nested_int = np.array([[1, None], [0, '']], dtype=object)
-    result_eq_int = LogicEvaluator.compare(nested_int, '==', '')
+    nested_int = np.array([[1, None], [0, ""]], dtype=object)
+    result_eq_int = LogicEvaluator.compare(nested_int, "==", "")
     assert result_eq_int.shape == (2,)
-    assert result_eq_int[0] is np.True_   # None becomes ''
-    assert result_eq_int[1] is np.True_   # '' == ''
+    assert result_eq_int[0] is np.True_  # None becomes ''
+    assert result_eq_int[1] is np.True_  # '' == ''
     assert result_eq_int[0] is np.True_  # 1 != ''
     assert result_eq_int[1] is np.True_  # 0 != ''
 
-    result_neq_int = LogicEvaluator.compare(nested_int, '!=', '')
+    result_neq_int = LogicEvaluator.compare(nested_int, "!=", "")
     assert result_neq_int[0] is np.False_
     assert result_neq_int[1] is np.False_
     assert result_neq_int[0] is np.False_
@@ -332,18 +396,14 @@ async def test_compare():
     with pytest.raises(ValueError, match="Unknown comparator 'abcd'"):
         LogicEvaluator.compare(np.array([5]), "abcd", 5)
 
+
 @pytest.mark.asyncio
 async def test_extract_conditions():
     # Condition with nested and/or
     condition = {
         "and": [
             {"mock_op": [1]},
-            {
-                "or": [
-                    {"mock_op": [2]},
-                    {"mock_scores_op": [3]}
-                ]
-            },
+            {"or": [{"mock_op": [2]}, {"mock_scores_op": [3]}]},
         ]
     }
     extracted = await LogicEvaluator.extract_conditions(condition)
@@ -365,8 +425,8 @@ def test_sort_conditions(evaluator):
     """
     condition = {
         "and": [
-            {"mock_op": [1]},      # in GPU ops
-            {"some_other_op": [2]},# not in GPU ops
+            {"mock_op": [1]},  # in GPU ops
+            {"some_other_op": [2]},  # not in GPU ops
         ]
     }
     sorted_cond = evaluator.sort_conditions(condition)
@@ -378,10 +438,7 @@ def test_sort_conditions(evaluator):
 
 
 def test_rehydrate_single_manifest_basic():
-    manifest = {
-        "filter": 123,
-        "other_field": "unchanged"
-    }
+    manifest = {"filter": 123, "other_field": "unchanged"}
     condition_map = {
         123: {
             "operator_name": "mock_op",
@@ -395,11 +452,7 @@ def test_rehydrate_single_manifest_basic():
 
 
 def test_rehydrate_single_manifest_nested():
-    manifest = {
-        "filter": {
-            "and": [123, {"or": [456, 789]}]
-        }
-    }
+    manifest = {"filter": {"and": [123, {"or": [456, 789]}]}}
     condition_map = {
         123: {"operator_name": "mock_op", "condition_parameters": [1]},
         456: {"operator_name": "mock_scores_op", "condition_parameters": [9]},
@@ -433,5 +486,7 @@ def test_rehydrate_single_manifest_no_manifest():
 
 def test_rehydrate_single_manifest_missing_condition():
     manifest = {"filter": 999}
-    with pytest.raises(ValueError, match="Condition ID 999 not found in condition_map."):
+    with pytest.raises(
+        ValueError, match="Condition ID 999 not found in condition_map."
+    ):
         LogicEvaluator.rehydrate_single_manifest(manifest, {})
