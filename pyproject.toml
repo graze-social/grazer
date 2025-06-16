@@ -42,6 +42,7 @@ dependencies = [
     "pydantic>=2.11.4",
     "certifi>=2025.4.26",
     "pyroscope-io>=0.8.11",
+    "prometheus-client>=0.22.1",
 
 ]
 

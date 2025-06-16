@@ -33,7 +33,7 @@ class KubeProcessor(KubeBase):
         return records
 
     @classmethod
-    @record_timing(prefix="KubeProcessor", annotate=True)
+    @record_timing(prefix="KubeProcessor", annotate=False)
     async def process_algos(cls, dispatcher, transactions):
         records = await cls.ingest_feed(transactions)
         algo_data = await KubeProcessor.get_algorithm_operators()
@@ -45,7 +45,7 @@ class KubeProcessor(KubeBase):
         )
 
     @classmethod
-    @record_timing(prefix="KubeProcessor", annotate=True)
+    @record_timing(prefix="KubeProcessor", annotate=False)
     async def run_algos(cls, dispatcher: Dispatcher, records, manifests, all_operators):
         logger.warn(
             f"[warn debug] running records: {len(records)} manifests: {len(manifests.items())}"

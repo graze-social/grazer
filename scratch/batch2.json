@@ -1,0 +1,25 @@
+[
+  {
+    "MessageId": "a98b2472-0e6d-41ab-a502-b3db4cdec69f",
+    "ReceiptHandle": "AQEBVDq/urCatsZyfRk6Qw57qD3MbKnpBgdISlUhv7NsSmC6rQXs7uwsH3dbDQ9+mmZsPFG5unCkBIxhpzlVhOPNfrfSruTCfS2SHGFAc4RPRLQR5KGL5p94W4D8C+d/nBUi6ueWjywadZihOUGoT9w+DNbLqVYp0BMSeGWbkqtSqHNVxfpakyT5YJKbV3Ld+KknBxmoEvwgKTtLhhDgz1QFgabVjsYTLvJMdKiT8kZ55ar1MIyTbO2qfqyZF86poGv8NIJgZghCt4+oDc8odgkSDLv8rda7smzYqg+XTMO/PD4RADi9nttWLz33Dd1gNKbvR37xHBsLkipANjkwOBt9cz3KXf8GVXiqxcOXDKMS9l35GRVxssmhK41oYc68dt1E/XzlG1TsECq/jaeprgM1kA==",
+    "MD5OfBody": "906202ec1ea81acaf552900d008c85d5",
+    "Body": {
+      "did": "did:plc:3oaalo3cf2ou6l3lgfzo6dts",
+      "time_us": 1749080041068084,
+      "kind": "commit",
+      "commit": {
+        "rev": "3lqsxrcgir52q",
+        "operation": "create",
+        "collection": "app.bsky.feed.post",
+        "rkey": "3lqsxrbqbgk2p",
+        "record": {
+          "$type": "app.bsky.feed.post",
+          "createdAt": "2025-06-04T23:34:00.218Z",
+          "langs": ["ja"],
+          "text": "今日ついにSwitch2発売か…"
+        },
+        "cid": "bafyreidefqtqrjcdz64q772jhy2kw4v5xfi7no3puiag2lqgakpd4hsygi"
+      }
+    }
+  }
+]

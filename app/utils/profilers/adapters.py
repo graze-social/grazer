@@ -3,6 +3,8 @@ from app.logger import logger
 from typing import List, Dict, Optional
 from dataclasses import dataclass
 import aiohttp
+from prometheus_client import CollectorRegistry, Gauge, push_to_gateway
+
 
 
 def timestamp(time: float) -> int:
@@ -53,6 +55,24 @@ class GrafanaAdapter:
             "content-type": "application/json",
             "authorization": f"Bearer {self.service_account_token}",
         }
+
+@dataclass
+class PrometheusAdapter:
+    # class Metric(Enum):
+    #     counter = 1
+    #     gauge = 2
+    """Utilize push gateway to send custom gauges
+    registry = CollectorRegistry()
+    g = Gauge('job_last_success_unixtime', 'Last time a batch job successfully finished', registry=registry)
+    g.set_to_current_time()
+    push_to_gateway('localhost:9091', job='batchA', registry=registry)
+    """
+
+    registry: Optional[CollectorRegistry] = None
+    prometheus_gateway_host: str = os.getenv("PROMETHEUS_GATEWAY_HOST", "localhost:9091")
+
+
+
 
 
 @dataclass

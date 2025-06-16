@@ -73,7 +73,7 @@ class SQSConsumer:
             await self.delete_message(sqs, receipt_handle)
             return StreamData({})
 
-    @record_timing(prefix="SQSConsumer", annotate=True)
+    @record_timing(prefix="SQSConsumer", annotate=False)
     async def process_message(self, sqs: Any, message: dict[str, Any]):
         """Parse JSON message and send it to KubeRouter."""
         receipt_handle = message["ReceiptHandle"]

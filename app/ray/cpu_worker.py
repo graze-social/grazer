@@ -52,7 +52,7 @@ class CPUWorker(TimingBase):
         return self.active_tasks
 
     @measure_time
-    @record_timing(prefix="CPUWorker", annotate=True)
+    @record_timing(prefix="CPUWorker", annotate=False)
     async def process_manifest(
         self, algorithm_id, manifest, records, report_output=True
     ):
@@ -118,7 +118,7 @@ class CPUWorker(TimingBase):
                 logger.warn("[warn debug] completed ")
 
     @measure_time
-    @record_timing(prefix="CPUWorker", annotate=True)
+    @record_timing(prefix="CPUWorker", annotate=False)
     async def process_batch(self, records, manifests, report_output=True):
         """
         Process a batch of records using the manifest.

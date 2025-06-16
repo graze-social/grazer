@@ -5,7 +5,7 @@
 groups = ["default", "build", "dev", "streamer"]
 strategy = ["inherit_metadata"]
 lock_version = "4.5.0"
-content_hash = "sha256:9129ec0aca7c01d30a8e84f71b237f11e0cc655df3024b00884bb1b6ced528c2"
+content_hash = "sha256:e6c97397b7e2e116e1ebbc038a8aea10e1a8f039ee0c3a4e7a1e80214d8de0c5"
 
 [[metadata.targets]]
 requires_python = ">=3.11,<3.13"
@@ -2026,6 +2026,17 @@ dependencies = [
 files = [
     {file = "prettytable-3.16.0-py3-none-any.whl", hash = "sha256:b5eccfabb82222f5aa46b798ff02a8452cf530a352c31bddfa29be41242863aa"},
     {file = "prettytable-3.16.0.tar.gz", hash = "sha256:3c64b31719d961bf69c9a7e03d0c1e477320906a98da63952bc6698d6164ff57"},
+]
+
+[[package]]
+name = "prometheus-client"
+version = "0.22.1"
+requires_python = ">=3.9"
+summary = "Python client for the Prometheus monitoring system."
+groups = ["default"]
+files = [
+    {file = "prometheus_client-0.22.1-py3-none-any.whl", hash = "sha256:cca895342e308174341b2cbf99a56bef291fbc0ef7b9e5412a0f26d653ba7094"},
+    {file = "prometheus_client-0.22.1.tar.gz", hash = "sha256:190f1331e783cf21eb60bca559354e0a4d4378facecf78f5428c39b675d20d28"},
 ]
 
 [[package]]

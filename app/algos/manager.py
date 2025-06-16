@@ -105,7 +105,7 @@ class AlgoManager:
         condition_keys = await self.condition_keys()
         return len(condition_keys & self.logic_evaluator.gpu_accelerable_operations) > 0
 
-    @record_timing(prefix="AlgoManager", annotate=True)
+    @record_timing(prefix="AlgoManager", annotate=False)
     async def matching_records(self, records):
         """Evaluate the manifest against a given record."""
         start_time = time.time()  # Record the start time

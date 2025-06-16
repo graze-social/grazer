@@ -96,8 +96,8 @@ class Dispatcher:
         )
         return sorted_timing_report
 
-    @record_timing(prefix="Dispatcher", annotate=True)
-    async def distribute_tasks(self, records, manifest_data, report_output=True, even_distribution=True):
+    @record_timing(prefix="Dispatcher", annotate=False)
+    async def distribute_tasks(self, records, manifest_data, report_output=True, even_distribution=False):
         # https://docs.ray.io/en/latest/ray-core/patterns/ray-get-loop.html
 
         logger.warn(f"[warn debug] length of manifest data: {len(manifest_data)}")
@@ -107,7 +107,7 @@ class Dispatcher:
         for manifest in manifest_data:
             if even_distribution:
                 workers = await self.snapshot_active_workers()
-                logger.info(f"low-task workers {json.dumps(workers)}")
+                logger.info(f"low-task workers {workers}")
                 worker = random.choice([worker["ref"] for worker in workers])
 
             else:
