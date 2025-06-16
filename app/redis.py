@@ -36,5 +36,6 @@ class RedisClient:
             return json.loads(value)
 
     @classmethod
-    async def set_process_timing(cls, field: str, timing: float):
-        await cls.REDIS_CLIENT.hset("function_timings", mapping={field: timing})
+    async def set_process_timing(cls, field: str, timing: float, metric_key: str ="function_timings"):
+        # TODO: Set metric key in decorator
+        await cls.REDIS_CLIENT.hset(metric_key, mapping={field: timing})

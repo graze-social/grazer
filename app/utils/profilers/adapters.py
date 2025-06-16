@@ -58,25 +58,17 @@ class GrafanaAdapter:
 
 @dataclass
 class PrometheusAdapter:
-    # class Metric(Enum):
-    #     counter = 1
-    #     gauge = 2
-    """Utilize push gateway to send custom gauges
-    registry = CollectorRegistry()
-    g = Gauge('job_last_success_unixtime', 'Last time a batch job successfully finished', registry=registry)
-    g.set_to_current_time()
-    push_to_gateway('localhost:9091', job='batchA', registry=registry)
     """
-
+    TODO:
+    Utilize push gateway to send custom gauges
+    """
     registry: Optional[CollectorRegistry] = None
     prometheus_gateway_host: str = os.getenv("PROMETHEUS_GATEWAY_HOST", "localhost:9091")
 
-
-
-
-
 @dataclass
 class RedisAdapter:
-    """TODO"""
-
+    """
+    TODO:
+    Port Redis Client methods here
+    """
     pass

@@ -34,5 +34,6 @@ class StreamData:
         """Return receipt w/o receipt handle for processing"""
         return [self.data]
 
-    # def receipt_handles(self) -> List[str]:
-    #     return [datum.receipt_handle for datum in self.data]
+    def receipt_handles(self) -> List[str]:
+        # TODO: unused - initially included for de-duping
+        return [datum["receipt_handle"] for datum in self.data] #type: ignore

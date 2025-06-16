@@ -51,7 +51,6 @@ class SQSConsumer:
 
                     tasks = [self.process_message(sqs, msg) for msg in messages]
                     self.gathered_tasks += len(tasks)
-                    logger.warn("gathered tasks ")
                     await asyncio.gather(*tasks)
 
                 except Exception as e:

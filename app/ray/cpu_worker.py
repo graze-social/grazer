@@ -82,7 +82,6 @@ class CPUWorker(TimingBase):
                 if operable:
                     matched_records, _, timing = await algo_manager.matching_records(
                         records
-                        # records[:1]
                     )
                 else:
                     sentry_sdk.capture_exception(
@@ -141,7 +140,7 @@ class CPUWorker(TimingBase):
                 self.process_manifest(algorithm_id, manifest, records, report_output)
             )
 
-        # THEORY: maybe ray.get(processes)
+        # THEORY: Do we actually need to wait for enqueued work to complete here?
         results = await asyncio.gather(*processes)
         logger.warn(f"[warn debug] finished processing batch {results}")
         return results
