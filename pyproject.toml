@@ -29,44 +29,32 @@ dependencies = [
     "ray==2.43.0",
     "cachetools==5.5.1",
     "aiorwlock==1.5.0",
+    "sentry-sdk",
     "numpy",
     "uvicorn==0.34.0",
+    "pytest==8.3.5",
+    "pytest-cov==6.0.0",
+    "pytest-mock==3.14.0",
+    "pytest-asyncio==0.25.3",
     "grpcio==1.71.0",
     "opentelemetry-api>=1.31.1",
     "opentelemetry-sdk>=1.31.1",
     "opentelemetry-exporter-otlp>=1.31.1",
     "opentelemetry-instrumentation>=0.52b1",
     "opentelemetry-instrumentation-requests>=0.52b1",
-    "pydantic-settings",
-    "pydantic-core>=2.33.1",
-    "pydantic>=2.11.4",
-    "certifi>=2025.4.26",
-
 ]
-
-[project.optional-dependencies]
-build = ["cython>=3.0.12", "ninja>=1.11.1.3", "setuptools>=75.8.2"]
-streamer = [
-    "aioboto3>=14.1.0",
-    "websockets==13.1",
-    "types-aioboto3[sqs]",
-    "redis",
-    "pydantic-settings",
-    "pydantic-core>=2.33.1",
-    "pydantic>=2.11.4",
-    "sentry-sdk==2.19.0",
-]
-
 
 [dependency-groups]
 dev = [
+    "cython>=3.0.12",
+    "ninja>=1.11.1.3",
+    "setuptools>=75.8.2",
     "flake8>=7.1.2",
-    "pytest==8.3.5",
-    "pytest-cov==6.0.0",
-    "pytest-mock==3.14.0",
-    "pytest-asyncio==0.25.3",
+    "pytest>=8.3.5",
 ]
-
+cluster = [
+    "ray[client]==2.43.0",
+]
 
 [build-system]
 requires = ["setuptools", "wheel", "ninja"]
@@ -104,18 +92,6 @@ start_cpu_worker = { shell = "nohup python run_ray_cpu_worker.py --name cpu:main
 
 # Runpod Worker
 start_runpod_worker = { cmd = ["python3", "run_runpod_worker.py"] }
-
-# Kube Worker
-start_kube_worker = { cmd = ["python3", "run_kube_worker.py"] }
-
-# Jetstreamer
-start_streamer = { cmd = [
-    "python3",
-    "run_streamer.py",
-], env_file = ".env.streamer" }
-
-# Jetstreamer
-algo_sync = { cmd = ["python3", "algo_sync.py"], env_file = ".env.algosync" }
 
 tail_output = { shell = "tail -f -n 300 nohup.out" }
 

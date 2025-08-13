@@ -5,8 +5,6 @@ import traceback
 import sys
 from itertools import islice
 from typing import List, Dict, Any
-
-
 def is_numeric_like(x):
     """
     Returns True if x can be safely converted to a float.
@@ -17,30 +15,24 @@ def is_numeric_like(x):
     except (TypeError, ValueError):
         return False
 
-
 def normalize_element_for_logic_eval(x, is_numeric=False):
     """
     Returns either x, or if x is None/empty/blank, returns
     0 if is_numeric=True, otherwise ''.
     """
     if x is None:
-        return 0 if is_numeric else ""
-    if isinstance(x, str) and x == "":
-        return 0 if is_numeric else ""
-    if isinstance(x, np.ndarray) and x.size == 0:
         return 0 if is_numeric else ''
-    if x == [None]:
+    if isinstance(x, str) and x == '':
+        return 0 if is_numeric else ''
+    if isinstance(x, np.ndarray) and x.size == 0:
         return 0 if is_numeric else ''
     return x
 
-
 def is_likely_domain_or_url(term: str) -> bool:
-    return "." in term or term.startswith("http")
-
+    return '.' in term or term.startswith('http')
 
 def extract_all_text_fields(records: List[Dict[str, Any]]) -> List[str]:
     """Extract all relevant textual content from records including post text, image alt text, and link preview text."""
-
     def safe_get(d: Dict, path: List[str]) -> Any:
         for key in path:
             if isinstance(d, dict) and key in d:
@@ -48,7 +40,6 @@ def extract_all_text_fields(records: List[Dict[str, Any]]) -> List[str]:
             else:
                 return None
         return d
-
     def gather_text(record: Dict[str, Any]) -> str:
         parts = []
         # Top-level post text
@@ -70,9 +61,7 @@ def extract_all_text_fields(records: List[Dict[str, Any]]) -> List[str]:
                 if val:
                     parts.append(val)
         return "\n".join(parts)
-
     return [gather_text(e["commit"]["record"]) for e in records]
-
 
 def check_empty_string(value, threshold):
     """Return a boolean NumPy array where each element is True if '' is in that element."""
@@ -168,7 +157,7 @@ def create_exception_json(exc: Exception) -> dict:
 def get_url_domain(url: str) -> str:
     """Return domain, ignoring a leading 'www.', ensuring compatibility with both str and bytes."""
     parsed = urlparse(url)
-
+    
     # Ensure netloc is always a string
     netloc = parsed.netloc
     if isinstance(netloc, bytes):
@@ -180,12 +169,7 @@ def get_url_domain(url: str) -> str:
 def get_all_links(records):
     url_sets = []
     for record in records:
-        facet_urls = [
-            feature["uri"]
-            for facet in record["commit"]["record"].get("facets", [])
-            for feature in facet.get("features", [])
-            if feature.get("$type") == "app.bsky.richtext.facet#link"
-        ]
+        facet_urls = [feature["uri"] for facet in record["commit"]["record"].get("facets", []) for feature in facet.get("features", []) if feature.get("$type") == "app.bsky.richtext.facet#link"]
         primary_url = (
             (record["commit"]["record"].get("embed", {}) or {}).get("external", {})
             or {}

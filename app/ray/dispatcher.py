@@ -4,16 +4,7 @@ from app.ray.utils import discover_named_actors, discover_named_actor
 
 
 class Dispatcher:
-    def __init__(
-        self,
-        cache=None,
-        bluesky_semaphore=None,
-        graze_semaphore=None,
-        network_workers=[],
-        gpu_embedding_workers=[],
-        gpu_classifier_workers=[],
-        cpu_workers=[],
-    ):
+    def __init__(self, cache=None, bluesky_semaphore=None, graze_semaphore=None, network_workers=[], gpu_embedding_workers=[], gpu_classifier_workers=[], cpu_workers=[]):
         """
         Initialize the dispatcher with workers.
         Args:
@@ -25,21 +16,13 @@ class Dispatcher:
         print("Looking for cache...")
         self.cache = cache or discover_named_actor("cache:", timeout=10)
         print("Looking for Bluesky Semaphore...")
-        self.bluesky_semaphore = bluesky_semaphore or discover_named_actor(
-            "semaphore:bluesky", timeout=10
-        )
+        self.bluesky_semaphore = bluesky_semaphore or discover_named_actor("semaphore:bluesky", timeout=10)
         print("Looking for Graze Semaphore...")
-        self.graze_semaphore = graze_semaphore or discover_named_actor(
-            "semaphore:graze", timeout=10
-        )
+        self.graze_semaphore = graze_semaphore or discover_named_actor("semaphore:graze", timeout=10)
         print("Looking for Network Workers...")
-        self.network_workers = network_workers or discover_named_actors(
-            "network:", timeout=10
-        )
+        self.network_workers = network_workers or discover_named_actors("network:", timeout=10)
         print("Looking for GPU Worker...")
-        self.gpu_embedding_workers = gpu_embedding_workers or discover_named_actors(
-            "gpu:embedders", timeout=10
-        )
+        self.gpu_embedding_workers = gpu_embedding_workers or discover_named_actors("gpu:embedders", timeout=10)
         self.gpu_classifier_workers = gpu_classifier_workers or discover_named_actors(
             "gpu:classifiers", timeout=10
         )
@@ -88,14 +71,14 @@ class Dispatcher:
         )
         return sorted_timing_report
 
-    async def distribute_tasks(self, records, manifest_data, report_output=True):
+    async def distribute_tasks(self, records, manifest_data):
         for manifest in manifest_data:
             while True:
                 worker = random.choice(self.cpu_workers)
                 max_concurrency = await worker.max_concurrency.remote()
                 active_tasks = await worker.get_active_task_count.remote()
                 if active_tasks < max_concurrency:
-                    worker.process_batch.remote(records, [manifest], report_output)
+                    worker.process_batch.remote(records, [manifest])
                     break
                 else:
                     await asyncio.sleep(0.1)

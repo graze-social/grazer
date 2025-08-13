@@ -3,7 +3,6 @@ from app.runpod.auditor import RunpodAuditor
 from app.runpod.backfiller import RunpodBackfiller
 from app.runpod.backtester import RunpodBacktester
 
-
 class RunpodRouter:
     @classmethod
     async def process_request(cls, dispatcher, params):

@@ -1,11 +1,5 @@
 import numpy as np
-from app.helpers import (
-    is_truthy,
-    is_list_of_lists,
-    check_empty_string,
-    normalize_element_for_logic_eval,
-    is_numeric_like,
-)
+from app.helpers import is_truthy, is_list_of_lists, check_empty_string, normalize_element_for_logic_eval, is_numeric_like
 
 
 class LogicEvaluator:
@@ -21,12 +15,7 @@ class LogicEvaluator:
         return cls()
 
     async def add_operation(
-        self,
-        name,
-        func,
-        gpu_accelerable=False,
-        gpu_accelerable_custom=False,
-        fully_custom=False,
+        self, name, func, gpu_accelerable=False, gpu_accelerable_custom=False, fully_custom=False
     ):
         """Registers a custom operation."""
         self.operations[name] = func
@@ -175,18 +164,14 @@ class LogicEvaluator:
     async def _evaluate_scores(self, cond, records, indices):
         if not indices:
             return []
-
+    
         sub_records = [records[i] for i in indices]
-
+    
         for op, params in cond.items():
             if op in self.operations:
                 operation = self.operations[op]
-                if hasattr(operation, "__self__") and hasattr(
-                    operation.__self__, "get_ml_scores"
-                ):
-                    sub_results = await operation.__self__.get_ml_scores(
-                        sub_records, *params
-                    )
+                if hasattr(operation, "__self__") and hasattr(operation.__self__, "get_ml_scores"):
+                    sub_results = await operation.__self__.get_ml_scores(sub_records, *params)
                 else:
                     sub_results = await operation(sub_records, *params)
                     sub_results = np.array(sub_results).astype(float)
@@ -232,18 +217,11 @@ class LogicEvaluator:
             threshold = float(threshold)
 
         threshold = normalize_element_for_logic_eval(threshold, is_numeric)
-
+    
         if is_list_of_lists(value):
-            value = np.array(
-                [
-                    [normalize_element_for_logic_eval(elem, is_numeric) for elem in row]
-                    for row in value
-                ]
-            )
+            value = np.array([[normalize_element_for_logic_eval(elem, is_numeric) for elem in row] for row in value])
         else:
-            value = np.array(
-                [normalize_element_for_logic_eval(elem, is_numeric) for elem in value]
-            )
+            value = np.array([normalize_element_for_logic_eval(elem, is_numeric) for elem in value])
 
         return value, threshold
 
@@ -257,22 +235,22 @@ class LogicEvaluator:
             else:
                 return value == threshold
         elif operator == ">=":
-            if threshold == "":
+            if threshold == '':
                 return value == threshold
             else:
                 return value >= threshold
         elif operator == "<=":
-            if threshold == "":
+            if threshold == '':
                 return value == threshold
             else:
                 return value <= threshold
         elif operator == ">":
-            if threshold == "":
+            if threshold == '':
                 return value == threshold
             else:
                 return value > threshold
         elif operator == "<":
-            if threshold == "":
+            if threshold == '':
                 return value == threshold
             else:
                 return value < threshold
@@ -369,7 +347,6 @@ class LogicEvaluator:
         Returns:
             dict: The rehydrated manifest with condition parameters.
         """
-
         def rehydrate_condition(condition):
             """
             Recursively replaces IDs with condition parameters.
@@ -381,9 +358,7 @@ class LogicEvaluator:
                     result = condition_data["condition_parameters"]
                 else:
                     if not condition_data:
-                        raise ValueError(
-                            f"Condition ID {condition} not found in condition_map."
-                        )
+                        raise ValueError(f"Condition ID {condition} not found in condition_map.")
                     operator_name = condition_data.get("operator_name")
                     result = {operator_name: condition_data["condition_parameters"]}
                 return result
@@ -399,7 +374,6 @@ class LogicEvaluator:
                 return [rehydrate_condition(sub_cond) for sub_cond in condition]
             else:
                 raise ValueError(f"Unexpected condition format: {condition}")
-
         # Rehydrate the manifest
         if manifest:
             rehydrated_manifest = {

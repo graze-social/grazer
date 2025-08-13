@@ -1,4 +1,3 @@
-import time
 import numpy as np
 import ray
 from PIL import Image
@@ -11,11 +10,9 @@ from app.algorithm_asset_cacher import AlgorithmAssetCacher
 from app.helpers import dict_to_sorted_string, is_truthy
 from app.settings import HOSTNAME
 from app.ray.timing_base import TimingBase, measure_time
-from app.logger import logger
 from app.sentry import sentry_sdk
 
-
-@ray.remote(max_concurrency=100)  # type: ignore
+@ray.remote(max_concurrency=100)
 class NetworkWorker(TimingBase):
     def __init__(self, cache, bluesky_semaphore, graze_semaphore):
         """
@@ -47,7 +44,7 @@ class NetworkWorker(TimingBase):
                     try:
                         resp = await client.post(url, json=payload)
                         resp.raise_for_status()
-                        data = resp.json()
+                        data =  resp.json()
                         if data and isinstance(data, dict) and data.get("asset_value"):
                             # Currently everything we return is a list so return as np array
                             return np.array(data.get("asset_value"))
@@ -162,11 +159,3 @@ class NetworkWorker(TimingBase):
             return did
         else:
             return existing
-
-    async def run(self):
-        logger.info("NetworkWorker worker booting...")
-        try:
-            while True:
-                time.sleep(10)
-        except KeyboardInterrupt:
-            logger.info("NetworkWorker worker stopped.")

@@ -1,4 +1,3 @@
-import time
 import traceback
 import asyncio
 from asyncio import Semaphore
@@ -12,8 +11,7 @@ from app.ray.timing_base import TimingBase, measure_time
 from app.sentry import sentry_sdk
 from app.telemetry import Telemetry
 
-
-@ray.remote(max_concurrency=5)  # type: ignore
+@ray.remote(max_concurrency=5)
 class CPUWorker(TimingBase):
     def __init__(
         self,
@@ -48,9 +46,7 @@ class CPUWorker(TimingBase):
         return self.active_tasks
 
     @measure_time
-    async def process_manifest(
-        self, algorithm_id, manifest, records, report_output=True
-    ):
+    async def process_manifest(self, algorithm_id, manifest, records):
         async with self.semaphore:
             count = 0
             self.active_tasks += 1
@@ -71,27 +67,21 @@ class CPUWorker(TimingBase):
                     self.cache,
                 )
                 gpu_accelerated = await algo_manager.is_gpu_accelerated()
-                operable = await algo_manager.is_operable()
+                # operable = await algo_manager.is_operable()
                 matched_records = []
-                if operable:
-                    matched_records, _, timing = await algo_manager.matching_records(
-                        records
-                    )
-                else:
-                    sentry_sdk.capture_exception(
-                        Exception(
-                            "Could not process for #{algorithm_id}, was not operable!"
-                        )
-                    )
+                # if operable:
+                matched_records, _, timing = await algo_manager.matching_records(
+                    records
+                )
+                # else:
+                #     sentry_sdk.capture_exception(Exception("Could not process for #{algorithm_id}, was not operable!"))
                 response["compute_environment"] = "gpu" if gpu_accelerated else "cpu"
                 response["compute_amount"] = timing
                 response["matches"] = matched_records
                 count = len(response["matches"])
             except Exception as e:
                 sentry_sdk.capture_exception(e)
-                sentry_sdk.capture_exception(
-                    Exception("Could not process for #{algorithm_id}, error was {e}")
-                )
+                sentry_sdk.capture_exception(Exception("Could not process for #{algorithm_id}, error was {e}"))
                 print(
                     f"Error while processing records with algorithm {algorithm_id}. "
                     f"Error: {e}"
@@ -105,12 +95,11 @@ class CPUWorker(TimingBase):
                 logger.error(traceback.format_exc())
             finally:
                 print(f"Finished {algorithm_id}, took {timing}, {count} matches")
-                if report_output:
-                    self.cache.report_output.remote(response)
+                self.cache.report_output.remote(response)
                 self.active_tasks -= 1
 
     @measure_time
-    async def process_batch(self, records, manifests, report_output=True):
+    async def process_batch(self, records, manifests):
         """
         Process a batch of records using the manifest.
 
@@ -123,20 +112,9 @@ class CPUWorker(TimingBase):
         """
         processes = []
         if not self.telemetry:
-            self.telemetry = Telemetry("grazer")
+           self.telemetry = Telemetry("grazer")
         self.telemetry.record_gauge("input_queue_dump_size", len(records))
         for algorithm_id, manifest in manifests:
-            processes.append(
-                self.process_manifest(algorithm_id, manifest, records, report_output)
-            )
+            processes.append(self.process_manifest(algorithm_id, manifest, records))
         results = await asyncio.gather(*processes)
         return results
-
-    async def run(self):
-        # Keep the script running to maintain the actor
-        logger.info("CPUWorker worker booting..")
-        try:
-            while True:
-                time.sleep(10)
-        except KeyboardInterrupt:
-            logger.info("CPU Worker worker stopped.")

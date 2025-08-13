@@ -3,7 +3,6 @@ from app.algos.manager import AlgoManager
 from app.logger import logger
 from app.sentry import sentry_sdk
 
-
 class RunpodBase:
     @classmethod
     async def publish_status(cls, task_id, message):
