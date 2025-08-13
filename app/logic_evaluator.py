@@ -26,6 +26,9 @@ class LogicEvaluator:
         if fully_custom:
             self.fully_custom_operations.add(name)
 
+    async def uses_custom_operations(self):
+        return len(self.fully_custom_operations) != 0
+
     async def evaluate_with_audit(self, cond, records):
         """
         Evaluates a JSON-like condition structure across all records without short-circuiting
