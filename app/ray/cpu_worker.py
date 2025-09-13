@@ -66,7 +66,7 @@ class CPUWorker(TimingBase):
                     self.network_workers,
                     self.cache,
                 )
-                uses_custom_operations = await algo_manager.uses_custom_operations()
+                # uses_custom_operations = await algo_manager.uses_custom_operations()
                 gpu_accelerated = await algo_manager.is_gpu_accelerated()
                 gpu_accelerated_custom = await algo_manager.is_gpu_accelerated_custom()
                 # operable = await algo_manager.is_operable()
