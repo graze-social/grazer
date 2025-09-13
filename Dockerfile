@@ -42,7 +42,7 @@ ARG LOCKFILE=py311-linux.lock
 COPY pyproject.toml ${LOCKFILE} ./
 # manually install for pyre2
 RUN pip install pybind11[global]
-RUN pip install cython>=3.0.12 ninja>=1.11.1.3 setuptools>=75.8.2
+RUN pip install "cython>=3.0.12" "ninja>=1.11.1.3" "setuptools>=75.8.2"
 RUN pdm sync \
     --prod \
     -G streamer \
