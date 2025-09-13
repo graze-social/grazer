@@ -12,8 +12,6 @@ services:
       - RAY_memory_monitor_error_threshold=0.9
       - RAY_worker_register_timeout_s=10
       - RAY_verbose_exceptions=1
-    volumes:
-      - .:/grazer
     env_file:
       - .env
     command: ["tail", "-f", "/dev/null"]
