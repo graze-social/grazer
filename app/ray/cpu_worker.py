@@ -68,10 +68,11 @@ class CPUWorker(TimingBase):
                 )
                 uses_custom_operations = await algo_manager.uses_custom_operations()
                 gpu_accelerated = await algo_manager.is_gpu_accelerated()
+                gpu_accelerated_custom = await algo_manager.is_gpu_accelerated_custom()
                 # operable = await algo_manager.is_operable()
                 matched_records = []
                 # if operable:
-                if uses_custom_operations:
+                if gpu_accelerated_custom:
                     matched_records, _, timing = await algo_manager.matching_records(
                         records
                     )
